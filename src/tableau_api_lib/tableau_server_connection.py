@@ -1,10 +1,10 @@
 import requests
 
-from .endpoints import AuthEndpoint, DataAlertEndpoint, DatasourceEndpoint, \
+from src.tableau_api_lib.api_endpoints import AuthEndpoint, DataAlertEndpoint, DatasourceEndpoint, \
     FavoritesEndpoint, FileUploadEndpoint, FlowEndpoint, GroupEndpoint, JobsEndpoint, PermissionsEndpoint, \
     ProjectEndpoint, SchedulesEndpoint, SiteEndpoint, SubscriptionsEndpoint, UserEndpoint, TasksEndpoint, \
     ViewEndpoint, WorkbookEndpoint
-from .requests import AddDatasourcePermissionsRequest, AddDatasourceToFavoritesRequest, \
+from src.tableau_api_lib.api_requests import AddDatasourcePermissionsRequest, AddDatasourceToFavoritesRequest, \
     AddDatasourceToScheduleRequest, AddDefaultPermissionsRequest, AddFlowPermissionsRequest, \
     AddFlowToScheduleRequest, AddProjectPermissionsRequest, AddProjectToFavoritesRequest, \
     AddTagsRequest, AddUserToAlertRequest, AddUserToGroupRequest, AddUserToSiteRequest, \
@@ -16,7 +16,7 @@ from .requests import AddDatasourcePermissionsRequest, AddDatasourceToFavoritesR
     UpdateDatasourceRequest, UpdateFlowConnectionRequest, UpdateFlowRequest, UpdateGroupRequest, \
     UpdateProjectRequest, UpdateScheduleRequest, UpdateSiteRequest, UpdateSubscriptionRequest, \
     UpdateUserRequest, UpdateWorkbookConnectionRequest, UpdateWorkbookRequest
-from .decorators import verify_response, verify_signed_in
+from src.tableau_api_lib.decorators import verify_response, verify_signed_in
 
 
 class TableauServerConnection:

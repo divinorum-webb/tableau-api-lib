@@ -4,7 +4,7 @@ from functools import wraps
 def verify_response(success_code):
     """
     Verifies that the request being executed has a response whose status code matches the success code provided.
-    This decorates the function calls which send API requests to the server.
+    This decorates the function calls which send API api_requests to the server.
 
     :param success_code:    The code that will be passed with the server's response body if the request was successful.
     :type success_code:     int

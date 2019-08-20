@@ -4,7 +4,7 @@ from functools import wraps
 def verify_signed_in(func):
     """
     Verifies that the Tableau Server object is signed in.
-    This decorates the function calls which send API requests to the server.
+    This decorates the function calls which send API api_requests to the server.
 
     :param func:    The code that will be passed with the server's response body if the request was successful.
     :type func:     function

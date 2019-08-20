@@ -1,4 +1,4 @@
-tableau_server_config = {
+sample_config = {
     'tableau_prod': {
         'server': 'https://<YOUR_SERVER>.com',
         'api_version': '<YOUR_API_VERSION>',
