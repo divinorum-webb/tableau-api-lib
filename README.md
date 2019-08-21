@@ -1,0 +1,2 @@
+This library allows developers to call all methods as seen in Tableau Server's REST API reference.
+Each method returns the corresponding HTTP response, providing among other things the status code and a JSON response body.
