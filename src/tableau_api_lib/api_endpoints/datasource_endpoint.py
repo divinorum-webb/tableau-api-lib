@@ -1,4 +1,4 @@
-from src.tableau_api_lib.api_endpoints import BaseEndpoint
+from tableau_api_lib.api_endpoints import BaseEndpoint
 
 
 class DatasourceEndpoint(BaseEndpoint):

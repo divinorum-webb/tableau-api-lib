@@ -5,28 +5,16 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="tableau_api_lib",
-    version="0.0.1",
+    version="0.0.2",
     author="Elliott Stam",
     author_email="elliott.stam@gmail.com",
     description="This library enables developers to call any method seen in Tableau Server's REST API documentation.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/divinorum-webb/tableau-api-lib",
-    packages=[
-        'tableau_api_lib',
-        'decorators',
-        'api_endpoints',
-        'exceptions',
-        'api_requests',
-        'sample'
-    ],
+    packages=setuptools.find_packages('src'),
     package_dir={
-        'tableau_api_lib': 'src/tableau_api_lib',
-        'decorators': 'src/tableau_api_lib/decorators',
-        'api_endpoints': 'src/tableau_api_lib/api_endpoints',
-        'exceptions': 'src/tableau_api_lib/exceptions',
-        'api_requests': 'src/tableau_api_lib/api_requests',
-        'sample': 'src/tableau_api_lib/sample'
+        '': 'src',
     },
     install_requires=[
         'requests>2',

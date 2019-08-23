@@ -1,4 +1,4 @@
-from src.tableau_api_lib.exceptions import InvalidParameterException
+from tableau_api_lib.exceptions import InvalidParameterException
 
 
 class BaseEndpoint:

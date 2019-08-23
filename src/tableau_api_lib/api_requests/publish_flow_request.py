@@ -3,7 +3,7 @@ import json
 from urllib3.fields import RequestField
 from urllib3.filepost import encode_multipart_formdata
 
-from src.tableau_api_lib.api_requests import BaseRequest
+from tableau_api_lib.api_requests import BaseRequest
 
 
 CHUNK_SIZE = 1024 * 1024 * 5  # 5MB

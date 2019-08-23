@@ -1,4 +1,4 @@
-from src.tableau_api_lib.api_requests import BaseRequest
+from tableau_api_lib.api_requests import BaseRequest
 
 
 class CreateGroupRequest(BaseRequest):
