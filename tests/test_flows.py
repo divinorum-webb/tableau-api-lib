@@ -1,5 +1,5 @@
-from tableau.client.tableau_server_connection import TableauServerConnection
-from tableau.client.config.config import tableau_server_config
+from tableau_api_lib import TableauServerConnection
+from .config import tableau_server_config
 
 
 TABLEAU_SERVER_CONFIG_ENV = 'tableau_prod'
