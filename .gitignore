@@ -1,3 +1,4 @@
 *.idea
 *.ipynb
 config.py
+**/test_env
