@@ -44,6 +44,7 @@ class UpdateScheduleRequest(BaseRequest):
                                         the value is wrapped in quotes.
     :type interval_expression_dict:     dict
     """
+
     def __init__(self,
                  ts_connection,
                  schedule_name=None,
@@ -64,6 +65,9 @@ class UpdateScheduleRequest(BaseRequest):
         self._start_time = start_time
         self._end_time = end_time
         self._interval_expression_dict = interval_expression_dict
+        self._interval_expression_keys = None
+        self._interval_expression_values = None
+        self._validate_inputs()
         self.base_update_schedule_request()
 
     @property
@@ -94,9 +98,11 @@ class UpdateScheduleRequest(BaseRequest):
 
     def _validate_inputs(self):
         if self._interval_expression_dict:
+            print("setting interval expressions...")
             self._set_interval_expressions()
         else:
-            self._invalid_parameter_exception()
+            print("ain't doin it right")
+            pass
 
     @property
     def optional_schedule_param_values(self):
@@ -129,8 +135,9 @@ class UpdateScheduleRequest(BaseRequest):
     def _set_interval_expressions(self):
         if self._interval_expression_dict:
             if any(self._interval_expression_dict.values()):
-                self._interval_expression_keys, self._interval_expression_values = self._unpack_interval_expressions_dict(
-                    self._interval_expression_dict)
+                self._interval_expression_keys, self._interval_expression_values = \
+                    self._unpack_interval_expressions_dict(
+                        self._interval_expression_dict)
 
     @staticmethod
     def _get_parameters_list(param_keys, param_values):
@@ -157,9 +164,10 @@ class UpdateScheduleRequest(BaseRequest):
 
         if self._interval_expression_dict:
             self._request_body['schedule']['frequencyDetails'].update({'intervals': {}})
-            self._request_body['schedule']['frequencyDetails']['intervals'].update(
-                {'interval': self._get_parameters_list(self._interval_expression_keys,
-                                                       self._interval_expression_values)})
+            self._request_body['schedule']['frequencyDetails']['intervals'].update({
+                    'interval': self._get_parameters_list(self._interval_expression_keys,
+                                                          self._interval_expression_values)
+                })
         return self._request_body
 
     def get_request(self):

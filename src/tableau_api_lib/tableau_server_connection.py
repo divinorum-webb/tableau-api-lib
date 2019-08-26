@@ -1142,16 +1142,25 @@ class TableauServerConnection:
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
-    def update_schedule(self, schedule_id, schedule_name=None, schedule_priority=None, schedule_type=None,
+    def update_schedule(self, schedule_id,
+                        schedule_name=None,
+                        schedule_priority=None,
+                        schedule_type=None,
                         schedule_execution_order=None,
-                        schedule_frequency=None, start_time=None, end_time=None, interval_expression_dict=None):
+                        schedule_frequency=None,
+                        start_time=None,
+                        end_time=None,
+                        interval_expression_dict=None):
         self.active_request = UpdateScheduleRequest(ts_connection=self, schedule_name=schedule_name,
-                                                    schedule_priority=schedule_priority, schedule_type=schedule_type,
+                                                    schedule_priority=schedule_priority,
+                                                    schedule_type=schedule_type,
                                                     schedule_execution_order=schedule_execution_order,
                                                     schedule_frequency=schedule_frequency,
-                                                    start_time=start_time, end_time=end_time,
+                                                    start_time=start_time,
+                                                    end_time=end_time,
                                                     interval_expression_dict=interval_expression_dict).get_request()
-        self.active_endpoint = SchedulesEndpoint(ts_connection=self, schedule_id=schedule_id,
+        self.active_endpoint = SchedulesEndpoint(ts_connection=self,
+                                                 schedule_id=schedule_id,
                                                  update_schedule=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
@@ -1166,10 +1175,17 @@ class TableauServerConnection:
 
     # subscriptions
 
-    def create_subscription(self, subscription_subject, content_type, content_id, schedule_id, user_id):
-        self.active_request = CreateSubscriptionRequest(ts_connection=self, subscription_subject=subscription_subject,
+    def create_subscription(self,
+                            subscription_subject,
+                            content_type,
+                            content_id,
+                            schedule_id,
+                            user_id):
+        self.active_request = CreateSubscriptionRequest(ts_connection=self,
+                                                        subscription_subject=subscription_subject,
                                                         content_type=content_type,
-                                                        content_id=content_id, schedule_id=schedule_id,
+                                                        content_id=content_id,
+                                                        schedule_id=schedule_id,
                                                         user_id=user_id).get_request()
         self.active_endpoint = SubscriptionsEndpoint(ts_connection=self, create_subscription=True).get_endpoint()
         self.active_headers = self.default_headers
