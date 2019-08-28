@@ -117,7 +117,6 @@ class TableauServerConnection:
         self.active_endpoint = AuthEndpoint(ts_connection=self, switch_site=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
-        print(response.status_code)
         if response.status_code == 200:
             self.auth_token = response.json()['credentials']['token']
             self.site_id = response.json()['credentials']['site']['id']
