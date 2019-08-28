@@ -34,10 +34,11 @@ class TableauServerConnection:
         """
         self._config = config_json
         self._env = env
-        self.__auth_token = None
-        self.__site_id = None
-        self.__site_url = None
-        self.__user_id = None
+        self._auth_token = None
+        self.site_url = self._config[self._env]['site_url']
+        self.site_name = self._config[self._env]['site_name']
+        self.site_id = None
+        self.user_id = None
         self.active_endpoint = None
         self.active_request = None
         self.active_headers = None
@@ -57,10 +58,6 @@ class TableauServerConnection:
     @property
     def password(self):
         return self._config[self._env]['password']
-
-    @property
-    def site_name(self):
-        return self._config[self._env]['site_name']
 
     @property
     def sign_in_headers(self):
@@ -83,45 +80,14 @@ class TableauServerConnection:
 
     @property
     def auth_token(self):
-        return self.__auth_token
+        return self._auth_token
 
     @auth_token.setter
     def auth_token(self, token_value):
-        if token_value != self.__auth_token or token_value is None:
-            self.__auth_token = token_value
+        if token_value != self._auth_token or token_value is None:
+            self._auth_token = token_value
         else:
             raise Exception('You are already signed in with a valid auth token.')
-
-    @property
-    def site_id(self):
-        return self.__site_id
-
-    @site_id.setter
-    def site_id(self, site_id_value):
-        if self.site_id != site_id_value:
-            self.__site_id = site_id_value
-        else:
-            raise Exception('This Tableau Server connection is already connected the specified site.')
-
-    @property
-    def site_url(self):
-        return self._config[self._env]['site_url']
-
-    @site_url.setter
-    def site_url(self, content_url):
-        if self.site_url != content_url:
-            self.__site_url = content_url
-        else:
-            raise Exception('The current Tableau Server site already uses this content URL ({}).'
-                            .format(content_url))
-
-    @property
-    def user_id(self):
-        return self.__user_id
-
-    @user_id.setter
-    def user_id(self, user_id_value):
-        self.__user_id = user_id_value
 
     # authentication
 
@@ -151,9 +117,11 @@ class TableauServerConnection:
         self.active_endpoint = AuthEndpoint(ts_connection=self, switch_site=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        print(response.status_code)
         if response.status_code == 200:
             self.auth_token = response.json()['credentials']['token']
             self.site_id = response.json()['credentials']['site']['id']
+            self.site_name = self.query_site().json()['site']['name']
             self.site_url = response.json()['credentials']['site']['contentUrl']
             self.user_id = response.json()['credentials']['user']['id']
         return response
