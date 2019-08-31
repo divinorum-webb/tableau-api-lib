@@ -133,7 +133,8 @@ class TableauServerConnection:
 
     # sites
 
-    def create_site(self, site_name,
+    def create_site(self,
+                    site_name,
                     content_url,
                     admin_mode='ContentAndUsers',
                     user_quota=None,
@@ -269,24 +270,37 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def add_user_to_data_driven_alert(self, user_id, data_alert_id):
+    def add_user_to_data_driven_alert(self,
+                                      user_id,
+                                      data_alert_id):
         # this appears to be broken on Tableau's side, always returning an internal server error
-        self.active_request = AddUserToAlertRequest(ts_connection=self, user_id=user_id).get_request()
-        self.active_endpoint = DataAlertEndpoint(ts_connection=self, add_user=True, user_id=user_id,
+        self.active_request = AddUserToAlertRequest(ts_connection=self,
+                                                    user_id=user_id).get_request()
+        self.active_endpoint = DataAlertEndpoint(ts_connection=self,
+                                                 add_user=True,
+                                                 user_id=user_id,
                                                  data_alert_id=data_alert_id).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
-    def delete_user_from_data_driven_alert(self, user_id, data_alert_id):
-        self.active_endpoint = DataAlertEndpoint(ts_connection=self, remove_user=True, user_id=user_id,
+    def delete_user_from_data_driven_alert(self,
+                                           user_id,
+                                           data_alert_id):
+        self.active_endpoint = DataAlertEndpoint(ts_connection=self,
+                                                 remove_user=True,
+                                                 user_id=user_id,
                                                  data_alert_id=data_alert_id).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def update_data_driven_alert(self, data_alert_id, data_alert_subject=None, data_alert_frequency=None,
-                                 data_alert_owner_id=None, is_public_flag=None):
+    def update_data_driven_alert(self,
+                                 data_alert_id,
+                                 data_alert_subject=None,
+                                 data_alert_frequency=None,
+                                 data_alert_owner_id=None,
+                                 is_public_flag=None):
         self.active_request = UpdateDataAlertRequest(ts_connection=self,
                                                      data_alert_subject=data_alert_subject,
                                                      data_alert_frequency=data_alert_frequency,
@@ -300,44 +314,59 @@ class TableauServerConnection:
     # flows
 
     def query_flow(self, flow_id):
-        self.active_endpoint = FlowEndpoint(ts_connection=self, flow_id=flow_id, query_flow=True).get_endpoint()
+        self.active_endpoint = FlowEndpoint(ts_connection=self,
+                                            flow_id=flow_id,
+                                            query_flow=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
     def delete_flow(self, flow_id):
-        self.active_endpoint = FlowEndpoint(ts_connection=self, flow_id=flow_id, delete_flow=True).get_endpoint()
+        self.active_endpoint = FlowEndpoint(ts_connection=self,
+                                            flow_id=flow_id,
+                                            delete_flow=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
     def download_flow(self, flow_id):
-        self.active_endpoint = FlowEndpoint(ts_connection=self, flow_id=flow_id, download_flow=True).get_endpoint()
+        self.active_endpoint = FlowEndpoint(ts_connection=self,
+                                            flow_id=flow_id,
+                                            download_flow=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
     def query_flow_connections(self, flow_id):
-        self.active_endpoint = FlowEndpoint(ts_connection=self, flow_id=flow_id,
+        self.active_endpoint = FlowEndpoint(ts_connection=self,
+                                            flow_id=flow_id,
                                             query_flow_connections=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
     def query_flows_for_site(self):
-        self.active_endpoint = FlowEndpoint(ts_connection=self, query_flows_for_site=True).get_endpoint()
+        self.active_endpoint = FlowEndpoint(ts_connection=self,
+                                            query_flows_for_site=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def query_flows_for_user(self, user_id, parameter_dict=None):
-        self.active_endpoint = FlowEndpoint(ts_connection=self, user_id=user_id, query_flows_for_user=True,
+    def query_flows_for_user(self,
+                             user_id,
+                             parameter_dict=None):
+        self.active_endpoint = FlowEndpoint(ts_connection=self,
+                                            user_id=user_id,
+                                            query_flows_for_user=True,
                                             parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def update_flow(self, flow_id, new_project_id=None, new_owner_id=None):
+    def update_flow(self,
+                    flow_id,
+                    new_project_id=None,
+                    new_owner_id=None):
         self.active_request = UpdateFlowRequest(ts_connection=self,
                                                 new_project_id=new_project_id,
                                                 new_owner_id=new_owner_id).get_request()
@@ -348,14 +377,24 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
-    def update_flow_connection(self, flow_id, connection_id, server_address=None, port=None, connection_username=None,
-                               connection_password=None, embed_password_flag=None):
+    def update_flow_connection(self,
+                               flow_id,
+                               connection_id,
+                               server_address=None,
+                               port=None,
+                               connection_username=None,
+                               connection_password=None,
+                               embed_password_flag=None):
         """Note that you must set the connection_password='' if changing the embed_password_flag from True to False"""
-        self.active_request = UpdateFlowConnectionRequest(ts_connection=self, server_address=server_address, port=port,
+        self.active_request = UpdateFlowConnectionRequest(ts_connection=self,
+                                                          server_address=server_address,
+                                                          port=port,
                                                           connection_username=connection_username,
                                                           connection_password=connection_password,
                                                           embed_password_flag=embed_password_flag).get_request()
-        self.active_endpoint = FlowEndpoint(ts_connection=self, flow_id=flow_id, connection_id=connection_id,
+        self.active_endpoint = FlowEndpoint(ts_connection=self,
+                                            flow_id=flow_id,
+                                            connection_id=connection_id,
                                             update_flow_connection=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
@@ -363,32 +402,45 @@ class TableauServerConnection:
 
     # projects
 
-    def create_project(self, project_name, project_description=None, content_permissions='ManagedByOwner',
-                       parent_project_id=None, parameter_dict=None):
-        self.active_request = CreateProjectRequest(ts_connection=self, project_name=project_name,
+    def create_project(self,
+                       project_name,
+                       project_description=None,
+                       content_permissions='ManagedByOwner',
+                       parent_project_id=None,
+                       parameter_dict=None):
+        self.active_request = CreateProjectRequest(ts_connection=self,
+                                                   project_name=project_name,
                                                    project_description=project_description,
                                                    content_permissions=content_permissions,
                                                    parent_project_id=parent_project_id).get_request()
-        self.active_endpoint = ProjectEndpoint(ts_connection=self, create_project=True,
+        self.active_endpoint = ProjectEndpoint(ts_connection=self,
+                                               create_project=True,
                                                parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
     def query_projects(self, parameter_dict=None):
-        self.active_endpoint = ProjectEndpoint(ts_connection=self, query_projects=True,
+        self.active_endpoint = ProjectEndpoint(ts_connection=self,
+                                               query_projects=True,
                                                parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def update_project(self, project_id, project_name=None, project_description=None, content_permissions=None,
+    def update_project(self,
+                       project_id,
+                       project_name=None,
+                       project_description=None,
+                       content_permissions=None,
                        parent_project_id=None):
-        self.active_request = UpdateProjectRequest(ts_connection=self, project_name=project_name,
+        self.active_request = UpdateProjectRequest(ts_connection=self,
+                                                   project_name=project_name,
                                                    project_description=project_description,
                                                    content_permissions=content_permissions,
                                                    parent_project_id=parent_project_id).get_request()
-        self.active_endpoint = ProjectEndpoint(ts_connection=self, update_project=True,
+        self.active_endpoint = ProjectEndpoint(ts_connection=self,
+                                               update_project=True,
                                                project_id=project_id).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
@@ -417,40 +469,61 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
-    def query_views_for_workbook(self, workbook_id, parameter_dict=None):
-        self.active_endpoint = WorkbookEndpoint(ts_connection=self, query_views=True, workbook_id=workbook_id,
+    def query_views_for_workbook(self,
+                                 workbook_id,
+                                 parameter_dict=None):
+        self.active_endpoint = WorkbookEndpoint(ts_connection=self,
+                                                query_views=True,
+                                                workbook_id=workbook_id,
                                                 parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def query_view_data(self, view_id, parameter_dict=None):
+    def query_view_data(self,
+                        view_id,
+                        parameter_dict=None):
         # the CSV returned is in the response body as response.content
-        self.active_endpoint = ViewEndpoint(ts_connection=self, view_id=view_id, query_view_data=True,
+        self.active_endpoint = ViewEndpoint(ts_connection=self,
+                                            view_id=view_id,
+                                            query_view_data=True,
                                             parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def query_view_image(self, view_id, parameter_dict=None):
+    def query_view_image(self,
+                         view_id,
+                         parameter_dict=None):
         # the image returned is in the response body as response.content
-        self.active_endpoint = ViewEndpoint(ts_connection=self, view_id=view_id, query_view_image=True,
+        self.active_endpoint = ViewEndpoint(ts_connection=self,
+                                            view_id=view_id,
+                                            query_view_image=True,
                                             parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def query_view_pdf(self, view_id, parameter_dict=None):
+    def query_view_pdf(self,
+                       view_id,
+                       parameter_dict=None):
         # the PDF returned is in the response body as response.content
-        self.active_endpoint = ViewEndpoint(ts_connection=self, view_id=view_id, query_view_pdf=True,
+        self.active_endpoint = ViewEndpoint(ts_connection=self,
+                                            view_id=view_id,
+                                            query_view_pdf=True,
                                             parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def query_view_preview_image(self, workbook_id, view_id, parameter_dict=None):
+    def query_view_preview_image(self,
+                                 workbook_id,
+                                 view_id,
+                                 parameter_dict=None):
         # the preview thumbnail image returned is in the response body as response.content
-        self.active_endpoint = WorkbookEndpoint(ts_connection=self, workbook_id=workbook_id, view_id=view_id,
+        self.active_endpoint = WorkbookEndpoint(ts_connection=self,
+                                                workbook_id=workbook_id,
+                                                view_id=view_id,
                                                 query_workbook_view_preview_img=True,
                                                 parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
@@ -458,51 +531,72 @@ class TableauServerConnection:
         return response
 
     def get_view(self, view_id):
-        self.active_endpoint = ViewEndpoint(ts_connection=self, view_id=view_id, query_view=True).get_endpoint()
+        self.active_endpoint = ViewEndpoint(ts_connection=self,
+                                            view_id=view_id,
+                                            query_view=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
     def query_view(self, view_id):
         """This extra method exists because the official method 'get_view' appears to break naming conventions"""
-        self.active_endpoint = ViewEndpoint(ts_connection=self, view_id=view_id, query_view=True).get_endpoint()
+        self.active_endpoint = ViewEndpoint(ts_connection=self,
+                                            view_id=view_id,
+                                            query_view=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def query_workbook(self, workbook_id, parameter_dict=None):
-        self.active_endpoint = WorkbookEndpoint(ts_connection=self, workbook_id=workbook_id, query_workbook=True,
+    def query_workbook(self,
+                       workbook_id,
+                       parameter_dict=None):
+        self.active_endpoint = WorkbookEndpoint(ts_connection=self,
+                                                workbook_id=workbook_id,
+                                                query_workbook=True,
                                                 parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def query_workbook_connections(self, workbook_id, parameter_dict=None):
-        self.active_endpoint = WorkbookEndpoint(ts_connection=self, workbook_id=workbook_id, query_connections=True,
+    def query_workbook_connections(self,
+                                   workbook_id,
+                                   parameter_dict=None):
+        self.active_endpoint = WorkbookEndpoint(ts_connection=self,
+                                                workbook_id=workbook_id,
+                                                query_connections=True,
                                                 parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def get_workbook_revisions(self, workbook_id, parameter_dict=None):
-        self.active_endpoint = WorkbookEndpoint(ts_connection=self, workbook_id=workbook_id,
+    def get_workbook_revisions(self,
+                               workbook_id,
+                               parameter_dict=None):
+        self.active_endpoint = WorkbookEndpoint(ts_connection=self,
+                                                workbook_id=workbook_id,
                                                 get_workbook_revisions=True,
                                                 parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def remove_workbook_revision(self, workbook_id, revision_number):
-        self.active_endpoint = WorkbookEndpoint(ts_connection=self, workbook_id=workbook_id,
+    def remove_workbook_revision(self,
+                                 workbook_id,
+                                 revision_number):
+        self.active_endpoint = WorkbookEndpoint(ts_connection=self,
+                                                workbook_id=workbook_id,
                                                 revision_number=revision_number,
                                                 remove_workbook_revision=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def query_workbook_preview_image(self, workbook_id, parameter_dict=None):
+    def query_workbook_preview_image(self,
+                                     workbook_id,
+                                     parameter_dict=None):
         # the preview image returned is in the response body as response.content
-        self.active_endpoint = WorkbookEndpoint(ts_connection=self, workbook_id=workbook_id,
+        self.active_endpoint = WorkbookEndpoint(ts_connection=self,
+                                                workbook_id=workbook_id,
                                                 query_workbook_preview_img=True,
                                                 parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
@@ -510,36 +604,53 @@ class TableauServerConnection:
         return response
 
     def query_workbooks_for_site(self, parameter_dict=None):
-        self.active_endpoint = WorkbookEndpoint(ts_connection=self, query_workbooks=True,
+        self.active_endpoint = WorkbookEndpoint(ts_connection=self,
+                                                query_workbooks=True,
                                                 parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def query_workbooks_for_user(self, user_id, parameter_dict=None):
-        self.active_endpoint = UserEndpoint(ts_connection=self, user_id=user_id, query_workbooks_for_user=True,
+    def query_workbooks_for_user(self,
+                                 user_id,
+                                 parameter_dict=None):
+        self.active_endpoint = UserEndpoint(ts_connection=self,
+                                            user_id=user_id,
+                                            query_workbooks_for_user=True,
                                             parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def download_workbook(self, workbook_id, parameter_dict=None):
-        self.active_endpoint = WorkbookEndpoint(ts_connection=self, workbook_id=workbook_id, download_workbook=True,
+    def download_workbook(self,
+                          workbook_id,
+                          parameter_dict=None):
+        self.active_endpoint = WorkbookEndpoint(ts_connection=self,
+                                                workbook_id=workbook_id,
+                                                download_workbook=True,
                                                 parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def download_workbook_pdf(self, workbook_id, parameter_dict=None):
-        self.active_endpoint = WorkbookEndpoint(ts_connection=self, workbook_id=workbook_id, download_workbook_pdf=True,
+    def download_workbook_pdf(self,
+                              workbook_id,
+                              parameter_dict=None):
+        self.active_endpoint = WorkbookEndpoint(ts_connection=self,
+                                                workbook_id=workbook_id,
+                                                download_workbook_pdf=True,
                                                 parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def download_workbook_revision(self, workbook_id, revision_number, parameter_dict=None):
+    def download_workbook_revision(self,
+                                   workbook_id,
+                                   revision_number,
+                                   parameter_dict=None):
         # this method only works for workbook versions that are NOT the current version
-        self.active_endpoint = WorkbookEndpoint(ts_connection=self, workbook_id=workbook_id,
+        self.active_endpoint = WorkbookEndpoint(ts_connection=self,
+                                                workbook_id=workbook_id,
                                                 revision_number=revision_number,
                                                 download_workbook_revision=True,
                                                 parameter_dict=parameter_dict).get_endpoint()
@@ -547,25 +658,39 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def update_workbook(self, workbook_id, show_tabs_flag=None, project_id=None, owner_id=None):
-        self.active_request = UpdateWorkbookRequest(ts_connection=self, show_tabs_flag=show_tabs_flag,
-                                                    project_id=project_id, owner_id=owner_id).get_request()
+    def update_workbook(self,
+                        workbook_id,
+                        show_tabs_flag=None,
+                        project_id=None,
+                        owner_id=None):
+        self.active_request = UpdateWorkbookRequest(ts_connection=self,
+                                                    show_tabs_flag=show_tabs_flag,
+                                                    project_id=project_id,
+                                                    owner_id=owner_id).get_request()
         self.active_endpoint = WorkbookEndpoint(ts_connection=self, workbook_id=workbook_id,
                                                 update_workbook=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
-    def update_workbook_connection(self, workbook_id, connection_id, server_address=None, port=None,
+    def update_workbook_connection(self,
+                                   workbook_id,
+                                   connection_id,
+                                   server_address=None,
+                                   port=None,
                                    connection_username=None,
-                                   connection_password=None, embed_password_flag=None, parameter_dict=None):
+                                   connection_password=None,
+                                   embed_password_flag=None,
+                                   parameter_dict=None):
         # fails to execute correctly on Tableau Server's side
-        self.active_request = UpdateWorkbookConnectionRequest(ts_connection=self, server_address=server_address,
+        self.active_request = UpdateWorkbookConnectionRequest(ts_connection=self,
+                                                              server_address=server_address,
                                                               port=port,
                                                               connection_username=connection_username,
                                                               connection_password=connection_password,
                                                               embed_password_flag=embed_password_flag).get_request()
-        self.active_endpoint = WorkbookEndpoint(ts_connection=self, workbook_id=workbook_id,
+        self.active_endpoint = WorkbookEndpoint(ts_connection=self,
+                                                workbook_id=workbook_id,
                                                 connection_id=connection_id,
                                                 update_workbook_connection=True,
                                                 parameter_dict=parameter_dict).get_endpoint()
@@ -575,28 +700,36 @@ class TableauServerConnection:
 
     def update_workbook_now(self, workbook_id, ):
         self.active_request = EmptyRequest(ts_connection=self).get_request()
-        self.active_endpoint = WorkbookEndpoint(ts_connection=self, workbook_id=workbook_id,
+        self.active_endpoint = WorkbookEndpoint(ts_connection=self,
+                                                workbook_id=workbook_id,
                                                 refresh_workbook=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
     def delete_workbook(self, workbook_id):
-        self.active_endpoint = WorkbookEndpoint(ts_connection=self, workbook_id=workbook_id,
+        self.active_endpoint = WorkbookEndpoint(ts_connection=self,
+                                                workbook_id=workbook_id,
                                                 delete_workbook=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def delete_tag_from_view(self, view_id, tag_name):
-        self.active_endpoint = ViewEndpoint(ts_connection=self, view_id=view_id, tag_name=tag_name,
+    def delete_tag_from_view(self,
+                             view_id,
+                             tag_name):
+        self.active_endpoint = ViewEndpoint(ts_connection=self,
+                                            view_id=view_id,
+                                            tag_name=tag_name,
                                             delete_tag=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
     def delete_tag_from_workbook(self, workbook_id, tag_name):
-        self.active_endpoint = WorkbookEndpoint(ts_connection=self, workbook_id=workbook_id, tag_name=tag_name,
+        self.active_endpoint = WorkbookEndpoint(ts_connection=self,
+                                                workbook_id=workbook_id,
+                                                tag_name=tag_name,
                                                 delete_tag=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
@@ -604,15 +737,20 @@ class TableauServerConnection:
 
     # data sources
 
-    def add_tags_to_data_source(self, datasource_id, tags):
+    def add_tags_to_data_source(self,
+                                datasource_id,
+                                tags):
         self.active_request = AddTagsRequest(ts_connection=self, tags=tags).get_request()
-        self.active_endpoint = DatasourceEndpoint(ts_connection=self, datasource_id=datasource_id,
+        self.active_endpoint = DatasourceEndpoint(ts_connection=self,
+                                                  datasource_id=datasource_id,
                                                   add_tags=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
-    def delete_tag_from_data_source(self, datasource_id, tag_name):
+    def delete_tag_from_data_source(self,
+                                    datasource_id,
+                                    tag_name):
         self.active_endpoint = DatasourceEndpoint(ts_connection=self, datasource_id=datasource_id, tag_name=tag_name,
                                                   delete_tag=True).get_endpoint()
         self.active_headers = self.default_headers
@@ -640,15 +778,20 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def get_data_source_revisions(self, datasource_id, parameter_dict=None):
-        self.active_endpoint = DatasourceEndpoint(ts_connection=self, datasource_id=datasource_id,
+    def get_data_source_revisions(self,
+                                  datasource_id,
+                                  parameter_dict=None):
+        self.active_endpoint = DatasourceEndpoint(ts_connection=self,
+                                                  datasource_id=datasource_id,
                                                   get_datasource_revisions=True,
                                                   parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def download_data_source(self, datasource_id, parameter_dict=None):
+    def download_data_source(self,
+                             datasource_id,
+                             parameter_dict=None):
         self.active_endpoint = DatasourceEndpoint(ts_connection=self,
                                                   datasource_id=datasource_id,
                                                   download_datasource=True,
@@ -657,8 +800,12 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def download_data_source_revision(self, datasource_id, revision_number, parameter_dict=None):
-        self.active_endpoint = DatasourceEndpoint(ts_connection=self, datasource_id=datasource_id,
+    def download_data_source_revision(self,
+                                      datasource_id,
+                                      revision_number,
+                                      parameter_dict=None):
+        self.active_endpoint = DatasourceEndpoint(ts_connection=self,
+                                                  datasource_id=datasource_id,
                                                   revision_number=revision_number,
                                                   download_datasource_revision=True,
                                                   parameter_dict=parameter_dict).get_endpoint()
@@ -666,32 +813,44 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def update_data_source(self, datasource_id, new_project_id=None, new_owner_id=None, is_certified_flag=None,
+    def update_data_source(self, datasource_id,
+                           new_project_id=None,
+                           new_owner_id=None,
+                           is_certified_flag=None,
                            certification_note=None):
         """
         Note that assigning an embedded extract will remain in the same project as its workbook,
         even if the response indicates it has moved
         """
-        self.active_request = UpdateDatasourceRequest(ts_connection=self, new_project_id=new_project_id,
+        self.active_request = UpdateDatasourceRequest(ts_connection=self,
+                                                      new_project_id=new_project_id,
                                                       new_owner_id=new_owner_id,
                                                       is_certified_flag=is_certified_flag,
                                                       certification_note=certification_note).get_request()
-        self.active_endpoint = DatasourceEndpoint(ts_connection=self, datasource_id=datasource_id,
+        self.active_endpoint = DatasourceEndpoint(ts_connection=self,
+                                                  datasource_id=datasource_id,
                                                   update_datasource=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
-    def update_data_source_connection(self, datasource_id, connection_id, server_address=None, port=None,
+    def update_data_source_connection(self,
+                                      datasource_id,
+                                      connection_id,
+                                      server_address=None,
+                                      port=None,
                                       connection_username=None,
-                                      connection_password=None, embed_password_flag=None):
+                                      connection_password=None,
+                                      embed_password_flag=None):
         """Note that you must set the connection_password='' if changing the embed_password_flag from True to False"""
-        self.active_request = UpdateDatasourceConnectionRequest(ts_connection=self, server_address=server_address,
+        self.active_request = UpdateDatasourceConnectionRequest(ts_connection=self,
+                                                                server_address=server_address,
                                                                 port=port,
                                                                 connection_username=connection_username,
                                                                 connection_password=connection_password,
                                                                 embed_password_flag=embed_password_flag).get_request()
-        self.active_endpoint = DatasourceEndpoint(ts_connection=self, datasource_id=datasource_id,
+        self.active_endpoint = DatasourceEndpoint(ts_connection=self,
+                                                  datasource_id=datasource_id,
                                                   connection_id=connection_id,
                                                   update_datasource_connection=True).get_endpoint()
         self.active_headers = self.default_headers
@@ -700,21 +859,26 @@ class TableauServerConnection:
 
     def update_data_source_now(self, datasource_id):
         self.active_request = EmptyRequest(ts_connection=self).get_request()
-        self.active_endpoint = DatasourceEndpoint(ts_connection=self, datasource_id=datasource_id,
+        self.active_endpoint = DatasourceEndpoint(ts_connection=self,
+                                                  datasource_id=datasource_id,
                                                   refresh_datasource=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
     def delete_data_source(self, datasource_id):
-        self.active_endpoint = DatasourceEndpoint(ts_connection=self, datasource_id=datasource_id,
+        self.active_endpoint = DatasourceEndpoint(ts_connection=self,
+                                                  datasource_id=datasource_id,
                                                   delete_datasource=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def remove_data_source_revision(self, datasource_id, revision_number):
-        self.active_endpoint = DatasourceEndpoint(ts_connection=self, datasource_id=datasource_id,
+    def remove_data_source_revision(self,
+                                    datasource_id,
+                                    revision_number):
+        self.active_endpoint = DatasourceEndpoint(ts_connection=self,
+                                                  datasource_id=datasource_id,
                                                   revision_number=revision_number,
                                                   remove_datasource_revision=True).get_endpoint()
         self.active_headers = self.default_headers
@@ -723,9 +887,13 @@ class TableauServerConnection:
 
     # users and groups
 
-    def create_group(self, new_group_name, active_directory_group_name=None, active_directory_domain_name=None,
+    def create_group(self,
+                     new_group_name,
+                     active_directory_group_name=None,
+                     active_directory_domain_name=None,
                      default_site_role=None, parameter_dict=None):
-        self.active_request = CreateGroupRequest(ts_connection=self, new_group_name=new_group_name,
+        self.active_request = CreateGroupRequest(ts_connection=self,
+                                                 new_group_name=new_group_name,
                                                  active_directory_group_name=active_directory_group_name,
                                                  active_directory_domain_name=active_directory_domain_name,
                                                  default_site_role=default_site_role).get_request()
@@ -735,99 +903,143 @@ class TableauServerConnection:
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
-    def add_user_to_group(self, group_id, user_id):
+    def add_user_to_group(self,
+                          group_id,
+                          user_id):
         self.active_request = AddUserToGroupRequest(ts_connection=self, user_id=user_id).get_request()
         self.active_endpoint = GroupEndpoint(ts_connection=self, group_id=group_id, add_user=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
-    def add_user_to_site(self, user_name, site_role, auth_setting=None):
-        self.active_request = AddUserToSiteRequest(ts_connection=self, user_name=user_name,
-                                                   site_role=site_role, auth_setting=auth_setting).get_request()
+    def add_user_to_site(self,
+                         user_name,
+                         site_role,
+                         auth_setting=None):
+        self.active_request = AddUserToSiteRequest(ts_connection=self,
+                                                   user_name=user_name,
+                                                   site_role=site_role,
+                                                   auth_setting=auth_setting).get_request()
         self.active_endpoint = UserEndpoint(ts_connection=self, add_user=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
-    def get_users_in_group(self, group_id, parameter_dict=None):
-        self.active_endpoint = GroupEndpoint(ts_connection=self, group_id=group_id, get_users=True,
+    def get_users_in_group(self,
+                           group_id,
+                           parameter_dict=None):
+        self.active_endpoint = GroupEndpoint(ts_connection=self,
+                                             group_id=group_id,
+                                             get_users=True,
                                              parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
     def get_users_on_site(self, parameter_dict=None):
-        self.active_endpoint = UserEndpoint(ts_connection=self, query_users=True,
+        self.active_endpoint = UserEndpoint(ts_connection=self,
+                                            query_users=True,
                                             parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
     def query_groups(self, parameter_dict=None):
-        self.active_endpoint = GroupEndpoint(ts_connection=self, query_groups=True,
+        self.active_endpoint = GroupEndpoint(ts_connection=self,
+                                             query_groups=True,
                                              parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
     def query_user_on_site(self, user_id):
-        self.active_endpoint = UserEndpoint(ts_connection=self, user_id=user_id, query_user=True).get_endpoint()
+        self.active_endpoint = UserEndpoint(ts_connection=self,
+                                            user_id=user_id,
+                                            query_user=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def update_group(self, group_id, new_group_name=None, active_directory_group_name=None,
+    def update_group(self,
+                     group_id,
+                     new_group_name=None,
+                     active_directory_group_name=None,
                      active_directory_domain_name=None,
-                     default_site_role=None, parameter_dict=None):
-        self.active_request = UpdateGroupRequest(ts_connection=self, new_group_name=new_group_name,
+                     default_site_role=None,
+                     parameter_dict=None):
+        self.active_request = UpdateGroupRequest(ts_connection=self,
+                                                 new_group_name=new_group_name,
                                                  active_directory_group_name=active_directory_group_name,
                                                  active_directory_domain_name=active_directory_domain_name,
                                                  default_site_role=default_site_role).get_request()
-        self.active_endpoint = GroupEndpoint(ts_connection=self, group_id=group_id, update_group=True,
+        self.active_endpoint = GroupEndpoint(ts_connection=self,
+                                             group_id=group_id,
+                                             update_group=True,
                                              parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
-    def update_user(self, user_id, new_full_name=None, new_email=None, new_password=None, new_site_role=None,
+    def update_user(self,
+                    user_id,
+                    new_full_name=None,
+                    new_email=None,
+                    new_password=None,
+                    new_site_role=None,
                     new_auth_setting=None):
-        self.active_request = UpdateUserRequest(ts_connection=self, new_full_name=new_full_name, new_email=new_email,
-                                                new_password=new_password, new_site_role=new_site_role,
+        self.active_request = UpdateUserRequest(ts_connection=self,
+                                                new_full_name=new_full_name,
+                                                new_email=new_email,
+                                                new_password=new_password,
+                                                new_site_role=new_site_role,
                                                 new_auth_setting=new_auth_setting).get_request()
         self.active_endpoint = UserEndpoint(ts_connection=self, user_id=user_id, update_user=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.default_headers)
         return response
 
-    def remove_user_from_group(self, group_id, user_id):
-        self.active_endpoint = GroupEndpoint(ts_connection=self, group_id=group_id, user_id=user_id,
+    def remove_user_from_group(self,
+                               group_id,
+                               user_id):
+        self.active_endpoint = GroupEndpoint(ts_connection=self,
+                                             group_id=group_id,
+                                             user_id=user_id,
                                              remove_user=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
     def remove_user_from_site(self, user_id):
-        self.active_endpoint = UserEndpoint(ts_connection=self, user_id=user_id, remove_user=True).get_endpoint()
+        self.active_endpoint = UserEndpoint(ts_connection=self,
+                                            user_id=user_id,
+                                            remove_user=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
     def delete_group(self, group_id):
-        self.active_endpoint = GroupEndpoint(ts_connection=self, group_id=group_id, delete_group=True).get_endpoint()
+        self.active_endpoint = GroupEndpoint(ts_connection=self,
+                                             group_id=group_id,
+                                             delete_group=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
     # permissions
 
-    def add_data_source_permissions(self, datasource_id, user_capability_dict=None, group_capability_dict=None,
+    def add_data_source_permissions(self,
+                                    datasource_id,
+                                    user_capability_dict=None,
+                                    group_capability_dict=None,
                                     user_id=None, group_id=None):
-        self.active_request = AddDatasourcePermissionsRequest(ts_connection=self, datasource_id=datasource_id,
-                                                              user_id=user_id, group_id=group_id,
+        self.active_request = AddDatasourcePermissionsRequest(ts_connection=self,
+                                                              datasource_id=datasource_id,
+                                                              user_id=user_id,
+                                                              group_id=group_id,
                                                               user_capability_dict=user_capability_dict,
                                                               group_capability_dict=group_capability_dict).get_request()
-        self.active_endpoint = PermissionsEndpoint(ts_connection=self, object_type='datasource',
+        self.active_endpoint = PermissionsEndpoint(ts_connection=self,
+                                                   object_type='datasource',
                                                    object_id=datasource_id,
                                                    add_object_permissions=True).get_endpoint()
         self.active_headers = self.default_headers
