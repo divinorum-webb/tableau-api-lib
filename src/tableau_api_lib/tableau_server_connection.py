@@ -1046,30 +1046,51 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
-    def add_flow_permissions(self, flow_id, user_capability_dict=None, group_capability_dict=None, user_id=None,
+    def add_flow_permissions(self,
+                             flow_id,
+                             user_capability_dict=None,
+                             group_capability_dict=None,
+                             user_id=None,
                              group_id=None):
-        self.active_request = AddFlowPermissionsRequest(ts_connection=self, user_id=user_id, group_id=group_id,
+        self.active_request = AddFlowPermissionsRequest(ts_connection=self,
+                                                        user_id=user_id,
+                                                        group_id=group_id,
                                                         user_capability_dict=user_capability_dict,
                                                         group_capability_dict=group_capability_dict).get_request()
-        self.active_endpoint = PermissionsEndpoint(ts_connection=self, object_type='flow', object_id=flow_id,
+        self.active_endpoint = PermissionsEndpoint(ts_connection=self,
+                                                   object_type='flow',
+                                                   object_id=flow_id,
                                                    add_object_permissions=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
-    def add_project_permissions(self, project_id, user_capability_dict=None, group_capability_dict=None, user_id=None,
+    def add_project_permissions(self,
+                                project_id,
+                                user_capability_dict=None,
+                                group_capability_dict=None,
+                                user_id=None,
                                 group_id=None):
-        self.active_request = AddProjectPermissionsRequest(ts_connection=self, user_id=user_id, group_id=group_id,
+        self.active_request = AddProjectPermissionsRequest(ts_connection=self,
+                                                           user_id=user_id,
+                                                           group_id=group_id,
                                                            user_capability_dict=user_capability_dict,
                                                            group_capability_dict=group_capability_dict).get_request()
-        self.active_endpoint = PermissionsEndpoint(ts_connection=self, object_type='project', object_id=project_id,
+        self.active_endpoint = PermissionsEndpoint(ts_connection=self,
+                                                   object_type='project',
+                                                   object_id=project_id,
                                                    add_object_permissions=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
-    def add_default_permissions(self, project_id, project_permissions_object, group_id=None,
-                                user_id=None, user_capability_dict=None, group_capability_dict=None):
+    def add_default_permissions(self,
+                                project_id,
+                                project_permissions_object,
+                                group_id=None,
+                                user_id=None,
+                                user_capability_dict=None,
+                                group_capability_dict=None):
         self.active_request = AddDefaultPermissionsRequest(ts_connection=self,
                                                            group_id=group_id,
                                                            user_id=user_id,
@@ -1083,9 +1104,15 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
-    def add_view_permissions(self, view_id, user_capability_dict=None, group_capability_dict=None, user_id=None,
+    def add_view_permissions(self,
+                             view_id,
+                             user_capability_dict=None,
+                             group_capability_dict=None,
+                             user_id=None,
                              group_id=None):
-        self.active_request = AddViewPermissionsRequest(ts_connection=self, view_id=view_id, user_id=user_id,
+        self.active_request = AddViewPermissionsRequest(ts_connection=self,
+                                                        view_id=view_id,
+                                                        user_id=user_id,
                                                         group_id=group_id,
                                                         user_capability_dict=user_capability_dict,
                                                         group_capability_dict=group_capability_dict).get_request()
@@ -1095,10 +1122,16 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
-    def add_workbook_permissions(self, workbook_id, user_capability_dict=None, group_capability_dict=None, user_id=None,
+    def add_workbook_permissions(self,
+                                 workbook_id,
+                                 user_capability_dict=None,
+                                 group_capability_dict=None,
+                                 user_id=None,
                                  group_id=None):
-        self.active_request = AddWorkbookPermissionsRequest(ts_connection=self, workbook_id=workbook_id,
-                                                            user_id=user_id, group_id=group_id,
+        self.active_request = AddWorkbookPermissionsRequest(ts_connection=self,
+                                                            workbook_id=workbook_id,
+                                                            user_id=user_id,
+                                                            group_id=group_id,
                                                             user_capability_dict=user_capability_dict,
                                                             group_capability_dict=group_capability_dict).get_request()
         self.active_endpoint = PermissionsEndpoint(ts_connection=self, object_type='workbook', object_id=workbook_id,
@@ -1108,7 +1141,8 @@ class TableauServerConnection:
         return response
 
     def query_data_source_permissions(self, datasource_id):
-        self.active_endpoint = PermissionsEndpoint(ts_connection=self, object_type='datasource',
+        self.active_endpoint = PermissionsEndpoint(ts_connection=self,
+                                                   object_type='datasource',
                                                    object_id=datasource_id,
                                                    query_object_permissions=True).get_endpoint()
         self.active_headers = self.default_headers
@@ -1116,21 +1150,28 @@ class TableauServerConnection:
         return response
 
     def query_flow_permissions(self, flow_id):
-        self.active_endpoint = PermissionsEndpoint(ts_connection=self, object_type='flow', object_id=flow_id,
+        self.active_endpoint = PermissionsEndpoint(ts_connection=self,
+                                                   object_type='flow',
+                                                   object_id=flow_id,
                                                    query_object_permissions=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
     def query_project_permissions(self, project_id):
-        self.active_endpoint = PermissionsEndpoint(ts_connection=self, object_type='project', object_id=project_id,
+        self.active_endpoint = PermissionsEndpoint(ts_connection=self,
+                                                   object_type='project',
+                                                   object_id=project_id,
                                                    query_object_permissions=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def query_default_permissions(self, project_id, project_permissions_object):
-        self.active_endpoint = PermissionsEndpoint(ts_connection=self, project_id=project_id,
+    def query_default_permissions(self,
+                                  project_id,
+                                  project_permissions_object):
+        self.active_endpoint = PermissionsEndpoint(ts_connection=self,
+                                                   project_id=project_id,
                                                    project_permissions_object=project_permissions_object,
                                                    query_default_project_permissions=True).get_endpoint()
         self.active_headers = self.default_headers
@@ -1138,20 +1179,27 @@ class TableauServerConnection:
         return response
 
     def query_view_permissions(self, view_id):
-        self.active_endpoint = PermissionsEndpoint(ts_connection=self, object_type='view', object_id=view_id,
+        self.active_endpoint = PermissionsEndpoint(ts_connection=self,
+                                                   object_type='view',
+                                                   object_id=view_id,
                                                    query_object_permissions=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
     def query_workbook_permissions(self, workbook_id):
-        self.active_endpoint = PermissionsEndpoint(ts_connection=self, object_type='workbook', object_id=workbook_id,
+        self.active_endpoint = PermissionsEndpoint(ts_connection=self,
+                                                   object_type='workbook',
+                                                   object_id=workbook_id,
                                                    query_object_permissions=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def delete_data_source_permission(self, datasource_id, delete_permissions_object, delete_permissions_object_id,
+    def delete_data_source_permission(self,
+                                      datasource_id,
+                                      delete_permissions_object,
+                                      delete_permissions_object_id,
                                       capability_name, capability_mode):
         self.active_endpoint = PermissionsEndpoint(ts_connection=self,
                                                    object_type='datasource',
@@ -1165,9 +1213,15 @@ class TableauServerConnection:
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def delete_flow_permission(self, flow_id, delete_permissions_object, delete_permissions_object_id, capability_name,
+    def delete_flow_permission(self,
+                               flow_id,
+                               delete_permissions_object,
+                               delete_permissions_object_id,
+                               capability_name,
                                capability_mode):
-        self.active_endpoint = PermissionsEndpoint(ts_connection=self, object_type='flow', object_id=flow_id,
+        self.active_endpoint = PermissionsEndpoint(ts_connection=self,
+                                                   object_type='flow',
+                                                   object_id=flow_id,
                                                    delete_object_permissions=True,
                                                    delete_permissions_object=delete_permissions_object,
                                                    delete_permissions_object_id=delete_permissions_object_id,
@@ -1177,9 +1231,14 @@ class TableauServerConnection:
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def delete_project_permission(self, project_id, delete_permissions_object, delete_permissions_object_id,
+    def delete_project_permission(self,
+                                  project_id,
+                                  delete_permissions_object,
+                                  delete_permissions_object_id,
                                   capability_name, capability_mode):
-        self.active_endpoint = PermissionsEndpoint(ts_connection=self, object_type='project', object_id=project_id,
+        self.active_endpoint = PermissionsEndpoint(ts_connection=self,
+                                                   object_type='project',
+                                                   object_id=project_id,
                                                    delete_object_permissions=True,
                                                    delete_permissions_object=delete_permissions_object,
                                                    delete_permissions_object_id=delete_permissions_object_id,
@@ -1189,7 +1248,8 @@ class TableauServerConnection:
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def delete_default_permission(self, project_id,
+    def delete_default_permission(self,
+                                  project_id,
                                   project_permissions_object,
                                   delete_permissions_object,
                                   delete_permissions_object_id,
@@ -1244,26 +1304,36 @@ class TableauServerConnection:
 
     # jobs, tasks, and schedules
 
-    def add_data_source_to_schedule(self, datasource_id, schedule_id):
+    def add_data_source_to_schedule(self,
+                                    datasource_id,
+                                    schedule_id):
         self.active_request = AddDatasourceToScheduleRequest(ts_connection=self,
                                                              datasource_id=datasource_id).get_request()
-        self.active_endpoint = SchedulesEndpoint(ts_connection=self, schedule_id=schedule_id,
+        self.active_endpoint = SchedulesEndpoint(ts_connection=self,
+                                                 schedule_id=schedule_id,
                                                  add_datasource=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
-    def add_flow_task_to_schedule(self, flow_id, schedule_id):
-        self.active_request = AddFlowToScheduleRequest(ts_connection=self, flow_id=flow_id).get_request()
-        self.active_endpoint = SchedulesEndpoint(ts_connection=self, schedule_id=schedule_id,
+    def add_flow_task_to_schedule(self,
+                                  flow_id,
+                                  schedule_id):
+        self.active_request = AddFlowToScheduleRequest(ts_connection=self,
+                                                       flow_id=flow_id).get_request()
+        self.active_endpoint = SchedulesEndpoint(ts_connection=self,
+                                                 schedule_id=schedule_id,
                                                  add_flow=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
-    def add_workbook_to_schedule(self, workbook_id, schedule_id):
+    def add_workbook_to_schedule(self,
+                                 workbook_id,
+                                 schedule_id):
         self.active_request = AddWorkbookToScheduleRequest(ts_connection=self, workbook_id=workbook_id).get_request()
-        self.active_endpoint = SchedulesEndpoint(ts_connection=self, schedule_id=schedule_id,
+        self.active_endpoint = SchedulesEndpoint(ts_connection=self,
+                                                 schedule_id=schedule_id,
                                                  add_workbook=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
@@ -1312,11 +1382,19 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def create_schedule(self, schedule_name, schedule_priority=50, schedule_type='Extract',
-                        schedule_execution_order='Parallel', schedule_frequency='Weekly',
-                        start_time='07:00:00', end_time='23:00:00', interval_expression_dict={'weekDay': 'Monday'}):
-        self.active_request = CreateScheduleRequest(ts_connection=self, schedule_name=schedule_name,
-                                                    schedule_priority=schedule_priority, schedule_type=schedule_type,
+    def create_schedule(self,
+                        schedule_name,
+                        schedule_priority=50,
+                        schedule_type='Extract',
+                        schedule_execution_order='Parallel',
+                        schedule_frequency='Weekly',
+                        start_time='07:00:00',
+                        end_time='23:00:00',
+                        interval_expression_dict={'weekDay': 'Monday'}):
+        self.active_request = CreateScheduleRequest(ts_connection=self,
+                                                    schedule_name=schedule_name,
+                                                    schedule_priority=schedule_priority,
+                                                    schedule_type=schedule_type,
                                                     schedule_execution_order=schedule_execution_order,
                                                     schedule_frequency=schedule_frequency,
                                                     start_time=start_time, end_time=end_time,
@@ -1326,8 +1404,11 @@ class TableauServerConnection:
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
-    def query_extract_refresh_tasks(self, schedule_id, parameter_dict=None):
-        self.active_endpoint = TasksEndpoint(ts_connection=self, query_schedule_refresh_tasks=True,
+    def query_extract_refresh_tasks(self,
+                                    schedule_id,
+                                    parameter_dict=None):
+        self.active_endpoint = TasksEndpoint(ts_connection=self,
+                                             query_schedule_refresh_tasks=True,
                                              schedule_id=schedule_id,
                                              parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
@@ -1335,7 +1416,8 @@ class TableauServerConnection:
         return response
 
     def query_schedules(self, parameter_dict=None):
-        self.active_endpoint = SchedulesEndpoint(ts_connection=self, query_schedules=True,
+        self.active_endpoint = SchedulesEndpoint(ts_connection=self,
+                                                 query_schedules=True,
                                                  parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
@@ -1380,7 +1462,8 @@ class TableauServerConnection:
         return response
 
     def delete_schedule(self, schedule_id):
-        self.active_endpoint = SchedulesEndpoint(ts_connection=self, schedule_id=schedule_id,
+        self.active_endpoint = SchedulesEndpoint(ts_connection=self,
+                                                 schedule_id=schedule_id,
                                                  delete_schedule=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
@@ -1406,30 +1489,38 @@ class TableauServerConnection:
         return response
 
     def query_subscription(self, subscription_id):
-        self.active_endpoint = SubscriptionsEndpoint(ts_connection=self, subscription_id=subscription_id,
+        self.active_endpoint = SubscriptionsEndpoint(ts_connection=self,
+                                                     subscription_id=subscription_id,
                                                      query_subscription=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
     def query_subscriptions(self, parameter_dict=None):
-        self.active_endpoint = SubscriptionsEndpoint(ts_connection=self, query_subscriptions=True,
+        self.active_endpoint = SubscriptionsEndpoint(ts_connection=self,
+                                                     query_subscriptions=True,
                                                      parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def update_subscription(self, subscription_id, new_subscription_subject=None, new_schedule_id=None):
-        self.active_request = UpdateSubscriptionRequest(ts_connection=self, new_schedule_id=new_schedule_id,
+    def update_subscription(self,
+                            subscription_id,
+                            new_subscription_subject=None,
+                            new_schedule_id=None):
+        self.active_request = UpdateSubscriptionRequest(ts_connection=self,
+                                                        new_schedule_id=new_schedule_id,
                                                         new_subscription_subject=new_subscription_subject).get_request()
-        self.active_endpoint = SubscriptionsEndpoint(ts_connection=self, subscription_id=subscription_id,
+        self.active_endpoint = SubscriptionsEndpoint(ts_connection=self,
+                                                     subscription_id=subscription_id,
                                                      update_subscription=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
     def delete_subscription(self, subscription_id):
-        self.active_endpoint = SubscriptionsEndpoint(ts_connection=self, subscription_id=subscription_id,
+        self.active_endpoint = SubscriptionsEndpoint(ts_connection=self,
+                                                     subscription_id=subscription_id,
                                                      delete_subscription=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
@@ -1437,10 +1528,15 @@ class TableauServerConnection:
 
     # favorites
 
-    def add_data_source_to_favorites(self, datasource_id, user_id, favorite_label):
-        self.active_request = AddDatasourceToFavoritesRequest(ts_connection=self, datasource_id=datasource_id,
+    def add_data_source_to_favorites(self,
+                                     datasource_id,
+                                     user_id,
+                                     favorite_label):
+        self.active_request = AddDatasourceToFavoritesRequest(ts_connection=self,
+                                                              datasource_id=datasource_id,
                                                               favorite_label=favorite_label).get_request()
-        self.active_endpoint = FavoritesEndpoint(ts_connection=self, add_to_favorites=True,
+        self.active_endpoint = FavoritesEndpoint(ts_connection=self,
+                                                 add_to_favorites=True,
                                                  user_id=user_id).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
@@ -1449,60 +1545,92 @@ class TableauServerConnection:
     def add_project_to_favorites(self, project_id, user_id, favorite_label):
         self.active_request = AddProjectToFavoritesRequest(ts_connection=self, project_id=project_id,
                                                            favorite_label=favorite_label).get_request()
-        self.active_endpoint = FavoritesEndpoint(ts_connection=self, add_to_favorites=True,
+        self.active_endpoint = FavoritesEndpoint(ts_connection=self,
+                                                 add_to_favorites=True,
                                                  user_id=user_id).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
-    def add_view_to_favorites(self, view_id, user_id, favorite_label):
-        self.active_request = AddViewToFavoritesRequest(ts_connection=self, view_id=view_id,
+    def add_view_to_favorites(self,
+                              view_id,
+                              user_id,
+                              favorite_label):
+        self.active_request = AddViewToFavoritesRequest(ts_connection=self,
+                                                        view_id=view_id,
                                                         favorite_label=favorite_label).get_request()
-        self.active_endpoint = FavoritesEndpoint(ts_connection=self, add_to_favorites=True,
+        self.active_endpoint = FavoritesEndpoint(ts_connection=self,
+                                                 add_to_favorites=True,
                                                  user_id=user_id).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
-    def add_workbook_to_favorites(self, workbook_id, user_id, favorite_label):
-        self.active_request = AddWorkbookToFavoritesRequest(ts_connection=self, workbook_id=workbook_id,
+    def add_workbook_to_favorites(self,
+                                  workbook_id,
+                                  user_id,
+                                  favorite_label):
+        self.active_request = AddWorkbookToFavoritesRequest(ts_connection=self,
+                                                            workbook_id=workbook_id,
                                                             favorite_label=favorite_label).get_request()
-        self.active_endpoint = FavoritesEndpoint(ts_connection=self, add_to_favorites=True,
+        self.active_endpoint = FavoritesEndpoint(ts_connection=self,
+                                                 add_to_favorites=True,
                                                  user_id=user_id).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
-    def delete_data_source_from_favorites(self, datasource_id, user_id):
-        self.active_endpoint = FavoritesEndpoint(ts_connection=self, object_type='datasource', object_id=datasource_id,
-                                                 user_id=user_id, delete_from_favorites=True).get_endpoint()
+    def delete_data_source_from_favorites(self,
+                                          datasource_id,
+                                          user_id):
+        self.active_endpoint = FavoritesEndpoint(ts_connection=self,
+                                                 object_type='datasource',
+                                                 object_id=datasource_id,
+                                                 user_id=user_id,
+                                                 delete_from_favorites=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def delete_project_from_favorites(self, project_id, user_id):
-        self.active_endpoint = FavoritesEndpoint(ts_connection=self, object_type='project', object_id=project_id,
-                                                 user_id=user_id, delete_from_favorites=True).get_endpoint()
+    def delete_project_from_favorites(self,
+                                      project_id,
+                                      user_id):
+        self.active_endpoint = FavoritesEndpoint(ts_connection=self,
+                                                 object_type='project',
+                                                 object_id=project_id,
+                                                 user_id=user_id,
+                                                 delete_from_favorites=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def delete_view_from_favorites(self, view_id, user_id):
-        self.active_endpoint = FavoritesEndpoint(ts_connection=self, object_type='view', object_id=view_id,
-                                                 user_id=user_id, delete_from_favorites=True).get_endpoint()
+    def delete_view_from_favorites(self,
+                                   view_id,
+                                   user_id):
+        self.active_endpoint = FavoritesEndpoint(ts_connection=self,
+                                                 object_type='view',
+                                                 object_id=view_id,
+                                                 user_id=user_id,
+                                                 delete_from_favorites=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def delete_workbook_from_favorites(self, workbook_id, user_id):
-        self.active_endpoint = FavoritesEndpoint(ts_connection=self, object_type='workbook', object_id=workbook_id,
-                                                 user_id=user_id, delete_from_favorites=True).get_endpoint()
+    def delete_workbook_from_favorites(self,
+                                       workbook_id,
+                                       user_id):
+        self.active_endpoint = FavoritesEndpoint(ts_connection=self,
+                                                 object_type='workbook',
+                                                 object_id=workbook_id,
+                                                 user_id=user_id,
+                                                 delete_from_favorites=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
     def get_favorites_for_user(self, user_id):
-        self.active_endpoint = FavoritesEndpoint(ts_connection=self, get_user_favorites=True,
+        self.active_endpoint = FavoritesEndpoint(ts_connection=self,
+                                                 get_user_favorites=True,
                                                  user_id=user_id).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
@@ -1516,17 +1644,27 @@ class TableauServerConnection:
         response = requests.post(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def append_to_file_upload(self, upload_session_id, payload, content_type):
-        self.active_endpoint = FileUploadEndpoint(ts_connection=self, append_to_file_upload=True,
+    def append_to_file_upload(self,
+                              upload_session_id,
+                              payload,
+                              content_type):
+        self.active_endpoint = FileUploadEndpoint(ts_connection=self,
+                                                  append_to_file_upload=True,
                                                   upload_session_id=upload_session_id).get_endpoint()
         self.active_headers = self.default_headers.copy()
         self.active_headers.update({'content-type': content_type})
         response = requests.put(url=self.active_endpoint, data=payload, headers=self.active_headers)
         return response
 
-    def publish_data_source(self, datasource_file_path, datasource_name, project_id, connection_username=None,
+    def publish_data_source(self,
+                            datasource_file_path,
+                            datasource_name,
+                            project_id,
+                            connection_username=None,
                             connection_password=None,
-                            embed_credentials_flag=False, oauth_flag=False, parameter_dict=None):
+                            embed_credentials_flag=False,
+                            oauth_flag=False,
+                            parameter_dict=None):
         publish_request = PublishDatasourceRequest(ts_connection=self,
                                                    datasource_name=datasource_name,
                                                    datasource_file_path=datasource_file_path,
@@ -1537,16 +1675,27 @@ class TableauServerConnection:
                                                    oauth_flag=oauth_flag)
         self.active_request, content_type = publish_request.get_request()
         self.active_headers, parameter_dict = publish_request.publish_prep(content_type, parameter_dict=parameter_dict)
-        self.active_endpoint = DatasourceEndpoint(ts_connection=self, publish_datasource=True,
+        self.active_endpoint = DatasourceEndpoint(ts_connection=self,
+                                                  publish_datasource=True,
                                                   parameter_dict=parameter_dict).get_endpoint()
         response = requests.post(url=self.active_endpoint, data=self.active_request, headers=self.active_headers)
         return response
 
-    def publish_workbook(self, workbook_file_path, workbook_name, project_id, show_tabs_flag=False,
-                         user_id=None, server_address=None, port_number=None, connection_username=None,
+    def publish_workbook(self,
+                         workbook_file_path,
+                         workbook_name,
+                         project_id,
+                         show_tabs_flag=False,
+                         user_id=None,
+                         server_address=None,
+                         port_number=None,
+                         connection_username=None,
                          connection_password=None,
-                         embed_credentials_flag=False, oauth_flag=False, workbook_views_to_hide=None,
-                         hide_view_flag=False, parameter_dict=None):
+                         embed_credentials_flag=False,
+                         oauth_flag=False,
+                         workbook_views_to_hide=None,
+                         hide_view_flag=False,
+                         parameter_dict=None):
         publish_request = PublishWorkbookRequest(ts_connection=self,
                                                  workbook_name=workbook_name,
                                                  workbook_file_path=workbook_file_path,
@@ -1563,14 +1712,23 @@ class TableauServerConnection:
                                                  hide_view_flag=hide_view_flag)
         self.active_request, content_type = publish_request.get_request()
         self.active_headers, parameter_dict = publish_request.publish_prep(content_type, parameter_dict=parameter_dict)
-        self.active_endpoint = WorkbookEndpoint(ts_connection=self, publish_workbook=True,
+        self.active_endpoint = WorkbookEndpoint(ts_connection=self,
+                                                publish_workbook=True,
                                                 parameter_dict=parameter_dict).get_endpoint()
         response = requests.post(url=self.active_endpoint, data=self.active_request, headers=self.active_headers)
         return response
 
-    def publish_flow(self, flow_file_path, flow_name, project_id, flow_description=None, server_address=None,
+    def publish_flow(self,
+                     flow_file_path,
+                     flow_name,
+                     project_id,
+                     flow_description=None,
+                     server_address=None,
                      port_number=None,
-                     connection_username=None, connection_password=None, embed_credentials_flag=False, oauth_flag=False,
+                     connection_username=None,
+                     connection_password=None,
+                     embed_credentials_flag=False,
+                     oauth_flag=False,
                      parameter_dict=None):
         publish_request = PublishFlowRequest(ts_connection=self,
                                              flow_file_path=flow_file_path,
