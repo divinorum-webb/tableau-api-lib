@@ -44,7 +44,7 @@ class CreateSubscriptionRequest(BaseRequest):
         ]
 
     def _validate_content_type(self):
-        if self._content_type.capitalize() in self.valid_content_types:
+        if self._content_type.lower().capitalize() in self.valid_content_types:
             pass
         else:
             self._invalid_parameter_exception()
