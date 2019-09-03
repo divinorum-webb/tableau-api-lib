@@ -23,7 +23,7 @@ The config object can have multiple environments. Its default environment is def
 For each environment you have, define them. For example:
 
 `code
-<br>tableau_config = {
+\ntableau_config = {
   'tableau_prod': {
     'server': 'https://<YOUR_PROD_SERVER>.com',
     'api_version': '<YOUR_API_VERSION>',
