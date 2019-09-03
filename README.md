@@ -3,9 +3,9 @@ Each method returns the corresponding HTTP response, providing among other thing
 
 ## How it works
 
-``code`pip install --upgrade tableau-api-lib``
+``pip install --upgrade tableau-api-lib``
 2. Open a Jupyter notebook or a Python file in the text editor of your choice
-`from tableau_api_lib import TableauServerConnection`
+``from tableau_api_lib import TableauServerConnection``
 4. Import a config object (dict / JSON), or build it from scratch using the config guidelines below
 `your_connection = TableauServerConnection(your_config_object)`
 `your_connection.sign_in()`
