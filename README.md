@@ -3,7 +3,7 @@
 This library allows developers to call all methods as seen in Tableau Server's REST API reference.
 Each method returns the corresponding HTTP response, providing among other things the status code and a JSON response body.
 
-Tableau's REST API has several methods you can leverage. Use their [API reference](https://help.tableau.com/current/api/rest_api/en-us/REST/rest_api_ref.htm) to identify the methods that help you accomplish whatever tasks you need. This library's purpose is to make calling on those methods as easy as possible.
+Tableau's REST API has numerous methods you can leverage. Use their [API reference](https://help.tableau.com/current/api/rest_api/en-us/REST/rest_api_ref.htm) to identify the methods that help you accomplish whatever tasks you need. This library's purpose is to make calling on those methods as easy as possible.
 
 ## Use case
 
