@@ -11,3 +11,26 @@ Each method returns the corresponding HTTP response, providing among other thing
 6. **your_connection.sign_in()**
 7. Call on your Tableau Server connection to perform tasks from the REST API reference
 8. **your_connection.sign_out**
+
+## Defining your config object
+
+1. A sample / starter configuration object is provided
+2. **from tableau_api_lib import sample_config**
+3. **print(sample_config)**
+4. The config object can have multiple environments. Its default environment is defined as 'tableau_prod'.
+5. For each environment you have, define them. For example:
+
+`code`
+tableau_config = {
+  'tableau_prod': {
+    'server': 'https://<YOUR_PROD_SERVER>.com',
+    'api_version': '<YOUR_API_VERSION>',
+    'username': '<YOUR_USERNAME>',
+    'password': '<YOUR_PASSWORD>',
+    'site_name': '<YOUR_SITE_NAME>',
+    'site_url': '<YOUR_SITE_URL>',
+    'cache_buster': '',
+    'temp_dir': ''
+    }
+}
+`code`
