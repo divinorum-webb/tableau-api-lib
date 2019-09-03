@@ -23,17 +23,17 @@ The config object can have multiple environments. Its default environment is def
 For each environment you have, define them. For example:
 
 ``code
-tableau_config = {
-<br>    'tableau_prod': {
-        'server': 'https://<YOUR_PROD_SERVER>.com',<br>
-        'api_version': '<YOUR_API_VERSION>',
-        'username': '<YOUR_USERNAME>',
-        'password': '<YOUR_PASSWORD>',
-        'site_name': '<YOUR_SITE_NAME>',
-        'site_url': '<YOUR_SITE_URL>',
-        'cache_buster': '',
-        'temp_dir': ''
-    }
-}
+        tableau_config = {
+            'tableau_prod': {
+                'server': 'https://<YOUR_PROD_SERVER>.com',<br>
+                'api_version': '<YOUR_API_VERSION>',
+                'username': '<YOUR_USERNAME>',
+                'password': '<YOUR_PASSWORD>',
+                'site_name': '<YOUR_SITE_NAME>',
+                'site_url': '<YOUR_SITE_URL>',
+                'cache_buster': '',
+                'temp_dir': ''
+            }
+        }
 ``
 
