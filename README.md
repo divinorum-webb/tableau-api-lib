@@ -24,7 +24,7 @@ For each environment you have, define them. For example:
 
 ``code
 tableau_config = {
-    'tableau_prod': {
+<br>    'tableau_prod': {
         'server': 'https://<YOUR_PROD_SERVER>.com',<br>
         'api_version': '<YOUR_API_VERSION>',
         'username': '<YOUR_USERNAME>',
