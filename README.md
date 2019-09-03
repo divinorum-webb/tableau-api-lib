@@ -22,9 +22,9 @@ A sample / starter configuration object is provided
 The config object can have multiple environments. Its default environment is defined as 'tableau_prod'.
 For each environment you have, define them. For example:
 
-tableau_config = {
-  'tableau_prod': {
-    'server': 'https://<YOUR_PROD_SERVER>.com',
+tableau_config = {<br>
+  'tableau_prod': {<br>
+    'server': 'https://<YOUR_PROD_SERVER>.com',<br>
     'api_version': '<YOUR_API_VERSION>',
     'username': '<YOUR_USERNAME>',
     'password': '<YOUR_PASSWORD>',
