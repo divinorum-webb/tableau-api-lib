@@ -27,8 +27,9 @@ When you call on the tableau-api-lib methods, you receive an HTTP response. If y
 
 ``sites = response.json()['sites']['site']``
 
+How did we know to access the 'sites' and 'site' element? Because these elements are documented on Tableau Server's REST API reference. Use the reference to understand how the server will respond to your requests.
 
-## How it works
+## How it all works
 
 1. **pip install --upgrade tableau-api-lib**
 2. Open a Jupyter notebook or a Python file in the text editor of your choice
