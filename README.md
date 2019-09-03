@@ -14,14 +14,16 @@ Each method returns the corresponding HTTP response, providing among other thing
 
 ## Defining your config object
 
-1. A sample / starter configuration object is provided
-2. **from tableau_api_lib import sample_config**
-3. **print(sample_config)**
-4. The config object can have multiple environments. Its default environment is defined as 'tableau_prod'.
-5. For each environment you have, define them. For example:
+A sample / starter configuration object is provided
+
+**from tableau_api_lib import sample_config**
+**print(sample_config)**
+
+The config object can have multiple environments. Its default environment is defined as 'tableau_prod'.
+For each environment you have, define them. For example:
 
 `code
-tableau_config = {
+<br>tableau_config = {
   'tableau_prod': {
     'server': 'https://<YOUR_PROD_SERVER>.com',
     'api_version': '<YOUR_API_VERSION>',
