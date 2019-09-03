@@ -12,7 +12,7 @@ Suppose you wanted to download a PDF or a screenshot of each dashboard on Tablea
 2. for each site, get a list of all workbooks on the site
 3. for each workbook, download the PDF / screenshot for each view in the workbook
 
-While there is not a method in the Tableau Server REST API to print all workbook PDFs on the server, this library gives you the tools you need in order to chain together existing methods and build the functionality you need. This library makes it possible to call on all of the Tableau Server RESTA API methods, enabling you to automate much of your Tableau Server administrative tasks.
+While there is not a method in the Tableau Server REST API to print all workbook PDFs on the server, this library gives you the tools you need in order to chain together existing methods and build the functionality you need. This library makes it possible to call on all of the Tableau Server REST API methods, enabling you to automate much of your Tableau Server administrative tasks.
 
 In the scenario above, we could accomplish the task by identifying the following methods in the REST API Reference:
 1. API Reference: Query Sites  |  tableau-api-lib: query_sites()
