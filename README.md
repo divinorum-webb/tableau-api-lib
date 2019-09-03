@@ -111,7 +111,7 @@ For each environment you have, define them. For example:
     connection = TableauServerConnection(tableau_config)
     connection.sign_in()
     response = connection.query_sites()
-    site_list = [(site['name'], site['id']) for site in response.json()['sites']['site']
+    site_list = [(site['name'], site['id']) for site in response.json()['sites']['site']]
     connection.sign_out()
     
 The variable site_list is a list of all available sites, and each element of this list is a tuple which contains the site name and site ID.
