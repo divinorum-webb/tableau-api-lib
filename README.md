@@ -1,11 +1,11 @@
-#Overview of tableau-api-lib
+# Overview of tableau-api-lib
 
 This library allows developers to call all methods as seen in Tableau Server's REST API reference.
 Each method returns the corresponding HTTP response, providing among other things the status code and a JSON response body.
 
 Tableau's REST API has several methods you can leverage. Use their [API reference](https://help.tableau.com/current/api/rest_api/en-us/REST/rest_api_ref.htm) to identify the methods that help you accomplish whatever tasks you need. This library's purpose is to make calling on those methods as easy as possible.
 
-##Use case
+## Use case
 
 If you wanted to download a PDF or a screenshot of every dashboard on Tableau Server, you would need to:
 1. get a list of all sites
@@ -21,7 +21,7 @@ In the scenario above, we could accomplish the task by identifying the following
 4. API Refrerence: Query View PDF | tableau-api-lib: query_view_pdf()
 5. API Reference: Query View Image | tableau-api-lib: query_view_image()
 
-#Why use tableau-api-lib
+# Why use tableau-api-lib
 
 This library strives to mirror each and every REST API method, word for word. Once you find the methods you need on the Tableau Server REST API reference, this library helps you chain them together. 
 
