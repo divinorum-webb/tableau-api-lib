@@ -3,18 +3,18 @@ Each method returns the corresponding HTTP response, providing among other thing
 
 ## How it works
 
-1. `pip install --upgrade tableau-api-lib
+`pip install --upgrade tableau-api-lib`
 2. Open a Jupyter notebook or a Python file in the text editor of your choice
-3. `from tableau_api_lib import TableauServerConnection
+`from tableau_api_lib import TableauServerConnection`
 4. Import a config object (dict / JSON), or build it from scratch using the config guidelines below
-5. **your_connection = TableauServerConnection(your_config_object)**
-6. **your_connection.sign_in()**
+`your_connection = TableauServerConnection(your_config_object)`
+`your_connection.sign_in()`
 7. Call on your Tableau Server connection to perform tasks from the REST API reference
-8. **your_connection.sign_out**
+`your_connection.sign_out`
 
 ## Defining your config object
 
-A sample / starter configuration object is provided
+A sample / starter configuration object is provided.
 
 **from tableau_api_lib import sample_config**
 **print(sample_config)**
