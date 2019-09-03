@@ -20,7 +20,7 @@ Each method returns the corresponding HTTP response, providing among other thing
 4. The config object can have multiple environments. Its default environment is defined as 'tableau_prod'.
 5. For each environment you have, define them. For example:
 
-`code`
+`code
 tableau_config = {
   'tableau_prod': {
     'server': 'https://<YOUR_PROD_SERVER>.com',
@@ -33,4 +33,4 @@ tableau_config = {
     'temp_dir': ''
     }
 }
-`code`
+`
