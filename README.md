@@ -45,9 +45,9 @@ For each environment you have, define them. For example:
         }
     }
 
-# Try it out
-## This example creates a Tableau Server connection and prints the response from invoking the REST API's "query_sites" method.
-## For more details, see the [REST API reference](https://help.tableau.com/current/api/rest_api/en-us/REST/rest_api_ref.htm#query_sites).
+## Try it out
+### This example creates a Tableau Server connection and prints the response from invoking the REST API's "query_sites" method.
+### For more details, see Tableau's [REST API reference](https://help.tableau.com/current/api/rest_api/en-us/REST/rest_api_ref.htm#query_sites).
 
     from tableau_api_lib import TableauServerConnection
         
