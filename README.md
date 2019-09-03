@@ -7,7 +7,7 @@ Tableau's REST API has numerous methods you can leverage. Use their [API referen
 
 ## Use case
 
-If you wanted to download a PDF or a screenshot of every dashboard on Tableau Server, you would need to:
+If you wanted to download a PDF or a screenshot of each dashboard on Tableau Server, you would need to:
 1. get a list of all sites
 2. for each site, get a list of all workbooks
 3. for each workbook, download the PDF / screenshot
