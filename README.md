@@ -34,7 +34,7 @@ When you call on the tableau-api-lib methods, you receive an HTTP response. If y
 
 ``sites = response.json()['sites']['site']``
 
-How did we know to access the 'sites' and 'site' element? Because these elements are documented on Tableau Server's REST API reference. Use the reference to understand how the server will respond to your requests.
+How did we know to access the 'sites' and 'site' element? Because these elements are documented on Tableau Server's REST API reference. Use the [reference](https://help.tableau.com/current/api/rest_api/en-us/REST/rest_api_ref.htm) to understand how the server will respond to your requests.
 
 ## How it all works
 
@@ -105,3 +105,12 @@ For each environment you have, define them. For example:
     print(connection.query_sites().json())
     
     connection.sign_out()
+
+## Example of building a list of tuples storing the site name and site ID for each site on the server
+
+    connection = TableauServerConnection(tableau_config)
+    connection.sign_in()
+    response = connection.query_sites()
+    site_list = [(site['name'], site['id']) for site in response.json()['sites']['site']
+    
+The variable site_list is a list of all available sites, and each element of this list is a tuple which contains the site name and site ID.
