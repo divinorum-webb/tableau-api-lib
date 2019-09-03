@@ -19,6 +19,12 @@ In the scenario above, we could accomplish the task by identifying the following
 
 This library strives to mirror each and every REST API method, word for word. Once you find the methods you need on the Tableau Server REST API reference, this library helps you chain them together. 
 
+When you call on the tableau-api-lib methods, you receive an HTTP response. If you are expecting data to be returned to you (querying users, workbooks, groups, etc.) then you will likely want to access the JSON body of the response. 
+
+``**response = connection.query_sites()**``
+``**response.json()``  --> accesses the JSON body of the response, can be accessed directly as a dict
+``**sites = response.json()['sites']['site']``
+
 
 ## How it works
 
