@@ -7,12 +7,12 @@ Tableau's REST API has numerous methods you can leverage. Use their [API referen
 
 ## Use case
 
-If you wanted to download a PDF or a screenshot of each dashboard on Tableau Server, you would need to:
-1. get a list of all sites
-2. for each site, get a list of all workbooks
-3. for each workbook, download the PDF / screenshot
+Suppose you wanted to download a PDF or a screenshot of each dashboard on Tableau Server. Generally speaking, you would need to:
+1. get a list of all sites on your Tableau Server
+2. for each site, get a list of all workbooks on the site
+3. for each workbook, download the PDF / screenshot for each view in the workbook
 
-While there is not a method in the Tableau Server REST API to print all workbook PDFs, this library gives you the tools you need to chain together all of the methods which do exist, enabling you to automate much of your Tableau Server administrative tasks.
+While there is not a method in the Tableau Server REST API to print all workbook PDFs on the server, this library gives you the tools you need in order to chain together existing methods and build the functionality you need. This library makes it possible to call on all of the Tableau Server RESTA API methods, enabling you to automate much of your Tableau Server administrative tasks.
 
 In the scenario above, we could accomplish the task by identifying the following methods in the REST API Reference:
 1. API Reference: Query Sites  |  tableau-api-lib: query_sites()
@@ -24,7 +24,7 @@ In the scenario above, we could accomplish the task by identifying the following
 
 # Why use tableau-api-lib
 
-This library strives to mirror each and every REST API method, word for word. Once you find the methods you need on the Tableau Server REST API reference, this library helps you chain them together. 
+This library strives to mirror each and every REST API method, word for word. Once you find the methods you need on the Tableau Server REST API reference, this library helps you chain them together. To use this library effectively, you first browse Tableau's REST API reference and identify the specific methods you intend to use. You may then invoke those methods using this library.
 
 When you call on the tableau-api-lib methods, you receive an HTTP response. If you are expecting data to be returned to you (querying users, workbooks, groups, etc.) then you will likely want to access the JSON body of the response. 
 
