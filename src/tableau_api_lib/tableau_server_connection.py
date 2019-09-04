@@ -1390,7 +1390,7 @@ class TableauServerConnection:
                         schedule_frequency='Weekly',
                         start_time='07:00:00',
                         end_time='23:00:00',
-                        interval_expression_dict={'weekDay': 'Monday'}):
+                        interval_expression_list=[{'weekDay': 'Monday'}]):
         self.active_request = CreateScheduleRequest(ts_connection=self,
                                                     schedule_name=schedule_name,
                                                     schedule_priority=schedule_priority,
@@ -1398,7 +1398,7 @@ class TableauServerConnection:
                                                     schedule_execution_order=schedule_execution_order,
                                                     schedule_frequency=schedule_frequency,
                                                     start_time=start_time, end_time=end_time,
-                                                    interval_expression_dict=interval_expression_dict).get_request()
+                                                    interval_expression_list=interval_expression_list).get_request()
         self.active_endpoint = SchedulesEndpoint(ts_connection=self, create_schedule=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
@@ -1420,6 +1420,7 @@ class TableauServerConnection:
                                                  query_schedules=True,
                                                  parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
+        print("active_endpoint: ", self.active_endpoint)
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
@@ -1441,19 +1442,21 @@ class TableauServerConnection:
                         schedule_name=None,
                         schedule_priority=None,
                         schedule_type=None,
+                        schedule_state=None,
                         schedule_execution_order=None,
                         schedule_frequency=None,
                         start_time=None,
                         end_time=None,
-                        interval_expression_dict=None):
+                        interval_expression_list=None):
         self.active_request = UpdateScheduleRequest(ts_connection=self, schedule_name=schedule_name,
                                                     schedule_priority=schedule_priority,
                                                     schedule_type=schedule_type,
+                                                    schedule_state=schedule_state,
                                                     schedule_execution_order=schedule_execution_order,
                                                     schedule_frequency=schedule_frequency,
                                                     start_time=start_time,
                                                     end_time=end_time,
-                                                    interval_expression_dict=interval_expression_dict).get_request()
+                                                    interval_expression_list=interval_expression_list).get_request()
         self.active_endpoint = SchedulesEndpoint(ts_connection=self,
                                                  schedule_id=schedule_id,
                                                  update_schedule=True).get_endpoint()

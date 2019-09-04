@@ -32,7 +32,7 @@ class UpdateScheduleRequest(BaseRequest):
                                         the end time. For other schedule frequencies, this value is not required and
                                         if the attribute is included, it is ignored.
     :type end_time:                     string
-    :param interval_expression_dict:    This dict specifies the time interval(s) between jobs associated with the
+    :param interval_expression_list:    This list of dicts specifies the time interval(s) between jobs on the given
                                         schedule. The value required here depends on the 'schedule_frequency' value.
                                         If 'schedule_frequency' = 'Hourly', the interval expression should be either
                                         hours="interval" (where "interval" is a number [1, 2, 4, 6, 8, 12] in quotes).
@@ -42,29 +42,31 @@ class UpdateScheduleRequest(BaseRequest):
                                         If 'schedule_frequency' = 'Monthly', the interval expression is monthDay="day",
                                         where day is either the day of the month (1-31), or 'LastDay'. In both cases
                                         the value is wrapped in quotes.
-    :type interval_expression_dict:     dict
+    :type interval_expression_list:     list
     """
 
     def __init__(self,
                  ts_connection,
                  schedule_name=None,
-                 schedule_priority=50,
-                 schedule_type='Extract',
-                 schedule_execution_order='Parallel',
-                 schedule_frequency='Daily',
-                 start_time='12:00:00',
-                 end_time='23:00:00',
-                 interval_expression_dict=None):
+                 schedule_priority=None,
+                 schedule_type=None,
+                 schedule_state=None,
+                 schedule_execution_order=None,
+                 schedule_frequency=None,
+                 start_time=None,
+                 end_time=None,
+                 interval_expression_list=None):
 
         super().__init__(ts_connection)
         self._schedule_name = schedule_name
         self._schedule_priority = schedule_priority
         self._schedule_type = schedule_type
+        self._schedule_state = schedule_state
         self._schedule_execution_order = schedule_execution_order
         self._schedule_frequency = schedule_frequency
         self._start_time = start_time
         self._end_time = end_time
-        self._interval_expression_dict = interval_expression_dict
+        self._interval_expression_list = interval_expression_list
         self._interval_expression_keys = None
         self._interval_expression_values = None
         self._validate_inputs()
@@ -76,6 +78,7 @@ class UpdateScheduleRequest(BaseRequest):
             'name',
             'priority',
             'type',
+            'state',
             'frequency',
             'executionOrder'
         ]
@@ -97,11 +100,9 @@ class UpdateScheduleRequest(BaseRequest):
         ]
 
     def _validate_inputs(self):
-        if self._interval_expression_dict:
-            print("setting interval expressions...")
+        if self._interval_expression_list:
             self._set_interval_expressions()
         else:
-            print("ain't doin it right")
             pass
 
     @property
@@ -110,6 +111,7 @@ class UpdateScheduleRequest(BaseRequest):
             self._schedule_name,
             self._schedule_priority,
             self._schedule_type,
+            self._schedule_state,
             self._schedule_frequency,
             self._schedule_execution_order
         ]
@@ -121,23 +123,24 @@ class UpdateScheduleRequest(BaseRequest):
             self._end_time
         ]
 
-    def _unpack_interval_expressions_dict(self, interval_dict):
+    def _unpack_interval_expressions_list(self, interval_list):
         interval_keys = []
         interval_values = []
-        for key in interval_dict.keys():
-            if key in self.valid_interval_keys:
-                interval_keys.append(key)
-                interval_values.append(interval_dict[key])
-            else:
-                self._invalid_parameter_exception()
-        return interval_keys, interval_values
+        for interval_dict in interval_list:
+            for key in interval_dict.keys():
+                if key in self.valid_interval_keys:
+                    interval_keys.append(key)
+                    interval_values.append(interval_dict[key])
+                else:
+                    self._invalid_parameter_exception()
+            return interval_keys, interval_values
 
     def _set_interval_expressions(self):
-        if self._interval_expression_dict:
-            if any(self._interval_expression_dict.values()):
+        if self._interval_expression_list:
+            if any(self._interval_expression_list):
                 self._interval_expression_keys, self._interval_expression_values = \
-                    self._unpack_interval_expressions_dict(
-                        self._interval_expression_dict)
+                    self._unpack_interval_expressions_list(
+                        self._interval_expression_list)
 
     @staticmethod
     def _get_parameters_list(param_keys, param_values):
@@ -148,7 +151,7 @@ class UpdateScheduleRequest(BaseRequest):
         return params_list
 
     def base_update_schedule_request(self):
-        self._request_body.update({'schedule': {'frequencyDetails': {}}})
+        self._request_body.update({'schedule': {}})
         return self._request_body
 
     def modified_update_schedule_request(self):
@@ -158,11 +161,12 @@ class UpdateScheduleRequest(BaseRequest):
                                           self.optional_schedule_param_values))
 
         if any(self.optional_frequency_param_values):
+            self._request_body['schedule'].update({'frequencyDetails': {}})
             self._request_body['schedule']['frequencyDetails'].update(
                 self._get_parameters_dict(self.optional_frequency_param_keys,
                                           self.optional_frequency_param_values))
 
-        if self._interval_expression_dict:
+        if self._interval_expression_list:
             self._request_body['schedule']['frequencyDetails'].update({'intervals': {}})
             self._request_body['schedule']['frequencyDetails']['intervals'].update({
                     'interval': self._get_parameters_list(self._interval_expression_keys,
