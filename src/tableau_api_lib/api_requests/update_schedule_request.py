@@ -133,7 +133,7 @@ class UpdateScheduleRequest(BaseRequest):
                     interval_values.append(interval_dict[key])
                 else:
                     self._invalid_parameter_exception()
-            return interval_keys, interval_values
+        return interval_keys, interval_values
 
     def _set_interval_expressions(self):
         if self._interval_expression_list:

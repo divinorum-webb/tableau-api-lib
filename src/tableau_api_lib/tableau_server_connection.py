@@ -1420,7 +1420,6 @@ class TableauServerConnection:
                                                  query_schedules=True,
                                                  parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        print("active_endpoint: ", self.active_endpoint)
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
