@@ -22,7 +22,7 @@ In the scenario above, we could accomplish the task by identifying the following
 5. API Reference: Query View Image | tableau-api-lib: query_view_image()
 6. API Reference: Switch Site | tableau-api-lib: switch_site()
 
-# Why use tableau-api-lib
+## Why use tableau-api-lib
 
 This library strives to mirror each and every REST API method, word for word. Once you find the methods you need on the Tableau Server REST API reference, this library helps you chain them together. To use this library effectively, you first browse Tableau's REST API reference and identify the specific methods you intend to use. You may then invoke those methods using this library.
 
