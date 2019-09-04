@@ -137,4 +137,7 @@ Below, you can find an example of how to unpack all of the pages in a paginated 
     
 The extract_pages() function automatically unpacks all of the pages and results available to us via our connection's query_sites() method.
 
+Note that in the first example, we called query_sites() directly and then needed to parse the JSON object returned by that method.
+However, when we used extract_pages(), we pass the 'query_sites' method as an argument and the result returned to us is already parsed. The extract_pages() method is a clean way of obtaining the desired objects we are querying.
+
 The functions found within tableau_api_lib.utils all build upon the base functionality supported by the Tableau Server REST API reference. You can use these pre-made functions or build your own as you see fit.
