@@ -137,6 +137,19 @@ Below, you can find an example of how to unpack all of the pages in a paginated 
     
 The extract_pages() function automatically unpacks all of the pages and results available to us via our connection's query_sites() method.
 
+We could also play with the optional parameters in the extract_pages() function, as seen below:
+
+    from tableau_api_lib.utils import extract_pages
+    
+    connection = TableauServerConnection(tableau_config)
+    connection.sign_in()
+    all_sites = extract_pages(conn.query_sites, starting_page=1, page_size=200, limit=500)
+    site_list = [(site['name'], site['id']) for site in all_sites]
+    connection.sign_out()
+    
+The above example will iterate through each available page of site results (each page has 200 results, a number we specified) and cuts the results off at 500 sites.
+There is no default cutoff limit when using extract_pages(); if you only want to pull the first X results, you have to pass X as the 'limit' argument.
+
 Note that in the first example, we called query_sites() directly and then needed to parse the JSON object returned by that method.
 However, when we used extract_pages(), we pass the 'query_sites' method as an argument and the result returned to us is already parsed. The extract_pages() method is a clean way of obtaining the desired objects we are querying.
 
