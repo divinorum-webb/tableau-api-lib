@@ -115,3 +115,21 @@ For each environment you have, define them. For example:
     connection.sign_out()
     
 The variable site_list is a list of all available sites, and each element of this list is a tuple which contains the site name and site ID.
+
+
+## Example of unpacking paginated results
+
+Let's say you attempt the previous example (printing all site names and site IDs), but you only see 100 sites, when your organization really has 170 sites. The HTTP responses you receive will paginate the results whenever you query the server for items such as sites, users, groups, etc.
+Below, you can find an example of how to unpack all of the pages in a paginated result.
+
+    from tableau_api_lib.utils import extract_pages
+    
+    connection = TableauServerConnection(tableau_config)
+    connection.sign_in()
+    all_sites = extract_pages(connection.query_sites)
+    site_list = [(site['name'], site['id']) for site in all_sites]
+    connection.sign_out()
+    
+The extract_pages() function automatically unpacks all of the pages and results available to us via our connection's query_sites() method.
+
+The functions found within tableau_api_lib.utils all build upon the base functionality supported by the Tableau Server REST API reference. You can use these pre-made functions or build your own as you see fit.
