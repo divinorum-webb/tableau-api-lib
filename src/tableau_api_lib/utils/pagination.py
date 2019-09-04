@@ -16,7 +16,7 @@ def get_page_attributes(query):
         print("The query provided does not contain paged results.")
 
 
-def extract_pages(query_func, starting_page=1, page_size=100):
+def extract_pages(query_func, starting_page=1, page_size=100, limit=None):
     """
 
 
@@ -26,6 +26,8 @@ def extract_pages(query_func, starting_page=1, page_size=100):
     :type starting_page:        int
     :param page_size:           The number of objects per page. If querying users, this is the number of users per page.
     :type page_size:            int
+    :param limit:               The maximum number of objects to return. Default is no limit.
+    :type limit:                int
     :return: extracted_pages    JSON or dict
     """
     extracted_pages = []
@@ -43,7 +45,11 @@ def extract_pages(query_func, starting_page=1, page_size=100):
         inner_key = list(query[outer_key].keys())[0]
         extracted_pages += query[outer_key][inner_key]
 
-        if total_available <= (page_number * page_size):
+        if limit:
+            if limit <= len(extracted_pages):
+                extracted_pages = extracted_pages[:limit]
+                extracting = False
+        elif total_available <= (page_number * page_size):
             extracting = False
         else:
             page_number += 1
