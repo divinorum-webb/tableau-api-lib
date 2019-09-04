@@ -119,7 +119,12 @@ The variable site_list is a list of all available sites, and each element of thi
 
 ## Example of unpacking paginated results
 
-Let's say you attempt the previous example (printing all site names and site IDs), but you only see 100 sites, when your organization really has 170 sites. The HTTP responses you receive will paginate the results whenever you query the server for items such as sites, users, groups, etc.
+Let's say you attempt the previous example (printing all site names and site IDs), but you only see 100 sites, when your organization really has 170 sites. 
+The HTTP responses you receive will paginate the results whenever you query the server for items such as sites, users, groups, etc.
+
+By default, these HTTP responses return 100 results per page. You can modify this amount manually, or you can use our built-in util functions
+to control the behavior of paginated results.
+
 Below, you can find an example of how to unpack all of the pages in a paginated result.
 
     from tableau_api_lib.utils import extract_pages
