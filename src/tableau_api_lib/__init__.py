@@ -4,5 +4,6 @@ from tableau_api_lib import decorators
 from tableau_api_lib import api_endpoints
 from tableau_api_lib import exceptions
 from tableau_api_lib import api_requests
+from tableau_api_lib import utils
 
 name = 'tableau_api_lib'
