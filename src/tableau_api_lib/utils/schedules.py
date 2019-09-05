@@ -78,7 +78,8 @@ def copy_schedule_state(origin_conn,
 
     if origin_schedule_names and destination_schedule_names:
         if len(origin_schedule_names) != len(destination_schedule_names):
-            print("If specifying schedule names, you must provide names for both the origin and destination.")
+            print("When specifying schedule names, \
+            you must provide an equal number of names for both the origin and destination.")
             raise InvalidParameterException('copy_schedule_state()',
                                             (origin_schedule_names, destination_schedule_names))
     elif origin_schedule_names or destination_schedule_names:
