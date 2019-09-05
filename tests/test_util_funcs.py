@@ -2,7 +2,7 @@ from tableau_api_lib import TableauServerConnection
 from .config import tableau_server_config
 
 from tableau_api_lib.utils import extract_pages
-from tableau_api_lib.utils import clone_schedules, copy_schedule_state, override_schedule_state
+from tableau_api_lib.utils import clone_schedules, copy_schedule_state
 
 
 TEST_SCHEDULE_NAMES = ['estam_test extract schedule', 'estam_test hourly end']
