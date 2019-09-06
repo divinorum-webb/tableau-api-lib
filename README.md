@@ -45,7 +45,7 @@ How did we know to access the 'sites' and 'site' element? Because these elements
 5. ``connection = TableauServerConnection(your_config_object)``
 6. ``connection.sign_in()``
 7. Call on your Tableau Server connection to perform tasks from the REST API reference
-8. ``your_connection.sign_out``
+8. ``your_connection.sign_out()``
 
 ## Defining your config object
 
