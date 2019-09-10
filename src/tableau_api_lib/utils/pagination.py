@@ -16,7 +16,11 @@ def get_page_attributes(query):
         print("The query provided does not contain paged results.")
 
 
-def extract_pages(query_func, starting_page=1, page_size=100, limit=None):
+def extract_pages(query_func,
+                  starting_page=1,
+                  page_size=100,
+                  limit=None,
+                  parameter_dict={}):
     """
 
 
@@ -28,6 +32,8 @@ def extract_pages(query_func, starting_page=1, page_size=100, limit=None):
     :type page_size:            int
     :param limit:               The maximum number of objects to return. Default is no limit.
     :type limit:                int
+    :param parameter_dict:      A dict whose values are appended to the REST API URL endpoint as URL parameters.
+    :type parameter_dict:       dict
     :return: extracted_pages    JSON or dict
     """
     extracted_pages = []
@@ -35,10 +41,13 @@ def extract_pages(query_func, starting_page=1, page_size=100, limit=None):
     extracting = True
 
     while extracting:
-        query = query_func(parameter_dict={
+        params = parameter_dict.copy()
+        paginating_params = {
             'pageNumber': 'pageNumber={}'.format(page_number),
             'pageSize': 'pageSize={}'.format(page_size)
-        }).json()
+        }
+        params.update(paginating_params)
+        query = query_func(parameter_dict=params).json()
         page_number, page_size, total_available = get_page_attributes(query)
 
         outer_key = list(query.keys())[1]
