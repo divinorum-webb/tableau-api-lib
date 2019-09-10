@@ -51,10 +51,10 @@ def test_clone_schedules():
 def test_copy_schedule_state():
     updated_schedules = copy_schedule_state(conn,
                                             conn,
-                                            ['estam_test extract schedule',
-                                             'estam_test hourly end'],
-                                            ['estam_auto_estam_test extract schedule',
-                                             'estam_auto_estam_test hourly end'])
+                                            origin_schedule_names=['estam_test extract schedule',
+                                                                   'estam_test hourly end'],
+                                            destination_schedule_names=['estam_auto_estam_test extract schedule',
+                                                                        'estam_auto_estam_test hourly end'])
     assert len(updated_schedules) > 0
 
 
