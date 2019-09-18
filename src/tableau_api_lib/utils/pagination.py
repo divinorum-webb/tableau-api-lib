@@ -50,8 +50,8 @@ def extract_pages(query_func,
         query = query_func(parameter_dict=params).json()
         page_number, page_size, total_available = get_page_attributes(query)
 
-        outer_key = list(query.keys())[1]
-        inner_key = list(query[outer_key].keys())[0]
+        outer_key = [key for key in query.keys() if key != 'pagination'].pop()
+        inner_key = list(query[outer_key].keys()).pop()
         extracted_pages += query[outer_key][inner_key]
 
         if limit:
