@@ -1364,7 +1364,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
-    def get_extract_refresh_tasks(self):
+    def get_extract_refresh_tasks_for_site(self):
         self.active_endpoint = TasksEndpoint(ts_connection=self, get_refresh_tasks=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
@@ -1404,9 +1404,9 @@ class TableauServerConnection:
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
-    def query_extract_refresh_tasks(self,
-                                    schedule_id,
-                                    parameter_dict=None):
+    def query_extract_refresh_tasks_for_schedule(self,
+                                                 schedule_id,
+                                                 parameter_dict=None):
         self.active_endpoint = TasksEndpoint(ts_connection=self,
                                              query_schedule_refresh_tasks=True,
                                              schedule_id=schedule_id,
@@ -1749,3 +1749,53 @@ class TableauServerConnection:
                                             parameter_dict=parameter_dict).get_endpoint()
         response = requests.post(url=self.active_endpoint, data=self.active_request, headers=self.active_headers)
         return response
+
+    # additional methods
+
+    def add_data_quality_warning(self):
+        pass
+
+    def delete_data_quality_warning_by_content(self):
+        pass
+
+    def get_workbook_downgrade_info(self):
+        pass
+
+    def query_table_column(self):
+        pass
+
+    def query_table_columns(self):
+        pass
+
+    def query_database(self):
+        pass
+
+    def query_databases(self):
+        pass
+
+    def query_data_quality_warning_by_id(self):
+        pass
+
+    def query_data_quality_warning_by_asset(self):
+        pass
+
+    def remove_column(self):
+        pass
+
+    def remove_database(self):
+        pass
+
+    def remove_table(self):
+        pass
+
+    def update_column(self):
+        pass
+
+    def update_database(self):
+        pass
+
+    def update_data_quality_warning(self):
+        pass
+
+    def update_table(self):
+        pass
