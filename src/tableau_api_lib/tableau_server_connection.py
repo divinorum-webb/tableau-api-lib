@@ -1750,15 +1750,30 @@ class TableauServerConnection:
         response = requests.post(url=self.active_endpoint, data=self.active_request, headers=self.active_headers)
         return response
 
-    # additional methods
+    # metadata methods
 
-    def add_data_quality_warning(self):
+    def query_database(self):
         pass
 
-    def delete_data_quality_warning_by_content(self):
+    def query_databases(self):
         pass
 
-    def get_workbook_downgrade_info(self):
+    def update_database(self):
+        pass
+
+    def remove_database(self):
+        pass
+
+    def query_table(self):
+        pass
+
+    def query_tables(self):
+        pass
+
+    def update_table(self):
+        pass
+
+    def remove_table(self):
         pass
 
     def query_table_column(self):
@@ -1767,10 +1782,13 @@ class TableauServerConnection:
     def query_table_columns(self):
         pass
 
-    def query_database(self):
+    def update_column(self):
         pass
 
-    def query_databases(self):
+    def remove_column(self):
+        pass
+
+    def add_data_quality_warning(self):
         pass
 
     def query_data_quality_warning_by_id(self):
@@ -1779,23 +1797,16 @@ class TableauServerConnection:
     def query_data_quality_warning_by_asset(self):
         pass
 
-    def remove_column(self):
-        pass
-
-    def remove_database(self):
-        pass
-
-    def remove_table(self):
-        pass
-
-    def update_column(self):
-        pass
-
-    def update_database(self):
-        pass
-
     def update_data_quality_warning(self):
         pass
 
-    def update_table(self):
+    def delete_data_quality_warning_by_id(self):
+        pass
+
+    def delete_data_quality_warning_by_content(self):
+        pass
+
+    # new method (place in appropriate section after implementing)
+
+    def get_workbook_downgrade_info(self):
         pass
