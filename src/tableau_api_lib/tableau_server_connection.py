@@ -583,6 +583,14 @@ class TableauServerConnection:
     def get_workbook_downgrade_info(self,
                                     workbook_id,
                                     downgrade_target_version):
+        """
+        Method introduced in API version 3.6
+        :param workbook_id:                 The workbook ID.
+        :type workbook_id:                  string
+        :param downgrade_target_version:    The desired Tableau Desktop version to downgrade to.
+        :type downgrade_target_version:     string
+        :return:                            HTTP response
+        """
         self.active_endpoint = WorkbookEndpoint(ts_connection=self,
                                                 workbook_id=workbook_id,
                                                 downgrade_target_version=downgrade_target_version,
