@@ -34,6 +34,8 @@ class WorkbookEndpoint(BaseEndpoint):
     :type tag_name:                             string
     :param revision_number                      The revision number of the workbook revision to download.
     :type revision_number                       string
+    :param downgrade_target_version             The desired downgrade target version for the workbook.
+    :type downgrade_target_version              string
     :param query_views:                         Boolean flag; True if querying all views, False otherwise.
     :type query_views:                          boolean
     :param query_connections:                   Boolean flag; True if querying all connections, False otherwise.
@@ -59,6 +61,9 @@ class WorkbookEndpoint(BaseEndpoint):
     :param refresh_workbook:                    Boolean flag; True if refreshing a specific workbook,
                                                 False otherwise.
     :type refresh_workbook:                     boolean
+    :param get_workbook_downgrade_info:         Boolean flag; True if getting downgrade info for a specific workbook,
+                                                False otherwise.
+    :type get_workbook_downgrade_info:          boolean
     :param parameter_dict:                      Dictionary of URL parameters to append. The value in each key-value pair
                                                 is the literal text that will be appended to the URL endpoint.
     :type parameter_dict:                       dict
@@ -78,6 +83,7 @@ class WorkbookEndpoint(BaseEndpoint):
                  delete_tag=False,
                  tag_name=None,
                  revision_number=None,
+                 downgrade_target_version=None,
                  query_views=False,
                  query_connections=False,
                  query_workbook_preview_img=False,
@@ -88,6 +94,7 @@ class WorkbookEndpoint(BaseEndpoint):
                  download_workbook_pdf=False,
                  download_workbook_revision=False,
                  refresh_workbook=False,
+                 get_workbook_downgrade_info=False,
                  parameter_dict=None):
 
         super().__init__(ts_connection)
@@ -104,6 +111,7 @@ class WorkbookEndpoint(BaseEndpoint):
         self._delete_tag = delete_tag
         self._tag_name = tag_name
         self._revision_number = revision_number
+        self._downgrade_target_version = downgrade_target_version
         self._query_views = query_views
         self._query_connections = query_connections
         self._query_workbook_preview_img = query_workbook_preview_img
@@ -114,6 +122,7 @@ class WorkbookEndpoint(BaseEndpoint):
         self._download_workbook_pdf = download_workbook_pdf
         self._download_workbook_revision = download_workbook_revision
         self._refresh_workbook = refresh_workbook
+        self._get_workbook_downgrade_info = get_workbook_downgrade_info
         self._parameter_dict = parameter_dict
 
     @property
@@ -161,6 +170,11 @@ class WorkbookEndpoint(BaseEndpoint):
     @property
     def base_workbook_revisions_url(self):
         return "{0}/revisions".format(self.base_workbook_id_url)
+
+    @property
+    def base_workbook_downgrade_version_url(self):
+        return "{0}/downGradeInfo?productVersion={1}".format(self.base_workbook_id_url,
+                                                             self._downgrade_target_version)
 
     @property
     def base_workbook_revision_removal_url(self):
@@ -223,6 +237,7 @@ class WorkbookEndpoint(BaseEndpoint):
                     raise self._invalid_parameter_exception()
 
     def get_endpoint(self):
+        url = None
         if self._workbook_id:
             if self._query_workbook:
                 url = self.base_workbook_id_url
@@ -256,6 +271,8 @@ class WorkbookEndpoint(BaseEndpoint):
                 url = self.base_workbook_revision_download_url
             elif self._refresh_workbook:
                 url = self.base_workbook_refresh_url
+            elif self._get_workbook_downgrade_info:
+                url = self.base_workbook_downgrade_version_url
             else:
                 self._invalid_parameter_exception()
         else:

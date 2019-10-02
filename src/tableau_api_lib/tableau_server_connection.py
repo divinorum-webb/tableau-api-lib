@@ -580,6 +580,16 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    def get_workbook_downgrade_info(self,
+                                    workbook_id,
+                                    downgrade_target_version):
+        self.active_endpoint = WorkbookEndpoint(ts_connection=self,
+                                                workbook_id=workbook_id,
+                                                downgrade_target_version=downgrade_target_version,
+                                                get_workbook_downgrade_info=True,).get_endpoint()
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        return response
+
     def remove_workbook_revision(self,
                                  workbook_id,
                                  revision_number):
@@ -1804,9 +1814,4 @@ class TableauServerConnection:
         pass
 
     def delete_data_quality_warning_by_content(self):
-        pass
-
-    # new method (place in appropriate section after implementing)
-
-    def get_workbook_downgrade_info(self):
         pass
