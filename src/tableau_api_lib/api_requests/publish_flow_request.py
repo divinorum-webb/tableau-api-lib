@@ -69,6 +69,13 @@ class PublishFlowRequest(BaseRequest):
         self.base_publish_flow_request()
 
     @property
+    def valid_file_extensions(self):
+        return [
+            'tfl',
+            'tflx'
+        ]
+
+    @property
     def optional_flow_param_keys(self):
         return [
             'description'
@@ -150,9 +157,8 @@ class PublishFlowRequest(BaseRequest):
         flow_file = os.path.basename(self._flow_file_path)
         with open(self._flow_file_path, 'rb') as f:
             flow_bytes = f.read()
-        if 'tfl' in flow_file.split('.'):
-            pass
-        elif 'tflx' in flow_file.split('.'):
+        file_extension = flow_file.split('.')[-1]
+        if file_extension in self.valid_file_extensions:
             pass
         else:
             raise Exception('Invalid flow type provided. flow must be a .tfl or .tflx file.')

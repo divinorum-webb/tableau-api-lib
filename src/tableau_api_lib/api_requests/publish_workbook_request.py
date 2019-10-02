@@ -95,6 +95,13 @@ class PublishWorkbookRequest(BaseRequest):
         self.base_publish_workbook_request()
 
     @property
+    def valid_file_extensions(self):
+        return [
+            'twb',
+            'twbx'
+        ]
+
+    @property
     def optional_workbook_param_keys(self):
         return [
             'showTabs',
@@ -202,9 +209,7 @@ class PublishWorkbookRequest(BaseRequest):
         with open(self._workbook_file_path, 'rb') as f:
             workbook_bytes = f.read()
         file_extension = workbook_file.split('.')[-1]
-        if 'twbx' in file_extension:
-            pass
-        elif 'twb' in file_extension:
+        if file_extension in self.valid_file_extensions:
             pass
         else:
             raise InvalidFileTypeException(self.__class__.__name__,

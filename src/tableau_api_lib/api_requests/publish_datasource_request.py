@@ -58,6 +58,15 @@ class PublishDatasourceRequest(BaseRequest):
         self.base_publish_datasource_request()
 
     @property
+    def valid_file_extensions(self):
+        return [
+            'hyper',
+            'tds',
+            'tdsx',
+            'tde'
+        ]
+
+    @property
     def optional_credentials_param_keys(self):
         return [
             'name',
@@ -106,11 +115,7 @@ class PublishDatasourceRequest(BaseRequest):
         with open(self._datasource_file_path, 'rb') as f:
             datasource_bytes = f.read()
         file_extension = datasource_file.split('.')[-1]
-        if 'tdsx' in file_extension:
-            pass
-        elif 'tds' in file_extension:
-            pass
-        elif 'tde' in file_extension:
+        if file_extension in self.valid_file_extensions:
             pass
         else:
             raise InvalidFileTypeException(self.__class__.__name__,
