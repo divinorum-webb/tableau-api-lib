@@ -123,9 +123,8 @@ class TableauServerConnection:
     def switch_site(self, content_url):
         """
         Switches the connection to the specified site, whose site name is provided as 'content_url'.
-        :param content_url:     The 'content_url' is the site name as displayed in the url
-        :type content_url:      string
-        :return:                HTTP response
+        :param string content_url: The 'content_url' is the site name as displayed in the url
+        :return: HTTP response
         """
         self.active_request = SwitchSiteRequest(ts_connection=self, site_name=content_url).get_request()
         self.active_endpoint = AuthEndpoint(ts_connection=self, switch_site=True).get_endpoint()
@@ -167,34 +166,21 @@ class TableauServerConnection:
                     subscribe_others_enabled_flag=False):
         """
         Creates a new site via the active Tableau Server connection.
-        :param site_name:                       The name for the new site.
-        :type site_name:                        string
-        :param content_url:                     The content url for the new site (can be different than the site name).
-        :type site_name:                        string
-        :param admin_mode:                      The admin mode for the new site.
-        :type admin_mode:                       string
-        :param user_quota:                      The user quota for the site.
-        :type user_quota:                       string
-        :param storage_quota:                   The storage size quota for the site, in megabytes.
-        :type storage_quota:                    string
-        :param disable_subscriptions_flag:      Boolean flag; True if disabling subscriptions, defaults to False.
-        :type disable_subscriptions_flag:       boolean
-        :param flows_enabled_flag:              Boolean flag; True if flows are enabled, defaults to True.
-        :type flows_enabled_flag:               boolean
-        :param guest_access_enabled_flag:       Boolean flag; True if guest access is enabled, defaults to False.
-        :type guest_access_enabled_flag:        boolean
-        :param cache_warmup_enabled_flag:       Boolean flag; True if cache warmup is enabled, defaults to False.
-        :type cache_warmup_enabled_flag:        boolean
-        :param commenting_enabled_flag:         Boolean flag; True if commenting is enabled, defaults to False.
-        :type commenting_enabled_flag:          boolean
-        :param revision_history_enabled_flag:   Boolean flag; True if revision history is enabled, defaults to False.
-        :type revision_history_enabled_flag:    boolean
-        :param revision_limit:                  The maximum number of revisions stored on the server. The number can be
-                                                between 2 and 10,000, or set to -1 in order to remove the limit.
-        :type revision_limit:                   string
-        :param subscribe_others_enabled_flag:   Boolean flag; True if owners can subscribe other users, False otherwise.
-        :type subscribe_others_enabled_flag:    boolean
-        :return:                                HTTP response
+        :param string site_name: The name for the new site.
+        :param string content_url: The content url for the new site (can be different than the site name).
+        :param string admin_mode: The admin mode for the new site.
+        :param string user_quota: The user quota for the site.
+        :param string storage_quota: The storage size quota for the site, in megabytes.
+        :param boolean disable_subscriptions_flag: True if disabling subscriptions, defaults to False.
+        :param boolean flows_enabled_flag: True if flows are enabled, defaults to True.
+        :param boolean guest_access_enabled_flag: True if guest access is enabled, defaults to False.
+        :param boolean cache_warmup_enabled_flag: True if cache warmup is enabled, defaults to False.
+        :param boolean commenting_enabled_flag: True if commenting is enabled, defaults to False.
+        :param boolean revision_history_enabled_flag: True if revision history is enabled, defaults to False.
+        :param string revision_limit: The maximum number of revisions stored on the server. The number can be
+        between 2 and 10,000, or set to -1 in order to remove the limit.
+        :param boolean subscribe_others_enabled_flag: True if owners can subscribe other users, False otherwise.
+        :return: HTTP response
         """
         # This method can only be called by server administrators.
         self.active_request = CreateSiteRequest(ts_connection=self,
@@ -218,6 +204,11 @@ class TableauServerConnection:
         return response
 
     def query_site(self, parameter_dict=None):
+        """
+        Queries details for the active site.
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_endpoint = SiteEndpoint(ts_connection=self,
                                             query_site=True,
                                             site_id=self.site_id,
@@ -227,6 +218,11 @@ class TableauServerConnection:
         return response
 
     def query_sites(self, parameter_dict=None):
+        """
+        Query details for all sites on the server.
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_endpoint = SiteEndpoint(ts_connection=self,
                                             query_sites=True,
                                             parameter_dict=parameter_dict).get_endpoint()
@@ -235,6 +231,11 @@ class TableauServerConnection:
         return response
 
     def query_views_for_site(self, parameter_dict=None):
+        """
+        Query details for all views on the active site.
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_endpoint = SiteEndpoint(ts_connection=self,
                                             query_views=True,
                                             parameter_dict=parameter_dict).get_endpoint()
@@ -258,6 +259,25 @@ class TableauServerConnection:
                     revision_history_enabled_flag=False,
                     revision_limit=None,
                     subscribe_others_enabled_flag=False):
+        """
+        Update details for the specified site.
+        :param string site_id: the site ID
+        :param string site_name: the site's user-friendly name
+        :param string content_url: the site's name as displayed in the url
+        :param string admin_mode: the site's admin mode
+        :param string user_quota: sets a user quota value for the site
+        :param string state: sets the state for the site
+        :param string storage_quota: sets the storage quota in megabytes for the site
+        :param boolean disable_subscriptions_flag: enables or disables subscriptions
+        :param boolean flows_enabled_flag: enables or disables flows
+        :param boolean guest_access_enabled_flag: enables or disables guest access
+        :param boolean cache_warmup_enabled_flag: enables or disables cache warmup
+        :param boolean commenting_enabled_flag: enables or disables commenting
+        :param boolean revision_history_enabled_flag: enables or disables versioning
+        :param string revision_limit: sets the maximum number of revisions allowed for a versioned object
+        :param boolean subscribe_others_enabled_flag:
+        :return: HTTP response
+        """
         # This method can only be called by server administrators.
         self.active_request = UpdateSiteRequest(ts_connection=self,
                                                 site_name=site_name,
@@ -273,8 +293,8 @@ class TableauServerConnection:
                                                 commenting_enabled_flag=commenting_enabled_flag,
                                                 revision_history_enabled_flag=revision_history_enabled_flag,
                                                 revision_limit=revision_limit,
-                                                subscribe_others_enabled_flag=subscribe_others_enabled_flag) \
-                                                .get_request()
+                                                subscribe_others_enabled_flag=subscribe_others_enabled_flag
+                                                ).get_request()
         self.active_endpoint = SiteEndpoint(ts_connection=self, site_id=site_id, update_site=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
@@ -284,6 +304,13 @@ class TableauServerConnection:
                     site_id=None,
                     site_name=None,
                     content_url=None):
+        """
+        Deletes the specified site.
+        :param string site_id: the site ID
+        :param string site_name: the site's user-friendly name
+        :param string content_url: the site's name as it appears in the url
+        :return: HTTP response
+        """
         # This method can only be called by server administrators.
         self.active_endpoint = SiteEndpoint(ts_connection=self,
                                             delete_site=True,
@@ -297,6 +324,11 @@ class TableauServerConnection:
     # data driven alerts
 
     def delete_data_driven_alert(self, data_alert_id):
+        """
+        Deletes the specified data driven alert.
+        :param string data_alert_id: the data driven alert ID
+        :return: HTTP response
+        """
         self.active_endpoint = DataAlertEndpoint(ts_connection=self,
                                                  data_alert_id=data_alert_id).get_endpoint()
         self.active_headers = self.default_headers
@@ -304,6 +336,11 @@ class TableauServerConnection:
         return response
 
     def query_data_driven_alert_details(self, data_alert_id):
+        """
+        Queries details for the specified data driven alert.
+        :param string data_alert_id: the data driven alert ID
+        :return: HTTP response
+        """
         self.active_endpoint = DataAlertEndpoint(ts_connection=self,
                                                  query_data_alert=True,
                                                  data_alert_id=data_alert_id).get_endpoint()
@@ -312,6 +349,11 @@ class TableauServerConnection:
         return response
 
     def query_data_driven_alerts(self, parameter_dict=None):
+        """
+        Queries the data driven alerts for the active site.
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_endpoint = DataAlertEndpoint(ts_connection=self,
                                                  query_data_alerts=True,
                                                  parameter_dict=parameter_dict).get_endpoint()
@@ -322,6 +364,12 @@ class TableauServerConnection:
     def add_user_to_data_driven_alert(self,
                                       user_id,
                                       data_alert_id):
+        """
+        Adds the specified user to the specified data driven alert.
+        :param user_id: the user ID for the user being added to the alert
+        :param data_alert_id: the data driven alert ID
+        :return: HTTP response
+        """
         # this appears to be broken on Tableau's side, always returning an internal server error
         self.active_request = AddUserToAlertRequest(ts_connection=self,
                                                     user_id=user_id).get_request()
@@ -336,6 +384,12 @@ class TableauServerConnection:
     def delete_user_from_data_driven_alert(self,
                                            user_id,
                                            data_alert_id):
+        """
+        Removes the specified user from the specified data driven alert.
+        :param user_id: the user ID for the user being removed from the alert
+        :param data_alert_id: the data driven alert ID
+        :return: HTTP response
+        """
         self.active_endpoint = DataAlertEndpoint(ts_connection=self,
                                                  remove_user=True,
                                                  user_id=user_id,
@@ -350,6 +404,15 @@ class TableauServerConnection:
                                  data_alert_frequency=None,
                                  data_alert_owner_id=None,
                                  is_public_flag=None):
+        """
+        Updates the specified data driven alert.
+        :param string data_alert_id: the data driven alert ID
+        :param string data_alert_subject: the subject for the data driven alert
+        :param string data_alert_frequency: the frequency for the data driven alert
+        :param string data_alert_owner_id: the user ID for the owner of the data driven alert
+        :param boolean is_public_flag: determines whether the data driven alert is public or private
+        :return: HTTP response
+        """
         self.active_request = UpdateDataAlertRequest(ts_connection=self,
                                                      data_alert_subject=data_alert_subject,
                                                      data_alert_frequency=data_alert_frequency,
@@ -363,6 +426,11 @@ class TableauServerConnection:
     # flows
 
     def query_flow(self, flow_id):
+        """
+        Queries details for the specified flow.
+        :param string flow_id: the flow ID
+        :return: HTTP response
+        """
         self.active_endpoint = FlowEndpoint(ts_connection=self,
                                             flow_id=flow_id,
                                             query_flow=True).get_endpoint()
@@ -371,6 +439,11 @@ class TableauServerConnection:
         return response
 
     def delete_flow(self, flow_id):
+        """
+        Deletes the specified flow.
+        :param string flow_id: the flow ID
+        :return: HTTP response
+        """
         self.active_endpoint = FlowEndpoint(ts_connection=self,
                                             flow_id=flow_id,
                                             delete_flow=True).get_endpoint()
@@ -379,6 +452,11 @@ class TableauServerConnection:
         return response
 
     def download_flow(self, flow_id):
+        """
+        Downloads the specified flow.
+        :param string flow_id: the flow ID
+        :return: HTTP response
+        """
         self.active_endpoint = FlowEndpoint(ts_connection=self,
                                             flow_id=flow_id,
                                             download_flow=True).get_endpoint()
@@ -387,6 +465,11 @@ class TableauServerConnection:
         return response
 
     def query_flow_connections(self, flow_id):
+        """
+        Queries the connection details for the specified flow.
+        :param string flow_id: the flow ID
+        :return: HTTP response
+        """
         self.active_endpoint = FlowEndpoint(ts_connection=self,
                                             flow_id=flow_id,
                                             query_flow_connections=True).get_endpoint()
@@ -395,6 +478,10 @@ class TableauServerConnection:
         return response
 
     def query_flows_for_site(self):
+        """
+        Queries details for all flows on the active site.
+        :return: HTTP Response
+        """
         self.active_endpoint = FlowEndpoint(ts_connection=self,
                                             query_flows_for_site=True).get_endpoint()
         self.active_headers = self.default_headers
@@ -404,6 +491,12 @@ class TableauServerConnection:
     def query_flows_for_user(self,
                              user_id,
                              parameter_dict=None):
+        """
+        Queries details for all flows belonging to the specified user.
+        :param string user_id: the user ID for the user whose flows are being queried
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_endpoint = FlowEndpoint(ts_connection=self,
                                             user_id=user_id,
                                             query_flows_for_user=True,
@@ -416,6 +509,13 @@ class TableauServerConnection:
                     flow_id,
                     new_project_id=None,
                     new_owner_id=None):
+        """
+        Updates details for the specified flow.
+        :param string flow_id: the flow ID
+        :param string new_project_id: (optional) the new project ID the flow will belong to
+        :param string new_owner_id: (optional) the new onwer ID the flow will belong to
+        :return: HTTP response
+        """
         self.active_request = UpdateFlowRequest(ts_connection=self,
                                                 new_project_id=new_project_id,
                                                 new_owner_id=new_owner_id).get_request()
@@ -434,7 +534,18 @@ class TableauServerConnection:
                                connection_username=None,
                                connection_password=None,
                                embed_password_flag=None):
-        """Note that you must set the connection_password='' if changing the embed_password_flag from True to False"""
+        """
+        Updates details for the specified connection in the specified flow.
+        Note that you must set the connection_password='' if changing the embed_password_flag from True to False
+        :param string flow_id: the flow ID
+        :param string connection_id: the connection ID
+        :param string server_address: (optional) the server address for the connection
+        :param string port: (optional) the port for the connection
+        :param string connection_username: (optional) the username for the connection
+        :param string connection_password: (optional) the password for the connection
+        :param boolean embed_password_flag: (optional) True if embedding the credentials, false otherwise.
+        :return: HTTP response
+        """
         self.active_request = UpdateFlowConnectionRequest(ts_connection=self,
                                                           server_address=server_address,
                                                           port=port,
@@ -457,6 +568,15 @@ class TableauServerConnection:
                        content_permissions='ManagedByOwner',
                        parent_project_id=None,
                        parameter_dict=None):
+        """
+        Crates a new project on the active site.
+        :param string project_name: the project name
+        :param string project_description: the project description
+        :param string content_permissions: the content permissions for the project
+        :param string parent_project_id: the parent project ID, if the new project exists within a parent project
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_request = CreateProjectRequest(ts_connection=self,
                                                    project_name=project_name,
                                                    project_description=project_description,
@@ -470,6 +590,11 @@ class TableauServerConnection:
         return response
 
     def query_projects(self, parameter_dict=None):
+        """
+        Queries details for all projects on the active site.
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_endpoint = ProjectEndpoint(ts_connection=self,
                                                query_projects=True,
                                                parameter_dict=parameter_dict).get_endpoint()
@@ -483,6 +608,15 @@ class TableauServerConnection:
                        project_description=None,
                        content_permissions=None,
                        parent_project_id=None):
+        """
+        Updates details for the specified project.
+        :param string project_id: the project ID
+        :param string project_name: (optional) the new project name
+        :param string project_description: (optional) the new project description
+        :param string content_permissions: (optional) the new project content permissions
+        :param string parent_project_id: (optional) the new parent project ID
+        :return: HTTP response
+        """
         self.active_request = UpdateProjectRequest(ts_connection=self,
                                                    project_name=project_name,
                                                    project_description=project_description,
@@ -496,6 +630,11 @@ class TableauServerConnection:
         return response
 
     def delete_project(self, project_id):
+        """
+        Deletes the specified project.
+        :param string project_id: the project ID
+        :return: HTTP response
+        """
         self.active_endpoint = ProjectEndpoint(ts_connection=self, project_id=project_id).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
@@ -504,6 +643,12 @@ class TableauServerConnection:
     # workbooks and views
 
     def add_tags_to_view(self, view_id, tags):
+        """
+        Adds one or more tags to the specified view.
+        :param string view_id: the view ID
+        :param list tags: a list of tags to add to the view
+        :return: HTTP response
+        """
         self.active_request = AddTagsRequest(ts_connection=self, tags=tags).get_request()
         self.active_endpoint = ViewEndpoint(ts_connection=self, view_id=view_id, add_tags=True).get_endpoint()
         self.active_headers = self.default_headers
@@ -511,6 +656,12 @@ class TableauServerConnection:
         return response
 
     def add_tags_to_workbook(self, workbook_id, tags):
+        """
+        Adds tags to the specified workbook.
+        :param string workbook_id: the workbook ID
+        :param list tags: a list of tags to add to the workbook
+        :return: HTTP response
+        """
         self.active_request = AddTagsRequest(ts_connection=self, tags=tags).get_request()
         self.active_endpoint = WorkbookEndpoint(ts_connection=self, workbook_id=workbook_id,
                                                 add_tags=True).get_endpoint()
@@ -521,6 +672,12 @@ class TableauServerConnection:
     def query_views_for_workbook(self,
                                  workbook_id,
                                  parameter_dict=None):
+        """
+        Queries details for all views in the specified workbook.
+        :param string workbook_id: the workbook ID
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_endpoint = WorkbookEndpoint(ts_connection=self,
                                                 query_views=True,
                                                 workbook_id=workbook_id,
@@ -532,7 +689,13 @@ class TableauServerConnection:
     def query_view_data(self,
                         view_id,
                         parameter_dict=None):
-        # the CSV returned is in the response body as response.content
+        """
+        Queries the underlying data within the specified view.
+        Note that the CSV content is accessible via the 'content' attribute, for example response.content
+        :param string view_id: the view ID
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_endpoint = ViewEndpoint(ts_connection=self,
                                             view_id=view_id,
                                             query_view_data=True,
@@ -544,7 +707,13 @@ class TableauServerConnection:
     def query_view_image(self,
                          view_id,
                          parameter_dict=None):
-        # the image returned is in the response body as response.content
+        """
+        Downloads a PNG of the specified view.
+        Note that the PNG content is accessible via the 'content' attribute, for example response.content
+        :param string view_id: the view ID
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_endpoint = ViewEndpoint(ts_connection=self,
                                             view_id=view_id,
                                             query_view_image=True,
@@ -556,7 +725,13 @@ class TableauServerConnection:
     def query_view_pdf(self,
                        view_id,
                        parameter_dict=None):
-        # the PDF returned is in the response body as response.content
+        """
+        Downloads a PDF of the specified view.
+        Note that the PDF content is accessible via the 'content' attribute, for example response.content
+        :param string view_id: the view ID
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_endpoint = ViewEndpoint(ts_connection=self,
                                             view_id=view_id,
                                             query_view_pdf=True,
@@ -569,7 +744,14 @@ class TableauServerConnection:
                                  workbook_id,
                                  view_id,
                                  parameter_dict=None):
-        # the preview thumbnail image returned is in the response body as response.content
+        """
+        Downloads the preview image for the specified view within the specified workbook.
+        Note that the image content is accessible via the 'content' attribute, for example response.content
+        :param string workbook_id: the workbook ID
+        :param string view_id: the view ID
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_endpoint = WorkbookEndpoint(ts_connection=self,
                                                 workbook_id=workbook_id,
                                                 view_id=view_id,
@@ -580,6 +762,11 @@ class TableauServerConnection:
         return response
 
     def get_view(self, view_id):
+        """
+        Queries details for the specified view.
+        :param string view_id: the view ID
+        :return: HTTP response
+        """
         self.active_endpoint = ViewEndpoint(ts_connection=self,
                                             view_id=view_id,
                                             query_view=True).get_endpoint()
@@ -588,7 +775,12 @@ class TableauServerConnection:
         return response
 
     def query_view(self, view_id):
-        """This extra method exists because the official method 'get_view' appears to break naming conventions"""
+        """
+        Queries details for the specified view.
+        Note that this extra method exists because the official method 'get_view' appears to break naming conventions.
+        :param string view_id: the view ID
+        :return: HTTP response
+        """
         self.active_endpoint = ViewEndpoint(ts_connection=self,
                                             view_id=view_id,
                                             query_view=True).get_endpoint()
@@ -599,6 +791,12 @@ class TableauServerConnection:
     def query_workbook(self,
                        workbook_id,
                        parameter_dict=None):
+        """
+        Queries details for the specified workbook.
+        :param string workbook_id: the workbook ID
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_endpoint = WorkbookEndpoint(ts_connection=self,
                                                 workbook_id=workbook_id,
                                                 query_workbook=True,
@@ -610,6 +808,12 @@ class TableauServerConnection:
     def query_workbook_connections(self,
                                    workbook_id,
                                    parameter_dict=None):
+        """
+        Queries connection details for the specified workbook.
+        :param string workbook_id: the workbook ID
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_endpoint = WorkbookEndpoint(ts_connection=self,
                                                 workbook_id=workbook_id,
                                                 query_connections=True,
@@ -621,6 +825,12 @@ class TableauServerConnection:
     def get_workbook_revisions(self,
                                workbook_id,
                                parameter_dict=None):
+        """
+        Queries revision details for the specified workbook.
+        :param string workbook_id: the workbook ID
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_endpoint = WorkbookEndpoint(ts_connection=self,
                                                 workbook_id=workbook_id,
                                                 get_workbook_revisions=True,
@@ -633,12 +843,11 @@ class TableauServerConnection:
                                     workbook_id,
                                     downgrade_target_version):
         """
-        Method introduced in API version 3.6
-        :param workbook_id:                 The workbook ID.
-        :type workbook_id:                  string
-        :param downgrade_target_version:    The desired Tableau Desktop version to downgrade to.
-        :type downgrade_target_version:     string
-        :return:                            HTTP response
+        Queries details regarding the impact of downgrading the workbook to the older target version.
+        Requires API version 3.6 or higher.
+        :param workbook_id: the workbook ID
+        :param downgrade_target_version: the desired Tableau Desktop version to downgrade to
+        :return: HTTP response
         """
         self.active_endpoint = WorkbookEndpoint(ts_connection=self,
                                                 workbook_id=workbook_id,
@@ -650,6 +859,12 @@ class TableauServerConnection:
     def remove_workbook_revision(self,
                                  workbook_id,
                                  revision_number):
+        """
+        Deletes the specified revision for the specified workbook.
+        :param string workbook_id: the workbook ID
+        :param string revision_number: the revision number to delete
+        :return: HTTP response
+        """
         self.active_endpoint = WorkbookEndpoint(ts_connection=self,
                                                 workbook_id=workbook_id,
                                                 revision_number=revision_number,
@@ -661,6 +876,13 @@ class TableauServerConnection:
     def query_workbook_preview_image(self,
                                      workbook_id,
                                      parameter_dict=None):
+        """
+        Downloads the preview image for the specified workbook.
+        Note that the image content is accessible via the 'content' attribute, for example response.content
+        :param string workbook_id: the workbook ID
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         # the preview image returned is in the response body as response.content
         self.active_endpoint = WorkbookEndpoint(ts_connection=self,
                                                 workbook_id=workbook_id,
@@ -671,6 +893,11 @@ class TableauServerConnection:
         return response
 
     def query_workbooks_for_site(self, parameter_dict=None):
+        """
+        Queries details for all workbooks on the active site.
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_endpoint = WorkbookEndpoint(ts_connection=self,
                                                 query_workbooks=True,
                                                 parameter_dict=parameter_dict).get_endpoint()
@@ -681,6 +908,12 @@ class TableauServerConnection:
     def query_workbooks_for_user(self,
                                  user_id,
                                  parameter_dict=None):
+        """
+        Queries details for all workbooks belonging to the specified user.
+        :param string user_id: the user ID
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_endpoint = UserEndpoint(ts_connection=self,
                                             user_id=user_id,
                                             query_workbooks_for_user=True,
@@ -692,6 +925,13 @@ class TableauServerConnection:
     def download_workbook(self,
                           workbook_id,
                           parameter_dict=None):
+        """
+        Downloads the specified workbook.
+        Note that the workbook content is accessible via the 'content' attribute, for example response.content
+        :param string workbook_id: the workbook ID
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_endpoint = WorkbookEndpoint(ts_connection=self,
                                                 workbook_id=workbook_id,
                                                 download_workbook=True,
@@ -703,6 +943,13 @@ class TableauServerConnection:
     def download_workbook_pdf(self,
                               workbook_id,
                               parameter_dict=None):
+        """
+        Downloads a PDF of the specified workbook.
+        Note that the PDF content is accessible via the 'content' attribute, for example response.content
+        :param string workbook_id: the workbook ID
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP Response
+        """
         self.active_endpoint = WorkbookEndpoint(ts_connection=self,
                                                 workbook_id=workbook_id,
                                                 download_workbook_pdf=True,
@@ -715,7 +962,14 @@ class TableauServerConnection:
                                    workbook_id,
                                    revision_number,
                                    parameter_dict=None):
-        # this method only works for workbook versions that are NOT the current version
+        """
+        Downloads an older version of the specified workbook.
+        Note that the current version of the workbook is not a revision, so cannot be downloaded via this method.
+        :param string workbook_id: the workbook ID
+        :param string revision_number: the workbook revision number to download
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_endpoint = WorkbookEndpoint(ts_connection=self,
                                                 workbook_id=workbook_id,
                                                 revision_number=revision_number,
@@ -730,6 +984,14 @@ class TableauServerConnection:
                         show_tabs_flag=None,
                         project_id=None,
                         owner_id=None):
+        """
+        Updates the details of the specified workbook.
+        :param string workbook_id: the workbook ID
+        :param boolean show_tabs_flag: (optional) enables or disables showing tabs
+        :param string project_id: (optional) the new project ID
+        :param string owner_id: (optional) the new owner ID
+        :return: HTTP response
+        """
         self.active_request = UpdateWorkbookRequest(ts_connection=self,
                                                     show_tabs_flag=show_tabs_flag,
                                                     project_id=project_id,
@@ -749,6 +1011,18 @@ class TableauServerConnection:
                                    connection_password=None,
                                    embed_password_flag=None,
                                    parameter_dict=None):
+        """
+        Updates the specified connection for the specified workbook.
+        :param string workbook_id: the workbook ID
+        :param string connection_id: (optional) the connection ID
+        :param string server_address: (optional) the connection's server address
+        :param string port: (optional) the connection's server port
+        :param string connection_username: (optional) the connection's username
+        :param string connection_password: (optional) the connection's password
+        :param boolean embed_password_flag: (optional) enables or disables embedding the connection's password
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         # fails to execute correctly on Tableau Server's side
         self.active_request = UpdateWorkbookConnectionRequest(ts_connection=self,
                                                               server_address=server_address,
@@ -766,6 +1040,11 @@ class TableauServerConnection:
         return response
 
     def update_workbook_now(self, workbook_id, ):
+        """
+        Immediately executes extract refreshes for the specified workbook.
+        :param string workbook_id: the workbook ID
+        :return: HTTP response
+        """
         self.active_request = EmptyRequest(ts_connection=self).get_request()
         self.active_endpoint = WorkbookEndpoint(ts_connection=self,
                                                 workbook_id=workbook_id,
@@ -775,6 +1054,11 @@ class TableauServerConnection:
         return response
 
     def delete_workbook(self, workbook_id):
+        """
+        Deletes the specified workbook.
+        :param string workbook_id: the workbook ID
+        :return: HTTP response
+        """
         self.active_endpoint = WorkbookEndpoint(ts_connection=self,
                                                 workbook_id=workbook_id,
                                                 delete_workbook=True).get_endpoint()
@@ -785,6 +1069,12 @@ class TableauServerConnection:
     def delete_tag_from_view(self,
                              view_id,
                              tag_name):
+        """
+        Deletes the named tag from the specified view.
+        :param string view_id: the view ID
+        :param string tag_name: the tag name to delete
+        :return: HTTP response
+        """
         self.active_endpoint = ViewEndpoint(ts_connection=self,
                                             view_id=view_id,
                                             tag_name=tag_name,
@@ -794,6 +1084,12 @@ class TableauServerConnection:
         return response
 
     def delete_tag_from_workbook(self, workbook_id, tag_name):
+        """
+        Deletes the named tag from the specified workbook.
+        :param string workbook_id: the workbook ID
+        :param string tag_name: the tag name to delete
+        :return: HTTP response
+        """
         self.active_endpoint = WorkbookEndpoint(ts_connection=self,
                                                 workbook_id=workbook_id,
                                                 tag_name=tag_name,
@@ -807,6 +1103,12 @@ class TableauServerConnection:
     def add_tags_to_data_source(self,
                                 datasource_id,
                                 tags):
+        """
+        Adds one or more tags to the specified datasource.
+        :param string datasource_id: the datasource ID
+        :param list tags: a list of tags to add to the datasource
+        :return: HTTP response
+        """
         self.active_request = AddTagsRequest(ts_connection=self, tags=tags).get_request()
         self.active_endpoint = DatasourceEndpoint(ts_connection=self,
                                                   datasource_id=datasource_id,
@@ -818,6 +1120,12 @@ class TableauServerConnection:
     def delete_tag_from_data_source(self,
                                     datasource_id,
                                     tag_name):
+        """
+        Deletes a named tag from the specified datasource.
+        :param string datasource_id: the datasource ID
+        :param string tag_name: the named tag to delete
+        :return: HTTP response
+        """
         self.active_endpoint = DatasourceEndpoint(ts_connection=self, datasource_id=datasource_id, tag_name=tag_name,
                                                   delete_tag=True).get_endpoint()
         self.active_headers = self.default_headers
@@ -825,6 +1133,11 @@ class TableauServerConnection:
         return response
 
     def query_data_source(self, datasource_id):
+        """
+        Queries details for the specified datasource.
+        :param string datasource_id: the datasource ID
+        :return: HTTP response
+        """
         self.active_endpoint = DatasourceEndpoint(ts_connection=self, datasource_id=datasource_id,
                                                   query_datasource=True).get_endpoint()
         self.active_headers = self.default_headers
@@ -832,6 +1145,11 @@ class TableauServerConnection:
         return response
 
     def query_data_sources(self, parameter_dict=None):
+        """
+        Queries details for all datasources on the active site.
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_endpoint = DatasourceEndpoint(ts_connection=self, query_datasources=True,
                                                   parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
@@ -839,6 +1157,11 @@ class TableauServerConnection:
         return response
 
     def query_data_source_connections(self, datasource_id):
+        """
+        Queries details for the connections belonging to the specified datasource.
+        :param string datasource_id: the datasource ID
+        :return: HTTP response
+        """
         self.active_endpoint = DatasourceEndpoint(ts_connection=self, datasource_id=datasource_id,
                                                   query_datasource_connections=True).get_endpoint()
         self.active_headers = self.default_headers
@@ -848,6 +1171,12 @@ class TableauServerConnection:
     def get_data_source_revisions(self,
                                   datasource_id,
                                   parameter_dict=None):
+        """
+        Queries revision details for the specified datasource.
+        :param string datasource_id: the datasource ID
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_endpoint = DatasourceEndpoint(ts_connection=self,
                                                   datasource_id=datasource_id,
                                                   get_datasource_revisions=True,
@@ -859,6 +1188,12 @@ class TableauServerConnection:
     def download_data_source(self,
                              datasource_id,
                              parameter_dict=None):
+        """
+        Downloads the specified datasource.
+        :param string datasource_id: the datasource ID
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_endpoint = DatasourceEndpoint(ts_connection=self,
                                                   datasource_id=datasource_id,
                                                   download_datasource=True,
@@ -871,6 +1206,13 @@ class TableauServerConnection:
                                       datasource_id,
                                       revision_number,
                                       parameter_dict=None):
+        """
+        Downloads the specified revision number for the specified datasource.
+        :param string datasource_id: the datasource ID
+        :param string revision_number: the revision number to be downloaded.
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_endpoint = DatasourceEndpoint(ts_connection=self,
                                                   datasource_id=datasource_id,
                                                   revision_number=revision_number,
@@ -886,8 +1228,15 @@ class TableauServerConnection:
                            is_certified_flag=None,
                            certification_note=None):
         """
-        Note that assigning an embedded extract will remain in the same project as its workbook,
-        even if the response indicates it has moved
+        Updates details for the specified datasource.
+        Note that assigning a new project ID to an embedded extract will not actually change the extract's project ID,
+        even if the response indicates it has moved.
+        :param string datasource_id: the datasource ID
+        :param string new_project_id: (optional) the new project ID
+        :param string new_owner_id: (optional) the new owner ID
+        :param boolean is_certified_flag: (optional) notes whether or not the datasource is certified
+        :param string certification_note: (optional) the datasource certification note
+        :return: HTTP response
         """
         self.active_request = UpdateDatasourceRequest(ts_connection=self,
                                                       new_project_id=new_project_id,
@@ -909,7 +1258,18 @@ class TableauServerConnection:
                                       connection_username=None,
                                       connection_password=None,
                                       embed_password_flag=None):
-        """Note that you must set the connection_password='' if changing the embed_password_flag from True to False"""
+        """
+        Updates details for the specified connection in the specified datasource.
+        Note that you must set the connection_password='' if changing the embed_password_flag from True to False
+        :param string datasource_id: the datasource ID
+        :param string connection_id: the connection ID
+        :param string server_address: (optional) the connection's server address
+        :param string port: (optional) the connection's port
+        :param string connection_username: (optional) the connection's username
+        :param string connection_password: (optional) the connection's password
+        :param boolean embed_password_flag: (optional) enables or disables embedding the connection's password
+        :return: HTTP response
+        """
         self.active_request = UpdateDatasourceConnectionRequest(ts_connection=self,
                                                                 server_address=server_address,
                                                                 port=port,
@@ -925,6 +1285,11 @@ class TableauServerConnection:
         return response
 
     def update_data_source_now(self, datasource_id):
+        """
+        Immediately executes an extract refresh for the specified datasource.
+        :param string datasource_id: the datasource ID
+        :return: HTTP response
+        """
         self.active_request = EmptyRequest(ts_connection=self).get_request()
         self.active_endpoint = DatasourceEndpoint(ts_connection=self,
                                                   datasource_id=datasource_id,
@@ -934,6 +1299,11 @@ class TableauServerConnection:
         return response
 
     def delete_data_source(self, datasource_id):
+        """
+        Deletes the specified datasource.
+        :param string datasource_id: the datasource ID
+        :return: HTTP response
+        """
         self.active_endpoint = DatasourceEndpoint(ts_connection=self,
                                                   datasource_id=datasource_id,
                                                   delete_datasource=True).get_endpoint()
@@ -944,6 +1314,12 @@ class TableauServerConnection:
     def remove_data_source_revision(self,
                                     datasource_id,
                                     revision_number):
+        """
+        Deletes the specified revision number for the specified datasource.
+        :param string datasource_id: the datasource ID
+        :param string revision_number: the revision number to delete
+        :return: HTTP response
+        """
         self.active_endpoint = DatasourceEndpoint(ts_connection=self,
                                                   datasource_id=datasource_id,
                                                   revision_number=revision_number,
@@ -959,6 +1335,15 @@ class TableauServerConnection:
                      active_directory_group_name=None,
                      active_directory_domain_name=None,
                      default_site_role=None, parameter_dict=None):
+        """
+        Creates a group on the active site.
+        :param string new_group_name: the group name
+        :param string active_directory_group_name: (optional) the name of the active directory group to import
+        :param string active_directory_domain_name: (optional) the domain of the active directory group to import
+        :param string default_site_role: the default site role for users imported into the group via active directory
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_request = CreateGroupRequest(ts_connection=self,
                                                  new_group_name=new_group_name,
                                                  active_directory_group_name=active_directory_group_name,
@@ -973,6 +1358,12 @@ class TableauServerConnection:
     def add_user_to_group(self,
                           group_id,
                           user_id):
+        """
+        Adds the specified user to the specified group.
+        :param string group_id: the group ID
+        :param string user_id: the user ID
+        :return: HTTP response
+        """
         self.active_request = AddUserToGroupRequest(ts_connection=self, user_id=user_id).get_request()
         self.active_endpoint = GroupEndpoint(ts_connection=self, group_id=group_id, add_user=True).get_endpoint()
         self.active_headers = self.default_headers
@@ -983,6 +1374,13 @@ class TableauServerConnection:
                          user_name,
                          site_role,
                          auth_setting=None):
+        """
+        Adds a user to the active site.
+        :param string user_name: the username assigned to the new user
+        :param string site_role: the site role assigned to the new user
+        :param string auth_setting: (optional) the authentication type for the new user [SAML, ServerDefault]
+        :return: HTTP response
+        """
         self.active_request = AddUserToSiteRequest(ts_connection=self,
                                                    user_name=user_name,
                                                    site_role=site_role,
@@ -995,6 +1393,12 @@ class TableauServerConnection:
     def get_users_in_group(self,
                            group_id,
                            parameter_dict=None):
+        """
+        Queries details for all users within the specified group.
+        :param string group_id: the group ID
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_endpoint = GroupEndpoint(ts_connection=self,
                                              group_id=group_id,
                                              get_users=True,
@@ -1004,6 +1408,11 @@ class TableauServerConnection:
         return response
 
     def get_users_on_site(self, parameter_dict=None):
+        """
+        Queries details for all users on the active site.
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_endpoint = UserEndpoint(ts_connection=self,
                                             query_users=True,
                                             parameter_dict=parameter_dict).get_endpoint()
@@ -1012,6 +1421,11 @@ class TableauServerConnection:
         return response
 
     def query_groups(self, parameter_dict=None):
+        """
+        Queries details for all groups on the active site.
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_endpoint = GroupEndpoint(ts_connection=self,
                                              query_groups=True,
                                              parameter_dict=parameter_dict).get_endpoint()
@@ -1020,6 +1434,11 @@ class TableauServerConnection:
         return response
 
     def query_user_on_site(self, user_id):
+        """
+        Queries details for the specified user on the active site.
+        :param string user_id: the user ID
+        :return: HTTP response
+        """
         self.active_endpoint = UserEndpoint(ts_connection=self,
                                             user_id=user_id,
                                             query_user=True).get_endpoint()
@@ -1034,6 +1453,16 @@ class TableauServerConnection:
                      active_directory_domain_name=None,
                      default_site_role=None,
                      parameter_dict=None):
+        """
+        Updates details for the specified group.
+        :param string group_id: the group ID
+        :param string new_group_name: (optional) the new group name
+        :param string active_directory_group_name: (optional) the new active directory group name
+        :param string active_directory_domain_name: (optional) the new active directory domain name
+        :param string default_site_role: (optional) the new default site role
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_request = UpdateGroupRequest(ts_connection=self,
                                                  new_group_name=new_group_name,
                                                  active_directory_group_name=active_directory_group_name,
@@ -1054,6 +1483,16 @@ class TableauServerConnection:
                     new_password=None,
                     new_site_role=None,
                     new_auth_setting=None):
+        """
+        Updates details for the specified user.
+        :param string user_id: the user ID
+        :param string new_full_name: (optional) the new full name for the user
+        :param string new_email: (optional) the new email address for the user
+        :param string new_password: (optional) the new password for the user
+        :param string new_site_role: (optional) the new site role for the user
+        :param string new_auth_setting: (optional) the new auth setting for the user [SAML, ServerDefault]
+        :return: HTTP response
+        """
         self.active_request = UpdateUserRequest(ts_connection=self,
                                                 new_full_name=new_full_name,
                                                 new_email=new_email,
@@ -1068,6 +1507,12 @@ class TableauServerConnection:
     def remove_user_from_group(self,
                                group_id,
                                user_id):
+        """
+        Removes the specified user from the specified group.
+        :param string group_id: the group ID
+        :param string user_id: the user ID
+        :return: HTTP response
+        """
         self.active_endpoint = GroupEndpoint(ts_connection=self,
                                              group_id=group_id,
                                              user_id=user_id,
@@ -1077,6 +1522,11 @@ class TableauServerConnection:
         return response
 
     def remove_user_from_site(self, user_id):
+        """
+        Removes the specified user from the active site.
+        :param string user_id: the user ID
+        :return: HTTP response
+        """
         self.active_endpoint = UserEndpoint(ts_connection=self,
                                             user_id=user_id,
                                             remove_user=True).get_endpoint()
@@ -1085,6 +1535,11 @@ class TableauServerConnection:
         return response
 
     def delete_group(self, group_id):
+        """
+        Deletes the specified group from the active site.
+        :param string group_id: the group ID
+        :return: HTTP response
+        """
         self.active_endpoint = GroupEndpoint(ts_connection=self,
                                              group_id=group_id,
                                              delete_group=True).get_endpoint()
@@ -1098,7 +1553,18 @@ class TableauServerConnection:
                                     datasource_id,
                                     user_capability_dict=None,
                                     group_capability_dict=None,
-                                    user_id=None, group_id=None):
+                                    user_id=None,
+                                    group_id=None):
+        """
+        Adds permissions rules for the specified datasource.
+        Note that you cannot add permissions for users and groups in a single call to this function.
+        :param string datasource_id: the datasource ID
+        :param dict user_capability_dict: permissions definitions for the specified user
+        :param dict group_capability_dict: permissions definitions for the specified group
+        :param string user_id: the user ID for the user whose permissions are being defined
+        :param string group_id: the group ID for the group whose permissions are being defined
+        :return: HTTP response
+        """
         self.active_request = AddDatasourcePermissionsRequest(ts_connection=self,
                                                               datasource_id=datasource_id,
                                                               user_id=user_id,
@@ -1119,6 +1585,16 @@ class TableauServerConnection:
                              group_capability_dict=None,
                              user_id=None,
                              group_id=None):
+        """
+        Adds permissions rules for the specified flow.
+        Note that you cannot add permissions for users and groups in a single call to this function.
+        :param flow_id: the flow ID
+        :param user_capability_dict: permissions definitions for the specified user
+        :param group_capability_dict: permissions definitions for the specified group
+        :param user_id: the user ID for the user whose permissions are being defined
+        :param group_id: the group ID for the group whose permissions are being defined
+        :return: HTTP response
+        """
         self.active_request = AddFlowPermissionsRequest(ts_connection=self,
                                                         user_id=user_id,
                                                         group_id=group_id,
@@ -1138,6 +1614,16 @@ class TableauServerConnection:
                                 group_capability_dict=None,
                                 user_id=None,
                                 group_id=None):
+        """
+        Adds permissions rules for the specified project.
+        Note that you cannot add permissions for users and groups in a single call to this function.
+        :param string project_id: the project ID
+        :param dict user_capability_dict: permissions definitions for the specified user
+        :param dict group_capability_dict: permissions definitions for the specified group
+        :param string user_id: the user ID for the user whose permissions are being defined
+        :param string group_id: the group ID for the group whose permissions are being defined
+        :return: HTTP response
+        """
         self.active_request = AddProjectPermissionsRequest(ts_connection=self,
                                                            user_id=user_id,
                                                            group_id=group_id,
@@ -1158,6 +1644,18 @@ class TableauServerConnection:
                                 user_id=None,
                                 user_capability_dict=None,
                                 group_capability_dict=None):
+        """
+        Adds default permissions rules to the specified project.
+        Note that you cannot add permissions for users and groups in a single call to this function.
+        :param string project_id: the project ID
+        :param string project_permissions_object: the object type to add default permissions for; one of the following
+        [workbook, datasource, flow]
+        :param string group_id: the group ID for the group whose permissions are being defined
+        :param string user_id: the user ID for the user whose permissions are being defined
+        :param dict user_capability_dict: permissions definitions for the specified user
+        :param dict group_capability_dict: permissions definitions for the specified group
+        :return: HTTP response
+        """
         self.active_request = AddDefaultPermissionsRequest(ts_connection=self,
                                                            group_id=group_id,
                                                            user_id=user_id,
@@ -1177,6 +1675,16 @@ class TableauServerConnection:
                              group_capability_dict=None,
                              user_id=None,
                              group_id=None):
+        """
+        Adds permissions rules for the specified view.
+        Note that you cannot add permissions for users and groups in a single call to this function.
+        :param string view_id: the view ID
+        :param dict user_capability_dict: permissions definitions for the specified user
+        :param dict group_capability_dict: permissions definitions for the specified group
+        :param string user_id: the user ID for the user whose permissions are being defined
+        :param string group_id: the group ID for the group whose permissions are being defined
+        :return: HTTP response
+        """
         self.active_request = AddViewPermissionsRequest(ts_connection=self,
                                                         view_id=view_id,
                                                         user_id=user_id,
@@ -1195,6 +1703,16 @@ class TableauServerConnection:
                                  group_capability_dict=None,
                                  user_id=None,
                                  group_id=None):
+        """
+        Adds permissions rules for the specified view.
+        Note that you cannot add permissions for users and groups in a single call to this function.
+        :param string workbook_id: the workbook ID
+        :param dict user_capability_dict: permissions definitions for the specified user
+        :param dict group_capability_dict: permissions definitions for the specified group
+        :param string user_id: the user ID for the user whose permissions are being defined
+        :param string group_id: the group ID for the group whose permissions are being defined
+        :return: HTTP response
+        """
         self.active_request = AddWorkbookPermissionsRequest(ts_connection=self,
                                                             workbook_id=workbook_id,
                                                             user_id=user_id,
@@ -1208,6 +1726,11 @@ class TableauServerConnection:
         return response
 
     def query_data_source_permissions(self, datasource_id):
+        """
+        Queries permissions details for the specified datasource.
+        :param string datasource_id: the datasource ID
+        :return: HTTP response
+        """
         self.active_endpoint = PermissionsEndpoint(ts_connection=self,
                                                    object_type='datasource',
                                                    object_id=datasource_id,
@@ -1217,6 +1740,11 @@ class TableauServerConnection:
         return response
 
     def query_flow_permissions(self, flow_id):
+        """
+        Queries permissions details for the specified flow.
+        :param string flow_id: the flow ID
+        :return: HTTP response
+        """
         self.active_endpoint = PermissionsEndpoint(ts_connection=self,
                                                    object_type='flow',
                                                    object_id=flow_id,
@@ -1226,6 +1754,11 @@ class TableauServerConnection:
         return response
 
     def query_project_permissions(self, project_id):
+        """
+        Queries permissions details for the specified project.
+        :param string project_id: the project ID
+        :return: HTTP response
+        """
         self.active_endpoint = PermissionsEndpoint(ts_connection=self,
                                                    object_type='project',
                                                    object_id=project_id,
@@ -1237,6 +1770,12 @@ class TableauServerConnection:
     def query_default_permissions(self,
                                   project_id,
                                   project_permissions_object):
+        """
+        Queries permissions details for the specified object variety within the specified project.
+        :param string project_id: the project ID
+        :param string project_permissions_object: the object variety [workbook, datasource, flow]
+        :return: HTTP response
+        """
         self.active_endpoint = PermissionsEndpoint(ts_connection=self,
                                                    project_id=project_id,
                                                    project_permissions_object=project_permissions_object,
@@ -1246,6 +1785,11 @@ class TableauServerConnection:
         return response
 
     def query_view_permissions(self, view_id):
+        """
+        Queries permissions details for the specified view.
+        :param string view_id: the view ID
+        :return: HTTP response
+        """
         self.active_endpoint = PermissionsEndpoint(ts_connection=self,
                                                    object_type='view',
                                                    object_id=view_id,
@@ -1255,6 +1799,11 @@ class TableauServerConnection:
         return response
 
     def query_workbook_permissions(self, workbook_id):
+        """
+        Query permissions details for the specified workbook.
+        :param string workbook_id: the workbook ID
+        :return: HTTP response
+        """
         self.active_endpoint = PermissionsEndpoint(ts_connection=self,
                                                    object_type='workbook',
                                                    object_id=workbook_id,
@@ -1268,6 +1817,15 @@ class TableauServerConnection:
                                       delete_permissions_object,
                                       delete_permissions_object_id,
                                       capability_name, capability_mode):
+        """
+        Deletes the specified permission for the specified datasource.
+        :param string datasource_id: the datasource ID
+        :param string delete_permissions_object: the object type [users or groups]
+        :param string delete_permissions_object_id: the object ID [user ID or group ID]
+        :param string capability_name: the capability to remove permissions for
+        :param string capability_mode: the capability mode to remove permissions for
+        :return: HTTP response
+        """
         self.active_endpoint = PermissionsEndpoint(ts_connection=self,
                                                    object_type='datasource',
                                                    object_id=datasource_id,
@@ -1286,6 +1844,15 @@ class TableauServerConnection:
                                delete_permissions_object_id,
                                capability_name,
                                capability_mode):
+        """
+        Deletes the specified permission for the specified flow.
+        :param string flow_id: the flow ID
+        :param string delete_permissions_object: the object type [users or groups]
+        :param string delete_permissions_object_id: the object ID [user ID or group ID]
+        :param string capability_name: the capability to remove permissions for
+        :param string capability_mode: the capability mode to remove permissions for
+        :return: HTTP response
+        """
         self.active_endpoint = PermissionsEndpoint(ts_connection=self,
                                                    object_type='flow',
                                                    object_id=flow_id,
@@ -1303,6 +1870,15 @@ class TableauServerConnection:
                                   delete_permissions_object,
                                   delete_permissions_object_id,
                                   capability_name, capability_mode):
+        """
+        Deletes the specified permission for the specified project.
+        :param string project_id: the project ID
+        :param string delete_permissions_object: the object type [users or groups]
+        :param string delete_permissions_object_id: the object ID [user ID or group ID]
+        :param string capability_name: the capability to remove permissions for
+        :param string capability_mode: the capability mode to remove permissions for
+        :return: HTTP response
+        """
         self.active_endpoint = PermissionsEndpoint(ts_connection=self,
                                                    object_type='project',
                                                    object_id=project_id,
@@ -1322,6 +1898,16 @@ class TableauServerConnection:
                                   delete_permissions_object_id,
                                   capability_name,
                                   capability_mode):
+        """
+        Deletes the specified default permission for the specified object within the specified project.
+        :param string project_id: the project ID
+        :param string project_permissions_object: one of the following [workbooks, datasources, or flows]
+        :param string delete_permissions_object: the object type [users or groups]
+        :param string delete_permissions_object_id: the object ID [user ID or group ID]
+        :param string capability_name: the capability to remove permissions for
+        :param string capability_mode: the capability mode to remove permissions for
+        :return: HTTP response
+        """
         self.active_endpoint = PermissionsEndpoint(ts_connection=self,
                                                    project_id=project_id,
                                                    project_permissions_object=project_permissions_object,
@@ -1343,6 +1929,15 @@ class TableauServerConnection:
                                delete_permissions_object_id,
                                capability_name,
                                capability_mode):
+        """
+        Deletes the specified permission for the specified view.
+        :param string view_id: the view ID
+        :param string delete_permissions_object: the object type [users or groups]
+        :param string delete_permissions_object_id: the object ID [user ID or group ID]
+        :param string capability_name: the capability to remove permissions for
+        :param string capability_mode: the capability mode to remove permissions for
+        :return: HTTP response
+        """
         self.active_endpoint = PermissionsEndpoint(ts_connection=self,
                                                    object_type='view',
                                                    object_id=view_id,
@@ -1357,6 +1952,15 @@ class TableauServerConnection:
 
     def delete_workbook_permission(self, workbook_id, delete_permissions_object, delete_permissions_object_id,
                                    capability_name, capability_mode):
+        """
+        Deletes the specified permission for the specified workbook.
+        :param string workbook_id: the workbook ID
+        :param string delete_permissions_object: the object type [users or groups]
+        :param string delete_permissions_object_id: the object ID [user ID or group ID]
+        :param string capability_name: the capability to remove permissions for
+        :param string capability_mode: the capability mode to remove permissions for
+        :return: HTTP response
+        """
         self.active_endpoint = PermissionsEndpoint(ts_connection=self,
                                                    object_type='workbook',
                                                    object_id=workbook_id,
@@ -1374,6 +1978,12 @@ class TableauServerConnection:
     def add_data_source_to_schedule(self,
                                     datasource_id,
                                     schedule_id):
+        """
+        Adds the specified datasource to the specified schedule.
+        :param string datasource_id: the datasource ID
+        :param string schedule_id: the schedule ID
+        :return: HTTP response
+        """
         self.active_request = AddDatasourceToScheduleRequest(ts_connection=self,
                                                              datasource_id=datasource_id).get_request()
         self.active_endpoint = SchedulesEndpoint(ts_connection=self,
@@ -1386,6 +1996,12 @@ class TableauServerConnection:
     def add_flow_task_to_schedule(self,
                                   flow_id,
                                   schedule_id):
+        """
+        Adds the specified flow task to the specified schedule.
+        :param string flow_id: the flow ID
+        :param string schedule_id: the schedule ID
+        :return: HTTP response
+        """
         self.active_request = AddFlowToScheduleRequest(ts_connection=self,
                                                        flow_id=flow_id).get_request()
         self.active_endpoint = SchedulesEndpoint(ts_connection=self,
@@ -1398,6 +2014,12 @@ class TableauServerConnection:
     def add_workbook_to_schedule(self,
                                  workbook_id,
                                  schedule_id):
+        """
+        Adds the specified workbook to the specified schedule.
+        :param string workbook_id: the workbook ID
+        :param string schedule_id: the schedule ID
+        :return: HTTP response
+        """
         self.active_request = AddWorkbookToScheduleRequest(ts_connection=self, workbook_id=workbook_id).get_request()
         self.active_endpoint = SchedulesEndpoint(ts_connection=self,
                                                  schedule_id=schedule_id,
@@ -1407,18 +2029,33 @@ class TableauServerConnection:
         return response
 
     def cancel_job(self, job_id):
+        """
+        Cancels the specified job.
+        :param string job_id: the job ID
+        :return: HTTP response
+        """
         self.active_endpoint = JobsEndpoint(ts_connection=self, job_id=job_id, cancel_job=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.put(url=self.active_endpoint, headers=self.active_headers)
         return response
 
     def query_job(self, job_id):
+        """
+        Queries the specified job.
+        :param string job_id: the job ID
+        :return: HTTP response
+        """
         self.active_endpoint = JobsEndpoint(ts_connection=self, job_id=job_id, query_job=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
     def query_jobs(self, parameter_dict=None):
+        """
+        Queries details for all jobs on the active site.
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_endpoint = JobsEndpoint(ts_connection=self, query_jobs=True,
                                             parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
@@ -1426,24 +2063,56 @@ class TableauServerConnection:
         return response
 
     def get_extract_refresh_task(self, task_id):
+        """
+        Query details for the specified extract refresh task.
+        :param string task_id: the extract refresh task ID
+        :return: HTTP response
+        """
         self.active_endpoint = TasksEndpoint(ts_connection=self, task_id=task_id, get_refresh_task=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
     def get_extract_refresh_tasks_for_site(self):
+        """
+        Query details for all extract refresh tasks on the active site.
+        :return: HTTP response
+        """
         self.active_endpoint = TasksEndpoint(ts_connection=self, get_refresh_tasks=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    def get_extract_refresh_tasks_for_schedule(self, schedule_id):
+        """
+        Queries details for all extract refresh tasks belonging to the specified schedule.
+        R
+        :param string schedule_id: the schedule ID
+        :return: HTTP response
+        """
+        self.active_endpoint = SchedulesEndpoint(ts_connection=self,
+                                                 schedule_id=schedule_id,
+                                                 query_extract_schedules=True).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        return response
+
     def get_flow_run_task(self, task_id):
+        """
+        Queries details for the specified flow run task.
+        :param string task_id: the flow run task ID
+        :return: HTTP response
+        """
         self.active_endpoint = TasksEndpoint(ts_connection=self, task_id=task_id, get_flow_run_task=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
     def get_flow_run_tasks(self):
+        """
+        Queries details for all flow run tasks on the active site.
+        :return: HTTP response
+        """
         self.active_endpoint = TasksEndpoint(ts_connection=self, get_flow_run_tasks=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
@@ -1458,6 +2127,18 @@ class TableauServerConnection:
                         start_time='07:00:00',
                         end_time='23:00:00',
                         interval_expression_list=[{'weekDay': 'Monday'}]):
+        """
+        Creates a new schedule for the server.
+        :param string schedule_name: the new schedule's name
+        :param string schedule_priority: the new shcedule's execution priority value [1-100]
+        :param string schedule_type: the new schedule type [Flow, Extract, or Subscription]
+        :param string schedule_execution_order: the new schedule execution order [Parallel or Serial]
+        :param string schedule_frequency: the new schedule's frequency [Hourly, Daily, Weekly, or Monthly]
+        :param string start_time: the new schedule's start time [HH:MM:SS]
+        :param string end_time: the new schedule's end time [HH:MM:SS]
+        :param list interval_expression_list: schedule interval details, please see Tableau's REST API documentation.
+        :return: HTTP response
+        """
         self.active_request = CreateScheduleRequest(ts_connection=self,
                                                     schedule_name=schedule_name,
                                                     schedule_priority=schedule_priority,
@@ -1474,6 +2155,13 @@ class TableauServerConnection:
     def query_extract_refresh_tasks_for_schedule(self,
                                                  schedule_id,
                                                  parameter_dict=None):
+        """
+        Queries details for all extract refresh tasks belonging to the specified schedule.
+        Requires API version 3.6 or higher.
+        :param string schedule_id: the schedule ID
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_endpoint = TasksEndpoint(ts_connection=self,
                                              query_schedule_refresh_tasks=True,
                                              schedule_id=schedule_id,
@@ -1483,6 +2171,11 @@ class TableauServerConnection:
         return response
 
     def query_schedules(self, parameter_dict=None):
+        """
+        Queries details for all schedules on the server.
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_endpoint = SchedulesEndpoint(ts_connection=self,
                                                  query_schedules=True,
                                                  parameter_dict=parameter_dict).get_endpoint()
@@ -1491,6 +2184,12 @@ class TableauServerConnection:
         return response
 
     def run_extract_refresh_task(self, task_id):
+        """
+        Runs the specified extract refresh task.
+        Note that this task must belong to a schedule, and this will execute with the task's default priority value.
+        :param string task_id: the extract refresh task ID
+        :return: HTTP response
+        """
         self.active_request = EmptyRequest(ts_connection=self).get_request()
         self.active_endpoint = TasksEndpoint(ts_connection=self, task_id=task_id, run_refresh_task=True).get_endpoint()
         self.active_headers = self.default_headers
@@ -1498,13 +2197,20 @@ class TableauServerConnection:
         return response
 
     def run_flow_task(self, task_id):
+        """
+        Runs the specified flow run task.
+        Note that this task must belong to a schedule.
+        :param string task_id: the flow run task ID
+        :return: HTTP response
+        """
         self.active_request = EmptyRequest(ts_connection=self).get_request()
         self.active_endpoint = TasksEndpoint(ts_connection=self, task_id=task_id, run_flow_task=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
-    def update_schedule(self, schedule_id,
+    def update_schedule(self,
+                        schedule_id,
                         schedule_name=None,
                         schedule_priority=None,
                         schedule_type=None,
@@ -1514,6 +2220,21 @@ class TableauServerConnection:
                         start_time=None,
                         end_time=None,
                         interval_expression_list=None):
+        """
+        Updates details for the specified schedule.
+        :param string schedule_id: the schedule ID
+        :param string schedule_name: the new schedule's name
+        :param string schedule_priority: the new shcedule's execution priority value [1-100]
+        :param string schedule_type: the new schedule type [Flow, Extract, or Subscription]
+        :param string schedule_state: the new schedule state [Active,
+        :param string schedule_execution_order: the new schedule execution order [Parallel or Serial]
+        :param string schedule_frequency: the new schedule's frequency [Hourly, Daily, Weekly, or Monthly]
+        :param string start_time: the new schedule's start time [HH:MM:SS]
+        :param string end_time: the new schedule's end time [HH:MM:SS]
+        :param list interval_expression_list: list of interval expression key-value dicts,
+        please see Tableau's REST API documentation for details on the valid interval expressions.
+        :return: HTTP response
+        """
         self.active_request = UpdateScheduleRequest(ts_connection=self, schedule_name=schedule_name,
                                                     schedule_priority=schedule_priority,
                                                     schedule_type=schedule_type,
@@ -1531,6 +2252,11 @@ class TableauServerConnection:
         return response
 
     def delete_schedule(self, schedule_id):
+        """
+        Deletes the specified schedule.
+        :param string schedule_id: the schedule ID
+        :return: HTTP response
+        """
         self.active_endpoint = SchedulesEndpoint(ts_connection=self,
                                                  schedule_id=schedule_id,
                                                  delete_schedule=True).get_endpoint()
@@ -1546,6 +2272,15 @@ class TableauServerConnection:
                             content_id,
                             schedule_id,
                             user_id):
+        """
+        Creates a new subscription for the specified user to receive the specified content on the specified schedule.
+        :param string subscription_subject: the subject for the new subscription.
+        :param string content_type: the content type for the new subscription [Workbook or View]
+        :param string content_id: the content ID [workbook ID or view ID]
+        :param string schedule_id: the schedule ID the subscription will be executed on
+        :param string user_id: the user ID for the user being subscribed to the content
+        :return: HTTP response
+        """
         self.active_request = CreateSubscriptionRequest(ts_connection=self,
                                                         subscription_subject=subscription_subject,
                                                         content_type=content_type,
@@ -1558,6 +2293,11 @@ class TableauServerConnection:
         return response
 
     def query_subscription(self, subscription_id):
+        """
+        Queries details for the specified subscription.
+        :param string subscription_id: the subscription ID
+        :return: HTTP response
+        """
         self.active_endpoint = SubscriptionsEndpoint(ts_connection=self,
                                                      subscription_id=subscription_id,
                                                      query_subscription=True).get_endpoint()
@@ -1566,6 +2306,11 @@ class TableauServerConnection:
         return response
 
     def query_subscriptions(self, parameter_dict=None):
+        """
+        Queries details for all subscriptions on the site.
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         self.active_endpoint = SubscriptionsEndpoint(ts_connection=self,
                                                      query_subscriptions=True,
                                                      parameter_dict=parameter_dict).get_endpoint()
@@ -1577,6 +2322,13 @@ class TableauServerConnection:
                             subscription_id,
                             new_subscription_subject=None,
                             new_schedule_id=None):
+        """
+        Updates details for the specified subscription.
+        :param string subscription_id: the subscription ID
+        :param string new_subscription_subject: (optional) the new subscription subject
+        :param string new_schedule_id: (optional) the new schedule ID for the subscription
+        :return: HTTP response
+        """
         self.active_request = UpdateSubscriptionRequest(ts_connection=self,
                                                         new_schedule_id=new_schedule_id,
                                                         new_subscription_subject=new_subscription_subject).get_request()
@@ -1588,6 +2340,11 @@ class TableauServerConnection:
         return response
 
     def delete_subscription(self, subscription_id):
+        """
+        Deletes the specified subscription.
+        :param string subscription_id: the subscription ID
+        :return: HTTP response
+        """
         self.active_endpoint = SubscriptionsEndpoint(ts_connection=self,
                                                      subscription_id=subscription_id,
                                                      delete_subscription=True).get_endpoint()
@@ -1601,6 +2358,13 @@ class TableauServerConnection:
                                      datasource_id,
                                      user_id,
                                      favorite_label):
+        """
+        Adds the specified datasource to the favorites for the specified user.
+        :param string datasource_id: the datasource ID
+        :param string user_id: the user ID
+        :param string favorite_label: the text label for the datasource being added as a favorite
+        :return: HTTP response
+        """
         self.active_request = AddDatasourceToFavoritesRequest(ts_connection=self,
                                                               datasource_id=datasource_id,
                                                               favorite_label=favorite_label).get_request()
@@ -1611,7 +2375,17 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
-    def add_project_to_favorites(self, project_id, user_id, favorite_label):
+    def add_project_to_favorites(self,
+                                 project_id,
+                                 user_id,
+                                 favorite_label):
+        """
+        Adds the specified project to the favorites for the specified user.
+        :param string project_id: the project ID
+        :param string user_id: the user ID
+        :param string favorite_label: the text label for the project being added as a favorite
+        :return: HTTP response
+        """
         self.active_request = AddProjectToFavoritesRequest(ts_connection=self, project_id=project_id,
                                                            favorite_label=favorite_label).get_request()
         self.active_endpoint = FavoritesEndpoint(ts_connection=self,
@@ -1625,6 +2399,13 @@ class TableauServerConnection:
                               view_id,
                               user_id,
                               favorite_label):
+        """
+        Adds the specified view to the favorites for the specified user.
+        :param string view_id: the view ID
+        :param string user_id: the user ID
+        :param string favorite_label: the text label for the view being added as a favorite
+        :return: HTTP response
+        """
         self.active_request = AddViewToFavoritesRequest(ts_connection=self,
                                                         view_id=view_id,
                                                         favorite_label=favorite_label).get_request()
@@ -1639,6 +2420,13 @@ class TableauServerConnection:
                                   workbook_id,
                                   user_id,
                                   favorite_label):
+        """
+        Adds the specified workbook to the favorites for the specified user.
+        :param string workbook_id: the workbook ID
+        :param string user_id: the user ID
+        :param string favorite_label: the text label for the workbook being added as a favorite
+        :return: HTTP response
+        """
         self.active_request = AddWorkbookToFavoritesRequest(ts_connection=self,
                                                             workbook_id=workbook_id,
                                                             favorite_label=favorite_label).get_request()
@@ -1652,6 +2440,12 @@ class TableauServerConnection:
     def delete_data_source_from_favorites(self,
                                           datasource_id,
                                           user_id):
+        """
+        Deletes the specified datasource from the specified user's favorites list.
+        :param string datasource_id: the datasource ID
+        :param string user_id: the user ID
+        :return: HTTP response
+        """
         self.active_endpoint = FavoritesEndpoint(ts_connection=self,
                                                  object_type='datasource',
                                                  object_id=datasource_id,
@@ -1664,6 +2458,12 @@ class TableauServerConnection:
     def delete_project_from_favorites(self,
                                       project_id,
                                       user_id):
+        """
+        Deletes the specified project from the specified user's favorites list.
+        :param string project_id: the project ID
+        :param string user_id: the user ID
+        :return: HTTP response
+        """
         self.active_endpoint = FavoritesEndpoint(ts_connection=self,
                                                  object_type='project',
                                                  object_id=project_id,
@@ -1676,6 +2476,12 @@ class TableauServerConnection:
     def delete_view_from_favorites(self,
                                    view_id,
                                    user_id):
+        """
+        Deletes the specified view from the specified user's favorites list.
+        :param string view_id: the view ID
+        :param string user_id: the user ID
+        :return: HTTP response
+        """
         self.active_endpoint = FavoritesEndpoint(ts_connection=self,
                                                  object_type='view',
                                                  object_id=view_id,
@@ -1688,6 +2494,12 @@ class TableauServerConnection:
     def delete_workbook_from_favorites(self,
                                        workbook_id,
                                        user_id):
+        """
+        Deletes the specified workbook from the specified user's favorites list.
+        :param string workbook_id: the workbook ID
+        :param string user_id: the user ID
+        :return: HTTP response
+        """
         self.active_endpoint = FavoritesEndpoint(ts_connection=self,
                                                  object_type='workbook',
                                                  object_id=workbook_id,
@@ -1698,6 +2510,11 @@ class TableauServerConnection:
         return response
 
     def get_favorites_for_user(self, user_id):
+        """
+        Queries the favorite items for a specified user.
+        :param string user_id: the user ID
+        :return: HTTP response
+        """
         self.active_endpoint = FavoritesEndpoint(ts_connection=self,
                                                  get_user_favorites=True,
                                                  user_id=user_id).get_endpoint()
@@ -1708,6 +2525,10 @@ class TableauServerConnection:
     # publishing
 
     def initiate_file_upload(self):
+        """
+        Initiates a file upload session with Tableau Server.
+        :return: HTTP response
+        """
         self.active_endpoint = FileUploadEndpoint(ts_connection=self, initiate_file_upload=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.post(url=self.active_endpoint, headers=self.active_headers)
@@ -1717,6 +2538,13 @@ class TableauServerConnection:
                               upload_session_id,
                               payload,
                               content_type):
+        """
+        Appends file data to an existing file upload session.
+        :param string upload_session_id: the upload session ID
+        :param payload: the payload
+        :param string content_type: the content type header
+        :return: HTTP response
+        """
         self.active_endpoint = FileUploadEndpoint(ts_connection=self,
                                                   append_to_file_upload=True,
                                                   upload_session_id=upload_session_id).get_endpoint()
@@ -1734,6 +2562,18 @@ class TableauServerConnection:
                             embed_credentials_flag=False,
                             oauth_flag=False,
                             parameter_dict=None):
+        """
+        Publishes a datasource file to Tableau Server.
+        :param string datasource_file_path: the path to the datasource file
+        :param string datasource_name: the desired name for the datasource
+        :param string project_id: the project ID where the file will be published
+        :param string connection_username: the username for the datasource's connection
+        :param string connection_password: the password for the datasource's connection
+        :param boolean embed_credentials_flag: enables or disables embedding the connection's password
+        :param boolean oauth_flag: enables or disables OAuth authentication
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         publish_request = PublishDatasourceRequest(ts_connection=self,
                                                    datasource_name=datasource_name,
                                                    datasource_file_path=datasource_file_path,
@@ -1765,6 +2605,24 @@ class TableauServerConnection:
                          workbook_views_to_hide=None,
                          hide_view_flag=False,
                          parameter_dict=None):
+        """
+        Publishes a workbook file to Tableau Server.
+        :param string workbook_file_path: the path to the workbook file
+        :param string workbook_name: the desired name for the published workbook
+        :param string project_id: the project ID where the workbook will be published
+        :param boolean show_tabs_flag: enables or disables showing tabs
+        :param string user_id: the user ID for the user who owns the workbook
+        :param string server_address: the connection's server address
+        :param string port_number: the connection's port number
+        :param string connection_username: the connection's username
+        :param string connection_password: the connection's password
+        :param boolean embed_credentials_flag: enables or disables embedding the connection's password
+        :param boolean oauth_flag: enables or disables OAuth authentication
+        :param list workbook_views_to_hide: a list of workbook views to be hidden when published
+        :param boolean hide_view_flag: enables or disables hiding workbook views
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         publish_request = PublishWorkbookRequest(ts_connection=self,
                                                  workbook_name=workbook_name,
                                                  workbook_file_path=workbook_file_path,
@@ -1799,6 +2657,21 @@ class TableauServerConnection:
                      embed_credentials_flag=False,
                      oauth_flag=False,
                      parameter_dict=None):
+        """
+        Publishes a flow file to Tableau Server.
+        :param string flow_file_path: the path to the flow file
+        :param string flow_name: the desired name for the published flow
+        :param string project_id: the project ID where the flow will be published
+        :param string flow_description: the description for the published flow
+        :param string server_address: the connection's server address
+        :param string port_number: the connection's port
+        :param string connection_username: the connection's username
+        :param string connection_password: the connection's password
+        :param boolean embed_credentials_flag: enables or disables embedding the connection's password
+        :param boolean oauth_flag: enables or disables OAuth authentication
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
         publish_request = PublishFlowRequest(ts_connection=self,
                                              flow_file_path=flow_file_path,
                                              flow_name=flow_name,
