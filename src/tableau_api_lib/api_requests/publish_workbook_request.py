@@ -33,7 +33,7 @@ class PublishWorkbookRequest(BaseRequest):
     :type server_address:               string
     :param port_number:                 (Optional) Specify the port number for a data source connection if that data
                                         source does not use OAuth.
-    :type port_number:                  list
+    :type port_number:                  string
     :param connection_username:         (Optional) If the workbook's data source connections require credentials, the
                                         <connectionCredentials> elements are included and this attribute specifies the
                                         connection username. If the element is included but is not required
