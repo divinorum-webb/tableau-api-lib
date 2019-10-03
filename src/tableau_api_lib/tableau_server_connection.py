@@ -92,6 +92,10 @@ class TableauServerConnection:
     # authentication
 
     def sign_in(self):
+        """
+        Signs in to Tableau Server.
+        :return: HTTP response
+        """
         request = SignInRequest(ts_connection=self, username=self.username, password=self.password).get_request()
         endpoint = AuthEndpoint(ts_connection=self, sign_in=True).get_endpoint()
         response = requests.post(url=endpoint, json=request, headers=self.sign_in_headers)
@@ -103,6 +107,10 @@ class TableauServerConnection:
 
     @verify_signed_in
     def sign_out(self):
+        """
+        Signs out from Tableau Server.
+        :return: HTTP response
+        """
         endpoint = AuthEndpoint(ts_connection=self, sign_out=True).get_endpoint()
         response = requests.post(url=endpoint, headers=self.x_auth_header)
         if response.status_code == 204:
@@ -113,6 +121,12 @@ class TableauServerConnection:
 
     @verify_signed_in
     def switch_site(self, content_url):
+        """
+        Switches the connection to the specified site, whose site name is provided as 'content_url'.
+        :param content_url:     The 'content_url' is the site name as displayed in the url
+        :type content_url:      string
+        :return:                HTTP response
+        """
         self.active_request = SwitchSiteRequest(ts_connection=self, site_name=content_url).get_request()
         self.active_endpoint = AuthEndpoint(ts_connection=self, switch_site=True).get_endpoint()
         self.active_headers = self.default_headers
@@ -126,6 +140,10 @@ class TableauServerConnection:
         return response
 
     def server_info(self):
+        """
+        Provides information about the active Tableau Server connection.
+        :return: HTTP response
+        """
         self.active_endpoint = AuthEndpoint(ts_connection=self, get_server_info=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
@@ -147,6 +165,37 @@ class TableauServerConnection:
                     revision_history_enabled_flag=False,
                     revision_limit=None,
                     subscribe_others_enabled_flag=False):
+        """
+        Creates a new site via the active Tableau Server connection.
+        :param site_name:                       The name for the new site.
+        :type site_name:                        string
+        :param content_url:                     The content url for the new site (can be different than the site name).
+        :type site_name:                        string
+        :param admin_mode:                      The admin mode for the new site.
+        :type admin_mode:                       string
+        :param user_quota:                      The user quota for the site.
+        :type user_quota:                       string
+        :param storage_quota:                   The storage size quota for the site, in megabytes.
+        :type storage_quota:                    string
+        :param disable_subscriptions_flag:      Boolean flag; True if disabling subscriptions, defaults to False.
+        :type disable_subscriptions_flag:       boolean
+        :param flows_enabled_flag:              Boolean flag; True if flows are enabled, defaults to True.
+        :type flows_enabled_flag:               boolean
+        :param guest_access_enabled_flag:       Boolean flag; True if guest access is enabled, defaults to False.
+        :type guest_access_enabled_flag:        boolean
+        :param cache_warmup_enabled_flag:       Boolean flag; True if cache warmup is enabled, defaults to False.
+        :type cache_warmup_enabled_flag:        boolean
+        :param commenting_enabled_flag:         Boolean flag; True if commenting is enabled, defaults to False.
+        :type commenting_enabled_flag:          boolean
+        :param revision_history_enabled_flag:   Boolean flag; True if revision history is enabled, defaults to False.
+        :type revision_history_enabled_flag:    boolean
+        :param revision_limit:                  The maximum number of revisions stored on the server. The number can be
+                                                between 2 and 10,000, or set to -1 in order to remove the limit.
+        :type revision_limit:                   string
+        :param subscribe_others_enabled_flag:   Boolean flag; True if owners can subscribe other users, False otherwise.
+        :type subscribe_others_enabled_flag:    boolean
+        :return:                                HTTP response
+        """
         # This method can only be called by server administrators.
         self.active_request = CreateSiteRequest(ts_connection=self,
                                                 site_name=site_name,
@@ -161,8 +210,8 @@ class TableauServerConnection:
                                                 commenting_enabled_flag=commenting_enabled_flag,
                                                 revision_history_enabled_flag=revision_history_enabled_flag,
                                                 revision_limit=revision_limit,
-                                                subscribe_others_enabled_flag=subscribe_others_enabled_flag)\
-                                                .get_request()
+                                                subscribe_others_enabled_flag=subscribe_others_enabled_flag
+                                                ).get_request()
         self.active_endpoint = SiteEndpoint(ts_connection=self, create_site=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
