@@ -55,7 +55,7 @@ def get_test_workbook_id(connection):
 def get_test_extract_refresh_task_id():
     test_datasource_id = get_test_datasource_id(conn)
     try:
-        refresh_tasks = conn.get_extract_refresh_tasks().json()['tasks']['task']
+        refresh_tasks = conn.get_extract_refresh_tasks_for_site().json()['tasks']['task']
         for task in refresh_tasks:
             task_id = task['extractRefresh']['id']
             datasource_id = task['extractRefresh']['datasource']['id']
@@ -115,10 +115,16 @@ def test_add_data_source_to_schedule():
     assert response.status_code == 200
 
 
-def test_get_extract_refresh_tasks():
+def test_get_extract_refresh_tasks_for_schedule():
     test_schedule_id = get_test_schedule_id()
-    response = conn.query_extract_refresh_tasks(test_schedule_id)
-    print("test_get_extract_refresh_tasks: ", response.content)
+    response = conn.get_extract_refresh_tasks_for_schedule(test_schedule_id)
+    print("test_get_extract_refresh_tasks_for_schedule: ", response.content)
+    assert response.status_code == 200
+
+
+def test_get_extract_refresh_tasks_for_site():
+    response = conn.get_extract_refresh_tasks_for_site()
+    print("test_get_extract_refresh_tasks_for_schedule: ", response.content)
     assert response.status_code == 200
 
 
@@ -164,10 +170,10 @@ def test_cancel_job():
 def test_update_schedule():
     test_schedule_id = get_test_schedule_id()
     response = conn.update_schedule(test_schedule_id,
-                                    schedule_priority=25,
+                                    schedule_priority='25',
                                     schedule_frequency='Monthly',
                                     start_time='07:30:00',
-                                    interval_expression_dict={'monthDay': '5'})
+                                    interval_expression_list=[{'monthDay': '5'}])
     print(response.content)
     assert response.status_code == 200
 
