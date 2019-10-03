@@ -13,6 +13,8 @@ class UpdateScheduleRequest(BaseRequest):
                                         the default priority of the schedule if multiple tasks are pending in the queue.
                                         Higher numbers have higher priority.
     :type schedule_priority:            string
+    :param schedule_state:              The state for the schedule. Can be either 'Active' or 'Suspended'.
+    :type schedule_state:               string
     :param schedule_type:               This value (Extract or Subscription) indicates whether the schedule type is
                                         an extract or a subscription schedule.
     :type schedule_type:                string
@@ -70,6 +72,7 @@ class UpdateScheduleRequest(BaseRequest):
         self._interval_expression_keys = None
         self._interval_expression_values = None
         self._validate_inputs()
+        self._validate_state()
         self.base_update_schedule_request()
 
     @property
@@ -99,11 +102,27 @@ class UpdateScheduleRequest(BaseRequest):
             'monthDay'
         ]
 
+    @property
+    def valid_schedule_states(self):
+        return [
+            'active',
+            'suspended',
+            None
+        ]
+
     def _validate_inputs(self):
         if self._interval_expression_list:
             self._set_interval_expressions()
         else:
             pass
+
+    def _validate_state(self):
+        if not self._schedule_state:
+            pass
+        elif str(self._schedule_state).lower() in self.valid_schedule_states:
+            self._schedule_state = self._schedule_state.capitalize()
+        else:
+            self._invalid_parameter_exception()
 
     @property
     def optional_schedule_param_values(self):

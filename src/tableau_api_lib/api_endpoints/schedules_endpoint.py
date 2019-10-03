@@ -13,6 +13,8 @@ class SchedulesEndpoint(BaseEndpoint):
     :type create_schedule:      boolean
     :param query_schedules:     Boolean flag; True if querying all schedules, False otherwise.
     :type query_schedules:      boolean
+    :param query_extract_schedules: Boolean flag; True if querying all extract schedules, False otherwise.
+    :type query_extract_schedules: boolean
     :param update_schedule:     Boolean flag; True if updating a specific schedule, False otherwise.
     :type update_schedule:      boolean
     :param delete_schedule:     Boolean flag; True if deleting a specific schedule, False otherwise.
@@ -32,6 +34,7 @@ class SchedulesEndpoint(BaseEndpoint):
                  schedule_id=None,
                  create_schedule=False,
                  query_schedules=False,
+                 query_extract_schedules=False,
                  update_schedule=False,
                  delete_schedule=False,
                  add_datasource=False,
@@ -43,6 +46,7 @@ class SchedulesEndpoint(BaseEndpoint):
         self._schedule_id = schedule_id
         self._create_schedule = create_schedule
         self._query_schedules = query_schedules
+        self._query_extract_schedules = query_extract_schedules
         self._update_schedule = update_schedule
         self._delete_schedule = delete_schedule
         self._add_datasource = add_datasource
@@ -79,7 +83,12 @@ class SchedulesEndpoint(BaseEndpoint):
     def base_schedule_flow_url(self):
         return "{0}/flows".format(self.base_site_schedule_id_url)
 
+    @property
+    def base_schedule_extracts_url(self):
+        return "{0}/extracts".format(self.base_schedule_id_url)
+
     def get_endpoint(self):
+        url = None
         if self._schedule_id:
             if self._add_datasource and not (self._add_workbook or self._add_flow):
                 url = self.base_schedule_datasource_url
@@ -89,6 +98,8 @@ class SchedulesEndpoint(BaseEndpoint):
                 url = self.base_schedule_flow_url
             elif self._update_schedule or self._delete_schedule:
                 url = self.base_schedule_id_url
+            elif self._query_extract_schedules:
+                url = self.base_schedule_extracts_url
             else:
                 self._invalid_parameter_exception()
         else:
