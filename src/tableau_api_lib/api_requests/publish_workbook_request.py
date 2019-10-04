@@ -13,51 +13,33 @@ FILE_SIZE_LIMIT = 1024 * 1024 * 60  # 60MB
 
 class PublishWorkbookRequest(BaseRequest):
     """
-    Publish workbook request for API api_requests to Tableau Server.
+    Builds the JSON request to publish a workbook to Tableau Server via API.
 
-    :param ts_connection:               The Tableau Server connection object.
-    :type ts_connection:                class
-    :param workbook_name:               The name the published workbook will have on Tableau Server.
-    :type workbook_name:                string
-    :param workbook_file_path:          The file path for the workbook being published.
-    :type workbook_file_path:           string
-    :param project_id:                  The project ID of the project the workbook is being published to.
-    :type project_id:                   string
-    :param show_tabs_flag:              (Optional) Boolean flag; True if the workbook will show views as tabs,
-                                        false otherwise.
-    :type show_tabs_flag:               boolean
-    :param user_id:                     If generating thumbnails as a specific user, specify the user ID here.
-    :type user_id:                      string
-    :param server_address:              (Optional) Specify the server address for a data source connection if that
-                                        data source does not use OAuth.
-    :type server_address:               string
-    :param port_number:                 (Optional) Specify the port number for a data source connection if that data
-                                        source does not use OAuth.
-    :type port_number:                  string
-    :param connection_username:         (Optional) If the workbook's data source connections require credentials, the
-                                        <connectionCredentials> elements are included and this attribute specifies the
-                                        connection username. If the element is included but is not required
-                                        (for example, if the data source uses OAuth), the server ignores the
-                                        element and its attributes.
-    :type connection_username:          string
-    :param connection_password:         (Optional) If the workbook's data source connections require credentials, the
-                                        <connectionCredentials> elements are included and this attribute specifies the
-                                        connection password. If the element is included but is not required (for
-                                        example, if the data source uses OAuth), the server ignores the element
-                                        and its attributes.
-    :type connection_password:          string
-    :param embed_credentials_flag:      (Optional) Boolean fkag; True if embedding credentials in the published
-                                        workbook, False otherwise.
-    :type embed_credentials_flag:       boolean
-    :param oauth_flag:                  List of boolean flags; True if OAuth is used for the credentials,
-                                        False otherwise.
-    :type oauth_flag:                   boolean
-    :param workbook_views_to_hide:      A list of the views to hide for the workbook being published. The list should
-                                        contain the view names, not view IDs.
-    :type workbook_views_to_hide:       list
-    :param hide_view_flag:              (Optional) Boolean flag; True if the published workbook will hide any of its
-                                        views, False otherwise.
-    :type hide_view_flag:               boolean
+    :param class ts_connection: the Tableau Server connection object
+    :param string workbook_name: the name the published workbook will have on Tableau Server
+    :param string workbook_file_path: the file path for the workbook being published
+    :param string project_id: the project ID of the project the workbook is being published to
+    :param boolean show_tabs_flag: (Optional) true if the workbook will show views as tabs, false otherwise
+    :param string user_id: If generating thumbnails as a specific user, specify the user ID here
+    :param string server_address: (Optional) specify the server address for a data source connection if that data source
+    does not use OAuth
+    :param string port_number: (Optional) specify the port number for a data source connection if that data source does
+    not use OAuth
+    :param string connection_username: (Optional) if the workbook's data source connections require credentials, the
+    <connectionCredentials> elements are included and this attribute specifies the connection username. If the element
+    is included but is not required (for example, if the data source uses OAuth), the server ignores the element and its
+    attributes
+    :param string connection_password: (Optional) if the workbook's data source connections require credentials, the
+    <connectionCredentials> elements are included and this attribute specifies the connection password. If the element
+    is included but is not required (for example, if the data source uses OAuth), the server ignores the element and its
+    attributes
+    :param boolean embed_credentials_flag: (Optional) true if embedding credentials in the published workbook, false
+    otherwise
+    :param boolean oauth_flag: list of boolean flags; True if OAuth is used for the credentials, false otherwise.
+    :param list workbook_views_to_hide: a list of the views to hide for the workbook being published. The list should
+    contain the view names, not view IDs
+    :param boolean hide_view_flag: (Optional) true if the published workbook will hide any of its views,  false
+    otherwise
     """
     def __init__(self,
                  ts_connection,
@@ -160,7 +142,7 @@ class PublishWorkbookRequest(BaseRequest):
         if self._hide_view_flag:
             [values_list.append(view_name) for view_name in self._workbook_views_to_hide]
         else:
-            [values_list.append(None) for key in self.optional_view_param_keys]
+            [values_list.append(None) for _ in self.optional_view_param_keys]
         return values_list
 
     def base_publish_workbook_request(self):
@@ -219,6 +201,7 @@ class PublishWorkbookRequest(BaseRequest):
 
     # testing for chunk upload
     def publish_prep(self, publish_content_type, parameter_dict):
+        parameter_dict = parameter_dict if parameter_dict else {'overwrite': 'overwrite=true'}
         filename = os.path.basename(self._workbook_file_path)
         file_extension = filename.split('.')[-1]
 

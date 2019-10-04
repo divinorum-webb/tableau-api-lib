@@ -125,6 +125,7 @@ class PublishDatasourceRequest(BaseRequest):
 
     # testing for chunk upload
     def publish_prep(self, publish_content_type, parameter_dict):
+        parameter_dict = parameter_dict if parameter_dict else {'overwrite': 'overwrite=true'}
         filename = os.path.basename(self._datasource_file_path)
         file_extension = filename.split('.')[-1]
 
