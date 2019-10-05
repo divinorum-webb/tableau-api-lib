@@ -21,21 +21,21 @@ class PublishWorkbookRequest(BaseRequest):
     :param string project_id: the project ID of the project the workbook is being published to
     :param boolean show_tabs_flag: (Optional) true if the workbook will show views as tabs, false otherwise
     :param string user_id: If generating thumbnails as a specific user, specify the user ID here
-    :param string server_address: (Optional) specify the server address for a data source connection if that data source
-    does not use OAuth
-    :param string port_number: (Optional) specify the port number for a data source connection if that data source does
+    :param list server_address: (Optional) specify the server addresses for data source connections if the data sources
+    do not use OAuth
+    :param list port_number: (Optional) specify the port numbers for a data source connections if that data sources do
     not use OAuth
-    :param string connection_username: (Optional) if the workbook's data source connections require credentials, the
+    :param list connection_username: (Optional) if the workbook's data source connections require credentials, the
     <connectionCredentials> elements are included and this attribute specifies the connection username. If the element
     is included but is not required (for example, if the data source uses OAuth), the server ignores the element and its
     attributes
-    :param string connection_password: (Optional) if the workbook's data source connections require credentials, the
+    :param list connection_password: (Optional) if the workbook's data source connections require credentials, the
     <connectionCredentials> elements are included and this attribute specifies the connection password. If the element
     is included but is not required (for example, if the data source uses OAuth), the server ignores the element and its
     attributes
-    :param boolean embed_credentials_flag: (Optional) true if embedding credentials in the published workbook, false
+    :param list embed_credentials_flag: (Optional) true if embedding credentials in the published workbook, false
     otherwise
-    :param boolean oauth_flag: list of boolean flags; True if OAuth is used for the credentials, false otherwise.
+    :param list oauth_flag: list of boolean flags; True if OAuth is used for the credentials, false otherwise.
     :param list workbook_views_to_hide: a list of the views to hide for the workbook being published. The list should
     contain the view names, not view IDs
     :param boolean hide_view_flag: (Optional) true if the published workbook will hide any of its views,  false
@@ -73,8 +73,23 @@ class PublishWorkbookRequest(BaseRequest):
         self._hide_view_flag = hide_view_flag
         self.payload = None
         self.content_type = None
+        self._listify_inputs()
         self._file_is_chunked = self._file_requires_chunking()
         self.base_publish_workbook_request()
+
+    def _listify_inputs(self):
+        if isinstance(self._server_address, str):
+            self._server_address = [self._server_address]
+        if isinstance(self._port_number, str):
+            self._port_number = [self._port_number]
+        if isinstance(self._connection_username, str):
+            self._connection_username = [self._connection_username]
+        if isinstance(self._connection_password, str):
+            self._connection_password = [self._connection_password]
+        if isinstance(self._embed_credentials_flag, bool) or isinstance(self._embed_credentials_flag, str):
+            self._embed_credentials_flag = [self._embed_credentials_flag]
+        if isinstance(self._oauth_flag, bool) or isinstance(self._oauth_flag, str):
+            self._oauth_flag = [self._oauth_flag]
 
     @property
     def valid_file_extensions(self):
@@ -157,20 +172,23 @@ class PublishWorkbookRequest(BaseRequest):
     def modified_publish_workbook_request(self):
         self._request_body['workbook'].update(self._get_parameters_dict(self.optional_workbook_param_keys,
                                                                         self.optional_workbook_param_values))
-
-        if any(self.optional_connection_param_values):
+        if any(self.optional_connection_param_values) or any(self.optional_credentials_param_values):
             self._request_body['workbook'].update({'connections': {'connection': []}})
-            for i, connection in enumerate(list(self._connection_username)):
+            for i, _ in enumerate(self._embed_credentials_flag):
                 self._request_body['workbook']['connections']['connection'].append({
-                    'serverAddress': self._server_address[i],
+                    'serverAddress': self._server_address[i] if self._server_address else None,
                     'serverPort': self._port_number[i] if self._port_number else None,
                     'connectionCredentials': {
-                        'name': self._connection_username[i],
-                        'password': self._connection_password[i],
-                        'embed': self._embed_credentials_flag[i] if self._embed_credentials_flag else None,
-                        'oAuth': self._oauth_flag[i] if self._oauth_flag else None
+                        'name': self._connection_username[i] if self._connection_username else None,
+                        'password': self._connection_password[i] if self._connection_password else None,
+                        'embed': self._embed_credentials_flag[i] if self._embed_credentials_flag else False
                     }
                 })
+            if any(self._oauth_flag):
+                for i, _ in enumerate(self._oauth_flag):
+                    self._request_body['workbook']['connections']['connection'][i]['connectionCredentials'].update({
+                        'oAuth': self._oauth_flag[i]
+                    })
 
         if any(self.optional_view_param_values):
             self._request_body['workbook'].update({'views': {'view': []}})
@@ -179,6 +197,7 @@ class PublishWorkbookRequest(BaseRequest):
                     'name': view,
                     'hidden': 'true'
                 })
+        print(self._request_body)
         return self._request_body
 
     def _file_requires_chunking(self):

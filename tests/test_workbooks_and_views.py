@@ -84,6 +84,7 @@ def test_publish_workbook():
                                      workbook_name=TEST_WORKBOOK_PREFIX+'a',
                                      project_id=test_project_id,
                                      show_tabs_flag=False,
+                                     embed_credentials_flag=True,
                                      parameter_dict={
                                          'overwrite': 'overwrite=true',
                                          'asJob': 'asJob=true'
@@ -94,6 +95,7 @@ def test_publish_workbook():
                                      workbook_name=TEST_WORKBOOK_PREFIX+'a',
                                      project_id=test_project_id,
                                      show_tabs_flag=False,
+                                     embed_credentials_flag=True,
                                      parameter_dict={
                                          'overwrite': 'overwrite=true',
                                          'asJob': 'asJob=true'
@@ -103,6 +105,7 @@ def test_publish_workbook():
                                      workbook_name=TEST_WORKBOOK_PREFIX + 'b',
                                      project_id=test_project_id,
                                      show_tabs_flag=True,
+                                     embed_credentials_flag=True,
                                      parameter_dict={
                                          'overwrite': 'overwrite=true',
                                          'asJob': 'asJob=true'
@@ -221,7 +224,7 @@ def test_download_workbook_pdf():
 
 def test_download_workbook_revision():
     test_workbook_id = get_test_workbook_id(conn)
-    response = conn.download_workbook_revision(test_workbook_id, revision_number=1)
+    response = conn.download_workbook_revision(test_workbook_id, revision_number='1')
     print(response.content)
     assert response.status_code == 200
 
