@@ -73,23 +73,35 @@ class PublishWorkbookRequest(BaseRequest):
         self._hide_view_flag = hide_view_flag
         self.payload = None
         self.content_type = None
+        self._verify_embed_requirements()
         self._listify_inputs()
         self._file_is_chunked = self._file_requires_chunking()
         self.base_publish_workbook_request()
 
     def _listify_inputs(self):
-        if isinstance(self._server_address, str):
-            self._server_address = [self._server_address]
-        if isinstance(self._port_number, str):
-            self._port_number = [self._port_number]
-        if isinstance(self._connection_username, str):
-            self._connection_username = [self._connection_username]
-        if isinstance(self._connection_password, str):
-            self._connection_password = [self._connection_password]
-        if isinstance(self._embed_credentials_flag, bool) or isinstance(self._embed_credentials_flag, str):
-            self._embed_credentials_flag = [self._embed_credentials_flag]
+        if any(self.optional_connection_param_values):
+            if isinstance(self._server_address, str):
+                self._server_address = [self._server_address]
+            if isinstance(self._port_number, str):
+                self._port_number = [self._port_number]
+        if self._connection_username:
+            if isinstance(self._connection_username, str):
+                self._connection_username = [self._connection_username]
+        if self._connection_password:
+            if isinstance(self._connection_password, str):
+                self._connection_password = [self._connection_password]
+        if self._embed_credentials_flag:
+            if isinstance(self._embed_credentials_flag, bool) or isinstance(self._embed_credentials_flag, str):
+                self._embed_credentials_flag = [self._embed_credentials_flag]
         if isinstance(self._oauth_flag, bool) or isinstance(self._oauth_flag, str):
             self._oauth_flag = [self._oauth_flag]
+
+    def _verify_embed_requirements(self):
+        if self._embed_credentials_flag:
+            if self._server_address and self._connection_username and self._connection_password:
+                pass
+            else:
+                self._invalid_parameter_exception()
 
     @property
     def valid_file_extensions(self):
@@ -174,7 +186,7 @@ class PublishWorkbookRequest(BaseRequest):
                                                                         self.optional_workbook_param_values))
         if any(self.optional_connection_param_values) or any(self.optional_credentials_param_values):
             self._request_body['workbook'].update({'connections': {'connection': []}})
-            for i, _ in enumerate(self._connection_username):
+            for i, _ in enumerate(self._connection_username or [None]):
                 self._request_body['workbook']['connections']['connection'].append({
                     'serverAddress': self._server_address[i] if self._server_address else None,
                     'serverPort': self._port_number[i] if self._port_number else None,
