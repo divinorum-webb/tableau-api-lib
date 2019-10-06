@@ -2612,12 +2612,12 @@ class TableauServerConnection:
         :param string project_id: the project ID where the workbook will be published
         :param boolean show_tabs_flag: enables or disables showing tabs
         :param string user_id: the user ID for the user who owns the workbook
-        :param list server_address: the connection's server address
-        :param list port_number: the connection's port number
-        :param list connection_username: the connection's username
-        :param list connection_password: the connection's password
-        :param list embed_credentials_flag: enables or disables embedding the connection's password
-        :param list oauth_flag: enables or disables OAuth authentication
+        :param list or str server_address: the connection's server address
+        :param list or str port_number: the connection's port number
+        :param list or str connection_username: the connection's username
+        :param list or str connection_password: the connection's password
+        :param list or bool embed_credentials_flag: enables or disables embedding the connection's password
+        :param list or bool oauth_flag: enables or disables OAuth authentication
         :param list workbook_views_to_hide: a list of workbook views to be hidden when published
         :param boolean hide_view_flag: enables or disables hiding workbook views
         :param dict parameter_dict: dict defining url parameters for API endpoint
@@ -2659,16 +2659,16 @@ class TableauServerConnection:
                      parameter_dict=None):
         """
         Publishes a flow file to Tableau Server.
-        :param string flow_file_path: the path to the flow file
-        :param string flow_name: the desired name for the published flow
-        :param string project_id: the project ID where the flow will be published
-        :param string flow_description: the description for the published flow
-        :param string server_address: the connection's server address
-        :param string port_number: the connection's port
-        :param string connection_username: the connection's username
-        :param string connection_password: the connection's password
-        :param boolean embed_credentials_flag: enables or disables embedding the connection's password
-        :param boolean oauth_flag: enables or disables OAuth authentication
+        :param str flow_file_path: the path to the flow file
+        :param str flow_name: the desired name for the published flow
+        :param str project_id: the project ID where the flow will be published
+        :param str flow_description: the description for the published flow
+        :param list or str server_address: the connection's server address
+        :param list or str port_number: the connection's port
+        :param list or str connection_username: the connection's username
+        :param list or str connection_password: the connection's password
+        :param list or bool embed_credentials_flag: enables or disables embedding the connection's password
+        :param list or bool oauth_flag: enables or disables OAuth authentication
         :param dict parameter_dict: dict defining url parameters for API endpoint
         :return: HTTP response
         """

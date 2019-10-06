@@ -80,12 +80,14 @@ class PublishDatasourceRequest(BaseRequest):
         return [
             self._connection_username,
             self._connection_password,
-            'true' if self._embed_credentials_flag is True
-            else 'false' if self._embed_credentials_flag is False
-            else None,
-            'true' if self._oauth_flag is True
-            else 'false' if self._oauth_flag is False
-            else None
+            self._embed_credentials_flag,
+            self._oauth_flag
+            # 'true' if self._embed_credentials_flag is True
+            # else 'false' if self._embed_credentials_flag is False
+            # else None,
+            # 'true' if self._oauth_flag is True
+            # else 'false' if self._oauth_flag is False
+            # else None
         ]
 
     def base_publish_datasource_request(self):
@@ -103,6 +105,7 @@ class PublishDatasourceRequest(BaseRequest):
             self._request_body['datasource']['connectionCredentials'].update(
                 self._get_parameters_dict(self.optional_credentials_param_keys,
                                           self.optional_credentials_param_values))
+        print(self._request_body)
         return self._request_body
 
     def _file_requires_chunking(self):

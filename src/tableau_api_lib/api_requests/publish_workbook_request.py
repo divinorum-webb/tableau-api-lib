@@ -174,7 +174,7 @@ class PublishWorkbookRequest(BaseRequest):
                                                                         self.optional_workbook_param_values))
         if any(self.optional_connection_param_values) or any(self.optional_credentials_param_values):
             self._request_body['workbook'].update({'connections': {'connection': []}})
-            for i, _ in enumerate(self._embed_credentials_flag):
+            for i, _ in enumerate(self._connection_username):
                 self._request_body['workbook']['connections']['connection'].append({
                     'serverAddress': self._server_address[i] if self._server_address else None,
                     'serverPort': self._port_number[i] if self._port_number else None,

@@ -14,32 +14,17 @@ class PublishFlowRequest(BaseRequest):
     """
     Update site request for generating API request URLs to Tableau Server.
 
-    :param ts_connection:           The Tableau Server connection object.
-    :type ts_connection:            class
-    :param flow_name:               The name for the flow being published.
-    :type flow_name:                string
-    :param flow_file_path:          The file path for the flow being published.
-    :type flow_file_path:           string
-    :param project_id:              The project ID for the project the flow belongs to.
-    :type project_id:               string
-    :param flow_description:        (Optional) A description for the flow being published.
-    :type flow_description:         string
-    :param server_address:          (Optional) The server address(es) for the flow's connection(s).
-    :type server_address:           string
-    :param port_number:             (Optional) The port number(s) for the flow's connection(s).
-    :type port_number:              string
-    :param connection_username:     (Optional) If the flow requires credentials, this value specifies
-                                    the connection username.
-    :type connection_username:      string
-    :param connection_password:     (Optional) If the flow requires credentials, this value specifies
-                                    the connection password.
-    :type connection_password:      string
-    :param embed_credentials_flag:  (Optional) Boolean flag; True if credentials are to be stored for when the
-                                    connection is used, False otherwise.
-    :type embed_credentials_flag:   boolean
-    :param oauth_flag:              (Optional) Boolean flag; True if the data connection username is an OAuth username,
-                                    False otherwise.
-    :type oauth_flag:               boolean
+    :param class ts_connection: the Tableau Server connection object
+    :param string flow_name: the name for the flow being published
+    :param string flow_file_path: the file path for the flow being published
+    :param string project_id: the project ID for the project the flow belongs to
+    :param string flow_description: (Optional) s description for the flow being published
+    :param list server_address: (Optional) list of string values for each flow connection server address
+    :param list port_number: (Optional) list of string values for each flow connection server port number
+    :param list connection_username: (Optional) list of string values for each flow connection username
+    :param list connection_password: (Optional) list of string values for each flow connection password
+    :param list embed_credentials_flag: (Optional) list of boolean values; True if embedding credentials, False if not
+    :param list oauth_flag: (Optional) list of boolean values; True if using OAuth, False if not
     """
     def __init__(self,
                  ts_connection,
@@ -65,8 +50,24 @@ class PublishFlowRequest(BaseRequest):
         self._connection_password = connection_password
         self._embed_credentials_flag = embed_credentials_flag
         self._oauth_flag = oauth_flag
+        self._listify_inputs()
         self._file_is_chunked = self._file_requires_chunking()
         self.base_publish_flow_request()
+
+    def _listify_inputs(self):
+        if any(self.optional_credentials_param_values) or any(self.optional_connection_param_values):
+            if isinstance(self._server_address, str):
+                self._server_address = [self._server_address]
+            if isinstance(self._port_number, str):
+                self._port_number = [self._port_number]
+            if isinstance(self._connection_username, str):
+                self._connection_username = [self._connection_username]
+            if isinstance(self._connection_password, str):
+                self._connection_password = [self._connection_password]
+            if isinstance(self._embed_credentials_flag, bool) or isinstance(self._embed_credentials_flag, str):
+                self._embed_credentials_flag = [self._embed_credentials_flag]
+            if isinstance(self._oauth_flag, bool) or isinstance(self._oauth_flag, str):
+                self._oauth_flag = [self._oauth_flag]
 
     @property
     def valid_file_extensions(self):
@@ -132,19 +133,23 @@ class PublishFlowRequest(BaseRequest):
         self._request_body['flow'].update(self._get_parameters_dict(self.optional_flow_param_keys,
                                                                     self.optional_flow_param_values))
 
-        if any(self.optional_connection_param_values):
+        if any(self.optional_connection_param_values) or any(self.optional_credentials_param_values):
             self._request_body['flow'].update({'connections': {'connection': []}})
-            for i, connection in enumerate(list(self._connection_username)):
+            for i, _ in enumerate(self._connection_username or [None]):
                 self._request_body['flow']['connections']['connection'].append({
-                    'serverAddress': self._server_address[i],
-                    'serverPort': self._port_number[i] if self._port_number else None,
+                    'serverAddress': self._server_address[i] if self._server_address else None,
+                    'portNumber': self._port_number[i] if self._port_number else None,
                     'connectionCredentials': {
-                        'name': self._connection_username[i],
-                        'password': self._connection_password[i],
-                        'embed': self._embed_credentials_flag[i] if self._embed_credentials_flag else None,
-                        'oAuth': self._oauth_flag[i] if self._oauth_flag else None
+                        'name': self._connection_username[i] if self._connection_username else None,
+                        'password': self._connection_password[i] if self._connection_password else None,
+                        'embed': self._embed_credentials_flag[i] if self._embed_credentials_flag else False
                     }
                 })
+            if any(self._oauth_flag):
+                for i, _ in enumerate(self._oauth_flag):
+                    self._request_body['workbook']['connections']['connection'][i]['connectionCredentials'].update({
+                        'oAuth': self._oauth_flag[i]
+                    })
 
         return self._request_body
 

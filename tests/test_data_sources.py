@@ -135,6 +135,7 @@ def test_query_data_source_connections():
 def test_get_data_source_revisions():
     test_datasource_id = get_test_datasource_id(conn)
     response = conn.get_data_source_revisions(test_datasource_id)
+    print(response.json())
     assert response.status_code == 200
 
 
@@ -146,7 +147,8 @@ def test_download_data_source():
 
 def test_download_data_source_revision():
     test_datasource_id = get_test_datasource_id(conn)
-    response = conn.download_data_source_revision(test_datasource_id, revision_number=1)
+    response = conn.download_data_source_revision(test_datasource_id, revision_number='1')
+    print(response.content)
     assert response.status_code == 200
 
 
@@ -189,7 +191,7 @@ def test_update_data_source_connection():
 
 def test_remove_data_source_revision():
     test_datasource_id = get_test_datasource_id(conn)
-    response = conn.remove_data_source_revision(test_datasource_id, revision_number=1)
+    response = conn.remove_data_source_revision(test_datasource_id, revision_number='1')
     assert response.status_code == 204
 
 
