@@ -71,7 +71,8 @@ class UpdateSiteRequest(BaseRequest):
                  commenting_enabled_flag=False,
                  revision_history_enabled_flag=False,
                  revision_limit=None,
-                 subscribe_others_enabled_flag=False
+                 subscribe_others_enabled_flag=False,
+                 extract_encryption_mode=None
                  ):
 
         super().__init__(ts_connection)
@@ -89,7 +90,16 @@ class UpdateSiteRequest(BaseRequest):
         self._revision_history_enabled_flag = revision_history_enabled_flag
         self._revision_limit = revision_limit
         self._subscribe_others_enabled_flag = subscribe_others_enabled_flag
+        self._extract_encryption_mode = extract_encryption_mode
         self._request_body = {'site': {}}
+
+    @property
+    def valid_extract_encryption_modes(self):
+        return [
+            'enforced',
+            'enabled',
+            'disabled'
+        ]
 
     @property
     def optional_param_keys(self):
@@ -106,7 +116,8 @@ class UpdateSiteRequest(BaseRequest):
             'commentingEnabled',
             'revisionHistoryEnabled',
             'revisionLimit',
-            'subscribeOthersEnabled'
+            'subscribeOthersEnabled',
+            'extractEncryptionMode'
         ]
 
     @property
@@ -131,7 +142,8 @@ class UpdateSiteRequest(BaseRequest):
             else 'false' if self._revision_history_enabled_flag is False else None,
             str(self._revision_limit) if self._revision_limit else None,
             'true' if self._subscribe_others_enabled_flag is True
-            else 'false' if self._subscribe_others_enabled_flag is False else None
+            else 'false' if self._subscribe_others_enabled_flag is False else None,
+            self._extract_encryption_mode
         ]
 
     def base_update_site_request(self):
