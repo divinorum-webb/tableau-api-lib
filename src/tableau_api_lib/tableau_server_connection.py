@@ -1,9 +1,9 @@
 import requests
 
-from tableau_api_lib.api_endpoints import AuthEndpoint, DataAlertEndpoint, DatasourceEndpoint, \
+from tableau_api_lib.api_endpoints import AuthEndpoint, DataAlertEndpoint, DatabaseEndpoint, DatasourceEndpoint, \
     FavoritesEndpoint, FileUploadEndpoint, FlowEndpoint, GroupEndpoint, JobsEndpoint, PermissionsEndpoint, \
-    ProjectEndpoint, SchedulesEndpoint, SiteEndpoint, SubscriptionsEndpoint, UserEndpoint, TasksEndpoint, \
-    ViewEndpoint, WorkbookEndpoint
+    ProjectEndpoint, SchedulesEndpoint, SiteEndpoint, SubscriptionsEndpoint, UserEndpoint, TableEndpoint, \
+    TasksEndpoint, ViewEndpoint, WorkbookEndpoint, ColumnEndpoint, DQWarningEndpoint
 from tableau_api_lib.api_requests import AddDatasourcePermissionsRequest, AddDatasourceToFavoritesRequest, \
     AddDatasourceToScheduleRequest, AddDefaultPermissionsRequest, AddFlowPermissionsRequest, \
     AddFlowToScheduleRequest, AddProjectPermissionsRequest, AddProjectToFavoritesRequest, \
@@ -11,11 +11,12 @@ from tableau_api_lib.api_requests import AddDatasourcePermissionsRequest, AddDat
     AddViewPermissionsRequest, AddViewToFavoritesRequest, AddWorkbookPermissionsRequest, \
     AddWorkbookToFavoritesRequest, AddWorkbookToScheduleRequest, CreateGroupRequest, \
     CreateProjectRequest, CreateScheduleRequest, CreateSiteRequest, CreateSubscriptionRequest, \
-    EmptyRequest, PublishDatasourceRequest, PublishFlowRequest, PublishWorkbookRequest, \
-    SignInRequest, SwitchSiteRequest, UpdateDataAlertRequest, UpdateDatasourceConnectionRequest, \
+    EmptyRequest, PublishDatasourceRequest, PublishFlowRequest, PublishWorkbookRequest, SignInRequest, \
+    SwitchSiteRequest, UpdateDataAlertRequest, UpdateDatabaseRequest, UpdateDatasourceConnectionRequest, \
     UpdateDatasourceRequest, UpdateFlowConnectionRequest, UpdateFlowRequest, UpdateGroupRequest, \
     UpdateProjectRequest, UpdateScheduleRequest, UpdateSiteRequest, UpdateSubscriptionRequest, \
-    UpdateUserRequest, UpdateWorkbookConnectionRequest, UpdateWorkbookRequest
+    UpdateUserRequest, UpdateWorkbookConnectionRequest, UpdateWorkbookRequest, UpdateTableRequest, \
+    UpdateColumnRequest, AddDQWarningRequest, UpdateDQWarningRequest
 from tableau_api_lib.decorators import verify_response, verify_signed_in
 
 
@@ -2692,44 +2693,135 @@ class TableauServerConnection:
 
     # metadata methods
 
-    def query_database(self):
-        pass
+    def query_database(self, database_id):
+        """
+        Query details for the specified database.
+        :param str database_id: the database ID
+        :return: HTTP response
+        """
+        self.active_endpoint = DatabaseEndpoint(self, query_database=True, database_id=database_id).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        return response
 
     def query_databases(self):
-        pass
+        """
+        Queries details for databases stored on Tableau Server.
+        :return: HTTP response
+        """
+        self.active_endpoint = DatabaseEndpoint(self, query_databases=True).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        return response
 
-    def update_database(self):
-        pass
+    def update_database(self,
+                        database_id,
+                        certification_status=None,
+                        certification_note=None,
+                        new_description_value=None,
+                        new_contact_id=None):
+        self.active_request = UpdateDatabaseRequest(self,
+                                                    certification_status=certification_status,
+                                                    certification_note=certification_note,
+                                                    new_description_value=new_description_value,
+                                                    new_contact_id=new_contact_id).get_request()
+        self.active_endpoint = DatabaseEndpoint(self, database_id=database_id, update_database=True).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        return response
 
-    def remove_database(self):
-        pass
+    def remove_database(self, database_id):
+        # method does not work, produces error
+        self.active_endpoint = DatabaseEndpoint(self, database_id=database_id, remove_database=True).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        return response
 
-    def query_table(self):
-        pass
+    def query_table(self, table_id):
+        self.active_endpoint = TableEndpoint(self, table_id=table_id, query_table=True).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        return response
 
     def query_tables(self):
-        pass
+        self.active_endpoint = TableEndpoint(self, query_tables=True).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        return response
 
-    def update_table(self):
-        pass
+    def update_table(self,
+                     table_id,
+                     certification_status=None,
+                     certification_note=None,
+                     new_description_value=None,
+                     new_contact_id=None):
+        self.active_request = UpdateTableRequest(self,
+                                                 certification_status=certification_status,
+                                                 certification_note=certification_note,
+                                                 new_description_value=new_description_value,
+                                                 new_contact_id=new_contact_id).get_request()
+        self.active_endpoint = TableEndpoint(self, table_id=table_id, update_table=True).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        return response
 
-    def remove_table(self):
-        pass
+    def remove_table(self, table_id):
+        self.active_endpoint = TableEndpoint(self, table_id=table_id, remove_table=True).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        return response
 
-    def query_table_column(self):
-        pass
+    def query_table_column(self, table_id, column_id):
+        self.active_endpoint = ColumnEndpoint(self,
+                                              table_id=table_id,
+                                              column_id=column_id,
+                                              query_column=True).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        return response
 
-    def query_table_columns(self):
-        pass
+    def query_table_columns(self, table_id):
+        self.active_endpoint = ColumnEndpoint(self, table_id=table_id, query_columns=True).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        return response
 
-    def update_column(self):
-        pass
+    def update_column(self, table_id, column_id, new_description_value=None):
+        self.active_request = UpdateColumnRequest(self, new_description_value=new_description_value).get_request()
+        self.active_endpoint = ColumnEndpoint(self,
+                                              table_id=table_id,
+                                              column_id=column_id,
+                                              update_column=True).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        return response
 
-    def remove_column(self):
-        pass
+    def remove_column(self, table_id, column_id):
+        self.active_endpoint = ColumnEndpoint(self,
+                                              table_id=table_id,
+                                              column_id=column_id,
+                                              remove_column=True).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        return response
 
-    def add_data_quality_warning(self):
-        pass
+    def add_data_quality_warning(self,
+                                 content_type,
+                                 content_id,
+                                 warning_type,
+                                 message,
+                                 status=None):
+        self.active_request = AddDQWarningRequest(self,
+                                                  warning_type=warning_type,
+                                                  message=message,
+                                                  status=status).get_request()
+        self.active_endpoint = DQWarningEndpoint(self,
+                                                 content_type=content_type,
+                                                 content_id=content_id,
+                                                 add_warning=True).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        return response
 
     def query_data_quality_warning_by_id(self):
         pass
