@@ -21,7 +21,6 @@ def sign_out(conn):
 
 def create_site(conn, site_name, site_content_url):
     response = conn.create_site(site_name, site_content_url)
-    print(response)
     return conn, response
 
 
