@@ -2,25 +2,6 @@ from tableau_api_lib.api_endpoints import BaseEndpoint
 
 
 class ProjectEndpoint(BaseEndpoint):
-    """
-    Projects endpoint for Tableau Server API api_requests.
-
-    :param ts_connection:       The Tableau Server connection object.
-    :type ts_connection:        class
-    :param create_project:      Boolean flag; True if creating a project, False otherwise.
-    :type create_project:       boolean
-    :param query_projects:      Boolean flag; True if querying all projects, False otherwise.
-    :type query_projects:       boolean
-    :param update_project:      Boolean flag; True if updating a specific project, False otherwise.
-    :type update_project:       boolean
-    :param delete_project:      Boolean flag; True if deleting a specific project, False otherwise.
-    :type delete_project:       boolean
-    :param project_id:          The project ID.
-    :type project_id:           string
-    :param parameter_dict:      Dictionary of URL parameters to append. The value in each key-value pair
-                                is the literal text that will be appended to the URL endpoint.
-    :type parameter_dict:       dict
-    """
     def __init__(self, 
                  ts_connection,
                  create_project=False,
@@ -29,6 +10,17 @@ class ProjectEndpoint(BaseEndpoint):
                  delete_project=False,
                  project_id=None, 
                  parameter_dict=None):
+        """
+        Builds API endpoints for REST API project methods.
+        :param class ts_connection: the Tableau Server connection object
+        :param bool create_project: True if creating a project, False otherwise
+        :param bool query_projects: True if querying all projects, False otherwise
+        :param bool update_project: True if updating a specific project, False otherwise
+        :param bool delete_project: True if deleting a specific project, False otherwise
+        :param str project_id: the project ID
+        :param dict parameter_dict: dictionary of URL parameters to append. The value in each key-value pair is the
+        literal text that will be appended to the URL endpoint
+        """
         
         super().__init__(ts_connection)
         self._create_project = create_project
@@ -37,6 +29,23 @@ class ProjectEndpoint(BaseEndpoint):
         self._delete_project = delete_project
         self._project_id = project_id
         self._parameter_dict = parameter_dict
+        self._validate_inputs()
+
+    @property
+    def mutually_exclusive_params(self):
+        return [
+            self._create_project,
+            self._query_projects,
+            self._update_project,
+            self._delete_project
+        ]
+
+    def _validate_inputs(self):
+        valid = True
+        if sum(self.mutually_exclusive_params) != 1:
+            valid = False
+        if not valid:
+            self._invalid_parameter_exception()
         
     @property
     def base_project_url(self):

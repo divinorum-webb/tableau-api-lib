@@ -2,14 +2,13 @@ from tableau_api_lib.exceptions import InvalidParameterException
 
 
 class BaseEndpoint:
-    """
-    Base endpoint for sending API request URLs to Tableau Server.
-
-    :param ts_connection:       The Tableau Server connection object.
-    :type ts_connection:        class
-    """
     def __init__(self,
                  ts_connection):
+        """
+        The base endpoint from which all other API endpoints are built.
+        :param class ts_connection: the Tableau Server connection object
+        """
+
         self._connection = ts_connection
         self._parameter_dict = {}
         

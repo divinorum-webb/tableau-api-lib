@@ -31,6 +31,20 @@ class FileUploadEndpoint(BaseEndpoint):
         self._parameter_dict = parameter_dict
 
     @property
+    def mutually_exclusive_params(self):
+        return [
+            self._initiate_file_upload,
+            self._append_to_file_upload
+        ]
+
+    def _validate_inputs(self):
+        valid = True
+        if sum(self.mutually_exclusive_params) != 1:
+            valid = False
+        if not valid:
+            self._invalid_parameter_exception()
+
+    @property
     def base_file_upload_url(self):
         return "{0}/api/{1}/sites/{2}/fileUploads".format(self._connection.server,
                                                           self._connection.api_version,
@@ -42,6 +56,7 @@ class FileUploadEndpoint(BaseEndpoint):
                                 self._upload_session_id)
 
     def get_endpoint(self):
+        url = None
         if self._initiate_file_upload:
             url = self.base_file_upload_url
         elif self._append_to_file_upload and self._upload_session_id:

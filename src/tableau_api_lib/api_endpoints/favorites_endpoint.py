@@ -2,27 +2,6 @@ from tableau_api_lib.api_endpoints import BaseEndpoint
 
 
 class FavoritesEndpoint(BaseEndpoint):
-    """
-    Favorites endpoint for Tableau Server API api_requests.
-
-    :param ts_connection:           The Tableau Server connection object.
-    :type ts_connection:            class
-    :param add_to_favorites:        Boolean flag; True if adding item to favorites, False otherwise.
-    :type add_to_favorites:         boolean
-    :param delete_from_favorites:   Boolean flag; True if deleting item from favorites, False otherwise.
-    :type delete_from_favorites:    boolean
-    :param object_type:             The Tableau object type being considered.
-    :type object_type:              string
-    :param object_id:               The ID of the specific Tableau object being considered.
-    :type object_id:                string
-    :param get_user_favorites:      Boolean flag; True if getting the user's favorite items, False otherwise.
-    :type get_user_favorites:       boolean
-    :param user_id:                 The user ID.
-    :type user_id:                  string
-    :param parameter_dict:          Dictionary of URL parameters to append. The value in each key-value pair
-                                    is the literal text that will be appended to the URL endpoint.
-    :type parameter_dict:           dict
-    """
     def __init__(self,
                  ts_connection,
                  add_to_favorites=False,
@@ -32,6 +11,18 @@ class FavoritesEndpoint(BaseEndpoint):
                  get_user_favorites=False,
                  user_id=None,
                  parameter_dict=None):
+        """
+        Builds the API endpoints for Favorites methods.
+        :param class ts_connection: the Tableau Server connection object.
+        :param bool add_to_favorites: True if adding item to favorites, False otherwise.
+        :param bool delete_from_favorites: True if deleting item from favorites, False otherwise.
+        :param str object_type: the Tableau object type being considered.
+        :param str object_id: the ID of the specific Tableau object being considered.
+        :param bool get_user_favorites: True if getting the user's favorite items, False otherwise.
+        :param str user_id: the user ID.
+        :param dict parameter_dict: dictionary of URL parameters to append. The value in each key-value pair is the literal
+        text that will be appended to the URL endpoint.
+        """
 
         super().__init__(ts_connection)
         self._add_to_favorites = add_to_favorites

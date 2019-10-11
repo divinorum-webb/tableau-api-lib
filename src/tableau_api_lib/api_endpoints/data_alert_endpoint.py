@@ -2,27 +2,6 @@ from tableau_api_lib.api_endpoints import BaseEndpoint
 
 
 class DataAlertEndpoint(BaseEndpoint):
-    """
-    Data Alert endpoint for Tableau Server API api_requests.
-
-    :param ts_connection:       The Tableau Server connection object.
-    :type ts_connection:        class
-    :param query_data_alerts:   Boolean flag; True if querying all data alerts, False otherwise.
-    :type query_data_alerts:    boolean
-    :param query_data_alert:    Boolean flag; True if querying a specific data alert, False otherwise.
-    :type query_data_alert:     boolean
-    :param data_alert_id:       The data alert ID.
-    :type data_alert_id:        string
-    :param user_id:             The user ID.
-    :type user_id:              string
-    :param add_user:            Boolean flag; True if adding a user to the alert, False otherwise.
-    :type add_user:             boolean
-    :param remove_user:         Boolean flag; True if removing a user from the alert; False otherwise.
-    :type remove_user:          boolean
-    :param parameter_dict:      Dictionary of URL parameters to append. The value in each key-value pair
-                                is the literal text that will be appended to the URL endpoint.
-    :type parameter_dict:       dict
-    """
     def __init__(self, 
                  ts_connection,
                  query_data_alerts=False,
@@ -32,6 +11,18 @@ class DataAlertEndpoint(BaseEndpoint):
                  add_user=False, 
                  remove_user=False,
                  parameter_dict=None):
+        """
+        Data Alert endpoint for Tableau Server API api_requests.
+        :param class ts_connection: the Tableau Server connection object
+        :param bool query_data_alerts: True if querying all data alerts, False otherwise
+        :param bool query_data_alert: True if querying a specific data alert, False otherwise
+        :param str data_alert_id: the data alert ID
+        :param str user_id: the user ID
+        :param bool add_user: True if adding a user to the alert, False otherwise
+        :param bool remove_user: True if removing a user from the alert; False otherwise
+        :param dict parameter_dict: dictionary of URL parameters to append; the value in each key-value pair is the
+        literal text that will be appended to the URL endpoint
+        """
         
         super().__init__(ts_connection)
         self._query_data_alerts = query_data_alerts
@@ -41,7 +32,24 @@ class DataAlertEndpoint(BaseEndpoint):
         self._add_user = add_user
         self._remove_user = remove_user
         self._parameter_dict = parameter_dict
-        
+        self._validate_inputs()
+
+    @property
+    def mutually_exclusive_params(self):
+        return [
+            self._query_data_alerts,
+            self._query_data_alert,
+            self._add_user,
+            self._remove_user
+        ]
+
+    def _validate_inputs(self):
+        valid = True
+        if sum(self.mutually_exclusive_params) != 1:
+            valid = False
+        if not valid:
+            self._invalid_parameter_exception()
+
     @property
     def base_data_alert_url(self):
         return "{0}/api/{1}/sites/{2}/dataAlerts".format(self._connection.server,
@@ -63,6 +71,7 @@ class DataAlertEndpoint(BaseEndpoint):
                                 self._user_id)
     
     def get_endpoint(self):
+        url = None
         if not (self._data_alert_id or self._user_id or self._add_user or self._remove_user):
             url = self.base_data_alert_url
         elif self._data_alert_id and not (self._user_id or self._add_user or self._remove_user):

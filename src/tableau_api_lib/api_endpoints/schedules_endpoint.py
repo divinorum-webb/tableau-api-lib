@@ -2,33 +2,6 @@ from tableau_api_lib.api_endpoints import BaseEndpoint
 
 
 class SchedulesEndpoint(BaseEndpoint):
-    """
-    Schedules endpoint for Tableau Server API api_requests.
-
-    :param ts_connection:       The Tableau Server connection object.
-    :type ts_connection:        class
-    :param schedule_id:         The schedule ID.
-    :type schedule_id:          string
-    :param create_schedule:     Boolean flag; True if creating a schedule, False otherwise.
-    :type create_schedule:      boolean
-    :param query_schedules:     Boolean flag; True if querying all schedules, False otherwise.
-    :type query_schedules:      boolean
-    :param query_extract_schedules: Boolean flag; True if querying all extract schedules, False otherwise.
-    :type query_extract_schedules: boolean
-    :param update_schedule:     Boolean flag; True if updating a specific schedule, False otherwise.
-    :type update_schedule:      boolean
-    :param delete_schedule:     Boolean flag; True if deleting a specific schedule, False otherwise.
-    :type delete_schedule:      boolean
-    :param add_datasource:      Boolean flag; True if adding a datasource, False otherwise.
-    :type add_datasource:       boolean
-    :param add_workbook:        Boolean flag; True if adding a workbook, False otherwise.
-    :type add_workbook:         boolean
-    :param add_flow:            Boolean flag; True if adding a flow, False otherwise.
-    :type add_flow:             boolean
-    :param parameter_dict:      Dictionary of URL parameters to append. The value in each key-value pair
-                                is the literal text that will be appended to the URL endpoint.
-    :type parameter_dict:       dict
-    """
     def __init__(self,
                  ts_connection,
                  schedule_id=None,
@@ -41,6 +14,21 @@ class SchedulesEndpoint(BaseEndpoint):
                  add_workbook=False,
                  add_flow=False,
                  parameter_dict=None):
+        """
+        Builds API endpoints for REST API schedules methods.
+        :param class ts_connection: the Tableau Server connection object
+        :param str schedule_id: the schedule ID.
+        :param bool create_schedule: True if creating a schedule, False otherwise
+        :param bool query_schedules: True if querying all schedules, False otherwise
+        :param bool query_extract_schedules: True if querying all extract schedules, False otherwise
+        :param bool update_schedule: True if updating a specific schedule, False otherwise
+        :param bool delete_schedule: True if deleting a specific schedule, False otherwise
+        :param bool add_datasource: True if adding a datasource, False otherwise
+        :param bool add_workbook: True if adding a workbook, False otherwise
+        :param bool add_flow: True if adding a flow, False otherwise
+        :param dict parameter_dict: dictionary of URL parameters to append. The value in each key-value pair is the
+        literal text that will be appended to the URL endpoint
+        """
 
         super().__init__(ts_connection)
         self._schedule_id = schedule_id
@@ -53,6 +41,26 @@ class SchedulesEndpoint(BaseEndpoint):
         self._add_workbook = add_workbook
         self._add_flow = add_flow
         self._parameter_dict = parameter_dict
+
+    @property
+    def mutually_exclusive_params(self):
+        return [
+            self._create_schedule,
+            self._query_schedules,
+            self._query_extract_schedules,
+            self._update_schedule,
+            self._delete_schedule,
+            self._add_datasource,
+            self._add_workbook,
+            self._add_flow
+        ]
+
+    def _validate_inputs(self):
+        valid = True
+        if sum(self.mutually_exclusive_params) != 1:
+            valid = False
+        if not valid:
+            self._invalid_parameter_exception()
 
     @property
     def base_schedule_url(self):
@@ -90,11 +98,11 @@ class SchedulesEndpoint(BaseEndpoint):
     def get_endpoint(self):
         url = None
         if self._schedule_id:
-            if self._add_datasource and not (self._add_workbook or self._add_flow):
+            if self._add_datasource:
                 url = self.base_schedule_datasource_url
-            elif self._add_workbook and not (self._add_datasource or self._add_flow):
+            elif self._add_workbook:
                 url = self.base_schedule_workbook_url
-            elif self._add_flow and not (self._add_datasource or self._add_workbook):
+            elif self._add_flow:
                 url = self.base_schedule_flow_url
             elif self._update_schedule or self._delete_schedule:
                 url = self.base_schedule_id_url

@@ -2,56 +2,6 @@ from tableau_api_lib.api_endpoints import BaseEndpoint
 
 
 class DatasourceEndpoint(BaseEndpoint):
-    """
-    Datasource endpoint for Tableau Server API api_requests.
-
-    :param ts_connection:                   The Tableau Server connection object.
-    :type ts_connection:                    class
-    :param query_datasources:               Boolean flag; True if querying all datasources, False otherwise.
-    :type query_datasources:                boolean
-    :param query_datasource:                Boolean flag; True if querying a specific datasource, False otherwise.
-    :type query_datasource:                 boolean
-    :param publish_datasource:              Boolean flag; True if publishing a specific datasource, False otherwise.
-    :type publish_datasource:               boolean
-    :param datasource_id:                   The datasource ID.
-    :type datasource_id:                    string
-    :param query_datasource_connections:    Boolean flag; True if querying a specific datasource's connections,
-                                            False otherwise.
-    :type query_datasource_connections:     boolean
-    :param connection_id:                   The datasource connection id.
-    :type connection_id:                    string
-    :param add_tags:                        Boolean flag; True if adding tags to the datasource, False otherwise.
-    :type add_tags:                         boolean
-    :param delete_tag:                      Boolean flag; True if deleting a datasource tag, False otherwise.
-    :type delete_tag:                       boolean
-    :param refresh_datasource:              Boolean flag; True if refreshing the datasource, False otherwise.
-    :type refresh_datasource:               boolean
-    :param update_datasource:               Boolean flag; True if updating a datasource's information,
-                                            False otherwise.
-    :type update_datasource:                boolean
-    :param update_datasource_connection:    Boolean flag; True if updating a datasource connection's information,
-                                            False otherwise.
-    :type update_datasource_connection:     boolean
-    :type tag_name:                         The name / label for the datasource tag being added.
-    :param tag_name:                        string
-    :type download_datasource:              Boolean flag; True if downloading the datasource, False otherwise.
-    :param download_datasource:             boolean
-    :type delete_datasource:                Boolean flag; True if deleting the datasource, False otherwise.
-    :param delete_datasource:               boolean
-    :type get_datasource_revisions:         Boolean flag; True if getting datasource revisions, False otherwise.
-    :param get_datasource_revisions:        boolean
-    :type download_datasource_revision:     Boolean flag; True if downloading a specific datasource revision,
-                                            False otherwise.
-    :param download_datasource_revision:    boolean
-    :type remove_datasource_revision:       Boolean flag; True if removing a specific datasource revision,
-                                            False otherwise.
-    :param remove_datasource_revision:      boolean
-    :type revision_number:                  The datasource revision number.
-    :param revision_number:                 string
-    :type parameter_dict:                   Dictionary of URL parameters to append. The value in each key-value pair
-                                            is the literal text that will be appended to the URL endpoint.
-    :param parameter_dict:                  dict
-    """
     def __init__(self,
                  ts_connection,
                  query_datasources=False,
@@ -73,6 +23,31 @@ class DatasourceEndpoint(BaseEndpoint):
                  remove_datasource_revision=False,
                  revision_number=None,
                  parameter_dict=None):
+        """
+        Datasource endpoint for Tableau Server API api_requests.
+
+        :param class ts_connection: the Tableau Server connection object
+        :param bool query_datasources: True if querying all datasources, False otherwise
+        :param bool query_datasource: True if querying a specific datasource, False otherwise
+        :param bool publish_datasource: True if publishing a specific datasource, False otherwise
+        :param str datasource_id: the datasource ID
+        :param bool query_datasource_connections: True if querying a specific datasource's connections, False otherwise
+        :param str connection_id: the datasource connection id
+        :param bool add_tags: True if adding tags to the datasource, False otherwise
+        :param bool delete_tag: True if deleting a datasource tag, False otherwise
+        :param bool refresh_datasource: True if refreshing the datasource, False otherwise
+        :param bool update_datasource: True if updating a datasource, False otherwise
+        :param bool update_datasource_connection: True if updating a datasource connection, False otherwise
+        :param str tag_name: the name / label for the datasource tag being added
+        :param bool download_datasource: True if downloading the datasource, False otherwise
+        :param bool delete_datasource: True if deleting the datasource, False otherwise
+        :param bool get_datasource_revisions: True if getting datasource revisions, False otherwise
+        :param bool download_datasource_revision: True if downloading a specific datasource revision, False otherwise
+        :param bool remove_datasource_revision: True if removing a specific datasource revision, False otherwise
+        :param str revision_number: the datasource revision number
+        :param dict parameter_dict: dictionary of URL parameters to append; the value in each key-value pair is the
+        literal text that will be appended to the URL endpoint
+        """
 
         super().__init__(ts_connection)
         self._query_datasource = query_datasource
@@ -94,6 +69,32 @@ class DatasourceEndpoint(BaseEndpoint):
         self._remove_datasource_revision = remove_datasource_revision
         self._revision_number = revision_number
         self._parameter_dict = parameter_dict
+
+    @property
+    def mutually_exclusive_params(self):
+        return [
+            self._query_datasource,
+            self._query_datasources,
+            self._publish_datasource,
+            self._add_tags,
+            self._delete_tag,
+            self._refresh_datasource,
+            self._update_datasource,
+            self._update_datasource_connection,
+            self._query_datasource_connections,
+            self._download_datasource,
+            self._delete_datasource,
+            self._get_datasource_revisions,
+            self._download_datasource_revision,
+            self._remove_datasource_revision
+        ]
+
+    def _validate_inputs(self):
+        valid = True
+        if sum(self.mutually_exclusive_params) != 1:
+            valid = False
+        if not valid:
+            self._invalid_parameter_exception()
 
     @property
     def base_datasource_url(self):
@@ -147,6 +148,7 @@ class DatasourceEndpoint(BaseEndpoint):
         return "{0}/refresh".format(self.base_datasource_id_url)
 
     def get_endpoint(self):
+        url = None
         if self._datasource_id:
             if self._query_datasource:
                 url = self.base_datasource_id_url

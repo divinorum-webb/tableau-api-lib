@@ -2,31 +2,6 @@ from tableau_api_lib.api_endpoints import BaseEndpoint
 
 
 class TasksEndpoint(BaseEndpoint):
-    """
-    Tasks endpoint for Tableau Server API api_requests.
-
-    :param ts_connection:                   The Tableau Server connection object.
-    :type ts_connection:                    class
-    :param get_refresh_tasks:               Boolean flag; True if getting all refresh tasks, False otherwise.
-    :type get_refresh_tasks:                boolean
-    :param get_refresh_task:                Boolean flag; True if getting a specific refresh task, False otherwise.
-    :type get_refresh_task:                 boolean
-    :param run_refresh_task:                Boolean flag; True if running a specific refresh task, False otherwise.
-    :type run_refresh_task:                 boolean
-    :param run_flow_task:                   Boolean flag; True if running a specific flow task, False otherwise.
-    :type run_flow_task:                    boolean
-    :param task_id:                         The task ID.
-    :type task_id:                          string
-    :param flow_id:                         The flow ID.
-    :type flow_id:                          string
-    :param query_schedule_refresh_tasks:    Boolean flag; True if querying all refresh tasks, False otherwise.
-    :type query_schedule_refresh_tasks:     boolean
-    :param schedule_id:                     The schedule ID.
-    :type schedule_id:                      string
-    :param parameter_dict:                  Dictionary of URL parameters to append. The value in each key-value pair
-                                            is the literal text that will be appended to the URL endpoint.
-    :type parameter_dict:                   dict
-    """
     def __init__(self,
                  ts_connection,
                  get_refresh_tasks=False,
@@ -40,6 +15,20 @@ class TasksEndpoint(BaseEndpoint):
                  query_schedule_refresh_tasks=False,
                  schedule_id=None,
                  parameter_dict=None):
+        """
+        Builds API endpoints for REST API task methods.
+        :param class ts_connection: the Tableau Server connection object
+        :param bool get_refresh_tasks: True if getting all refresh tasks, False otherwise.
+        :param bool get_refresh_task: True if getting a specific refresh task, False otherwise.
+        :param bool run_refresh_task: True if running a specific refresh task, False otherwise.
+        :param bool run_flow_task: True if running a specific flow task, False otherwise.
+        :param str task_id: the task ID.
+        :param str flow_id: the flow ID.
+        :param bool query_schedule_refresh_tasks: True if querying all refresh tasks, False otherwise.
+        :param str schedule_id: the schedule ID.
+        :param dict parameter_dict: dictionary of URL parameters to append. The value in each key-value pair is the
+        literal text that will be appended to the URL endpoint.
+        """
 
         super().__init__(ts_connection)
         self._get_refresh_tasks = get_refresh_tasks
@@ -53,6 +42,26 @@ class TasksEndpoint(BaseEndpoint):
         self._query_schedule_refresh_tasks = query_schedule_refresh_tasks
         self._schedule_id = schedule_id
         self._parameter_dict = parameter_dict
+        self._validate_inputs()
+
+    @property
+    def mutually_exclusive_params(self):
+        return [
+            self._get_refresh_tasks,
+            self._get_flow_run_tasks,
+            self._get_refresh_task,
+            self._get_flow_run_task,
+            self._run_refresh_task,
+            self._run_flow_task,
+            self._query_schedule_refresh_tasks
+        ]
+
+    def _validate_inputs(self):
+        valid = True
+        if sum(self.mutually_exclusive_params) != 1:
+            valid = False
+        if not valid:
+            self._invalid_parameter_exception()
 
     @property
     def base_task_url(self):
@@ -98,6 +107,7 @@ class TasksEndpoint(BaseEndpoint):
                                     self._task_id)
 
     def get_endpoint(self):
+        url = None
         if self._get_refresh_tasks:
             url = self.base_extract_refresh_url
         elif self._get_refresh_task or self._run_refresh_task:

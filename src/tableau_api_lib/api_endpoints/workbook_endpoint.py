@@ -2,72 +2,6 @@ from tableau_api_lib.api_endpoints import BaseEndpoint
 
 
 class WorkbookEndpoint(BaseEndpoint):
-    """
-    Workbook endpoint for Tableau Server API api_requests.
-
-    :param ts_connection:                       The Tableau Server connection object.
-    :type ts_connection:                        class
-    :param query_workbooks:                     Boolean flag; True if querying all workbooks; False otherwise.
-    :type query_workbooks:                      boolean
-    :param query_workbook:                      Boolean flag; True if querying a specific workbook, False otherwise.
-    :type query_workbook:                       boolean
-    :param update_workbook_connection:          Boolean flag; True if updating a specific workbook connection,
-                                                False otherwise.
-    :type update_workbook_connection:           boolean
-    :param publish_workbook:                    Boolean flag; True if publishing a specific workbook, False otherwise.
-    :type publish_workbook:                     boolean
-    :param update_workbook:                     Boolean flag; True if updating a specific workbook, False otherwise.
-    :type update_workbook:                      boolean
-    :param delete_workbook:                     Boolean flag; True if deleting a specific workbook, False otherwise.
-    :type delete_workbook:                      boolean
-    :param workbook_id:                         The workbook ID.
-    :type workbook_id:                          string
-    :param view_id:                             The view ID.
-    :type view_id:                              string
-    :param connection_id:                       The workbook connection ID.
-    :type connection_id:                        string
-    :param add_tags:                            Boolean flag; True if adding tags, False otherwise.
-    :type add_tags:                             boolean
-    :param delete_tag:                          Boolean flag; True if deleting a specific tag, False otherwise.
-    :type delete_tag:                           boolean
-    :param tag_name:                            The name of the tag.
-    :type tag_name:                             string
-    :param revision_number                      The revision number of the workbook revision to download.
-    :type revision_number                       string
-    :param downgrade_target_version             The desired downgrade target version for the workbook.
-    :type downgrade_target_version              string
-    :param query_views:                         Boolean flag; True if querying all views, False otherwise.
-    :type query_views:                          boolean
-    :param query_connections:                   Boolean flag; True if querying all connections, False otherwise.
-    :type query_connections:                    boolean
-    :param query_workbook_preview_img:          Boolean flag; True if querying a specific preview image,
-                                                False otherwise.
-    :type query_workbook_preview_img:           boolean
-    :param query_workbook_view_preview_img:     Boolean flag; True if querying a specific preview image,
-                                                False otherwise.
-    :type query_workbook_view_preview_img:      boolean
-    :param get_workbook_revisions:              Boolean flag; True if getting all workbook revisions, False otherwise.
-    :type get_workbook_revisions:               boolean
-    :param remove_workbook_revision:            Boolean flag; True if removing a workbook revision, False otherwise.
-    :type remove_workbook_revision:             boolean
-    :param download_workbook:                   Boolean flag; True if downloading workbook content, False otherwise.
-    :type download_workbook:                    boolean
-    :param download_workbook_pdf:               Boolean flag; Ture if downloading a specific workbook's PDF,
-                                                False otherwise.
-    :type download_workbook_pdf:                boolean
-    :param download_workbook_revision:          Boolean flag; Ture if downloading a specific workbook revision,
-                                                False otherwise.
-    :type download_workbook_revision:           boolean
-    :param refresh_workbook:                    Boolean flag; True if refreshing a specific workbook,
-                                                False otherwise.
-    :type refresh_workbook:                     boolean
-    :param get_workbook_downgrade_info:         Boolean flag; True if getting downgrade info for a specific workbook,
-                                                False otherwise.
-    :type get_workbook_downgrade_info:          boolean
-    :param parameter_dict:                      Dictionary of URL parameters to append. The value in each key-value pair
-                                                is the literal text that will be appended to the URL endpoint.
-    :type parameter_dict:                       dict
-    """
     def __init__(self,
                  ts_connection,
                  query_workbooks=False,
@@ -96,6 +30,37 @@ class WorkbookEndpoint(BaseEndpoint):
                  refresh_workbook=False,
                  get_workbook_downgrade_info=False,
                  parameter_dict=None):
+        """
+        Builds API endpoints for REST API workbook methods.
+        :param class ts_connection: the Tableau Server connection object
+        :param bool query_workbooks: True if querying all workbooks; False otherwise
+        :param bool query_workbook: True if querying a specific workbook, False otherwise
+        :param bool update_workbook_connection: True if updating a specific workbook connection, False otherwise
+        :param bool publish_workbook: True if publishing a specific workbook, False otherwise
+        :param bool update_workbook: True if updating a specific workbook, False otherwise
+        :param bool delete_workbook: True if deleting a specific workbook, False otherwise
+        :param str workbook_id: the workbook ID
+        :param str view_id: the view ID
+        :param str connection_id: the workbook connection ID
+        :param bool add_tags: True if adding tags, False otherwise
+        :param bool delete_tag: True if deleting a specific tag, False otherwise
+        :param str tag_name: the name of the tag
+        :param str revision_number: the revision number of the workbook revision to download
+        :param str downgrade_target_version: the desired downgrade target version for the workbook
+        :param bool query_views: True if querying all views, False otherwise
+        :param bool query_connections: True if querying all connections, False otherwise
+        :param bool query_workbook_preview_img: True if querying a specific preview image, False otherwise
+        :param bool query_workbook_view_preview_img: True if querying a specific preview image, False otherwise
+        :param bool get_workbook_revisions: True if getting all workbook revisions, False otherwise
+        :param bool remove_workbook_revision: True if removing a workbook revision, False otherwise
+        :param bool download_workbook: True if downloading workbook content, False otherwise
+        :param bool download_workbook_pdf: True if downloading a specific workbook's PDF, False otherwise
+        :param bool download_workbook_revision: True if downloading a specific workbook revision, False otherwise
+        :param bool refresh_workbook: True if refreshing a specific workbook, False otherwise
+        :param bool get_workbook_downgrade_info: True if getting downgrade info for a specific workbook, False otherwise
+        :param dict parameter_dict: dictionary of URL parameters to append. The value in each key-value pair is the
+        literal text that will be appended to the URL endpoint
+        """
 
         super().__init__(ts_connection)
         self._query_workbooks = query_workbooks
@@ -124,6 +89,37 @@ class WorkbookEndpoint(BaseEndpoint):
         self._refresh_workbook = refresh_workbook
         self._get_workbook_downgrade_info = get_workbook_downgrade_info
         self._parameter_dict = parameter_dict
+        self._validate_inputs()
+
+    @property
+    def mutually_exclusive_params(self):
+        return [
+            self._query_workbooks,
+            self._query_workbook,
+            self._publish_workbook,
+            self._update_workbook,
+            self._delete_workbook,
+            self._update_workbook_connection,
+            self._delete_tag,
+            self._query_views,
+            self._query_connections,
+            self._query_workbook_preview_img,
+            self._query_workbook_view_preview_img,
+            self._get_workbook_revisions,
+            self._remove_workbook_revision,
+            self._download_workbook,
+            self._download_workbook_pdf,
+            self._download_workbook_revision,
+            self._refresh_workbook,
+            self._get_workbook_downgrade_info
+        ]
+
+    def _validate_inputs(self):
+        valid = True
+        if sum(self.mutually_exclusive_params) != 1:
+            valid = False
+        if not valid:
+            self._invalid_parameter_exception()
 
     @property
     def base_workbook_url(self):

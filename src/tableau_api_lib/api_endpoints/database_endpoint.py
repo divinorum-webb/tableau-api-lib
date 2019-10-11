@@ -9,6 +9,15 @@ class DatabaseEndpoint(BaseEndpoint):
                  update_database=False,
                  remove_database=False,
                  database_id=None):
+        """
+        Builds the API endpoints for interacting with database assets on Tableau Server.
+        :param ts_connection: the Tableau Server connection object
+        :param query_database: True if querying a specific database, False otherwise
+        :param query_databases: True if querying all databases on the active site, False otherwise
+        :param update_database: True if updating details for a specific database, False otherwise
+        :param remove_database: True if removing a specific database asset, False otherwise
+        :param database_id: the database ID
+        """
 
         super().__init__(ts_connection)
         self._query_database = query_database

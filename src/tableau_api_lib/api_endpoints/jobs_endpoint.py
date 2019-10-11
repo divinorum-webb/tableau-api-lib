@@ -2,23 +2,6 @@ from tableau_api_lib.api_endpoints import BaseEndpoint
 
 
 class JobsEndpoint(BaseEndpoint):
-    """
-    Jobs endpoint for Tableau Server API api_requests.
-
-    :param ts_connection:       The Tableau Server connection object.
-    :type ts_connection:        class
-    :param query_jobs:          Boolean flag; True if querying all jobs, False otherwise.
-    :type query_jobs:           boolean
-    :param query_job:           Boolean flag; True if querying a specific job, False otherwise.
-    :type query_job:            boolean
-    :param cancel_job:          Boolean flag; True if canceling a specific job, False otherwise.
-    :type cancel_job:           boolean
-    :param job_id:              The job ID.
-    :type job_id:               string
-    :param parameter_dict:      Dictionary of URL parameters to append. The value in each key-value pair
-                                is the literal text that will be appended to the URL endpoint.
-    :type parameter_dict:       dict
-    """
     def __init__(self,
                  ts_connection,
                  query_jobs=False,
@@ -26,6 +9,16 @@ class JobsEndpoint(BaseEndpoint):
                  cancel_job=False,
                  job_id=None,
                  parameter_dict=None):
+        """
+        Builds API endpoints for REST API job methods.
+        :param class ts_connection: the Tableau Server connection object
+        :param bool query_jobs: True if querying all jobs, False otherwise
+        :param bool query_job: True if querying a specific job, False otherwise
+        :param bool cancel_job: True if canceling a specific job, False otherwise
+        :param str job_id: the job ID
+        :param dict parameter_dict: dictionary of URL parameters to append; the value in each key-value pair is the
+        literal text that will be appended to the URL endpoint
+        """
 
         super().__init__(ts_connection)
         self._query_jobs = query_jobs
@@ -33,6 +26,21 @@ class JobsEndpoint(BaseEndpoint):
         self._cancel_job = cancel_job
         self._job_id = job_id
         self._parameter_dict = parameter_dict
+
+    @property
+    def mutually_exclusive_params(self):
+        return [
+            self._query_jobs,
+            self._query_job,
+            self._cancel_job
+        ]
+
+    def _validate_inputs(self):
+        valid = True
+        if sum(self.mutually_exclusive_params) != 1:
+            valid = False
+        if not valid:
+            self._invalid_parameter_exception()
 
     @property
     def base_job_url(self):

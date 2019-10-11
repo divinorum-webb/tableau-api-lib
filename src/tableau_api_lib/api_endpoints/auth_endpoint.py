@@ -2,17 +2,6 @@ from tableau_api_lib.api_endpoints import BaseEndpoint
 
 
 class AuthEndpoint(BaseEndpoint):
-    """
-    Authorization endpoint for Tableau Server API api_requests.
-
-    :param class ts_connection: the Tableau Server connection object.
-    :param bool sign_in: True if signing in, False otherwise.
-    :param bool sign_out: True if signing out, False otherwise.
-    :param bool switch_site: True if switching site, False otherwise.
-    :param bool get_server_info: True if getting server info, False otherwise.
-    :param dict parameter_dict: dictionary of URL parameters to append; the value in each key-value pair is the literal
-    text that will be appended to the URL endpoint.
-    """
     def __init__(self,
                  ts_connection,
                  sign_in=False,
@@ -20,6 +9,16 @@ class AuthEndpoint(BaseEndpoint):
                  switch_site=False,
                  get_server_info=False,
                  parameter_dict=None):
+        """
+        Builds the auth endpoint for Tableau Server REST API auth methods.
+        :param class ts_connection: the Tableau Server connection object.
+        :param bool sign_in: True if signing in, False otherwise.
+        :param bool sign_out: True if signing out, False otherwise.
+        :param bool switch_site: True if switching site, False otherwise.
+        :param bool get_server_info: True if getting server info, False otherwise.
+        :param dict parameter_dict: dictionary of URL parameters to append; the value in each key-value pair is the literal
+        text that will be appended to the URL endpoint.
+        """
         
         super().__init__(ts_connection)
         self._sign_in = sign_in

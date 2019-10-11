@@ -2,48 +2,6 @@ from tableau_api_lib.api_endpoints import BaseEndpoint
 
 
 class FlowEndpoint(BaseEndpoint):
-    """
-    Flow endpoint for Tableau Server API api_requests.
-
-    :param ts_connection:                   The Tableau Server connection object.
-    :type ts_connection:                    class
-    :param flow_id:                         The flow ID relevant to queries.
-    :type flow_id:                          string
-    :param user_id:                         The user ID relevant to queries.
-    :type user_id:                          string
-    :param connection_id:                   The connection ID relevant to queries.
-    :type connection_id:                    string
-    :param schedule_id:                     The schedule ID relevant to queries.
-    :type schedule_id:                      string
-    :param query_flows_for_site:            Boolean flag; True if querying all flows on the site, False otherwise.
-    :type query_flows_for_site:             boolean
-    :param query_flows_for_user:            Boolean flag; True if querying all flows for a user, False otherwise.
-    :type query_flows_for_user:             boolean
-    :param query_flow:                      Boolean flag; True if querying a specific flow, False otherwise.
-    :type query_flow:                       boolean
-    :param query_flows_for_site:            Boolean flag; True if querying all flows on the site, False otherwise.
-    :type query_flows_for_site:             boolean
-    :param download_flow:                   Boolean flag; True if downloading a specific flow, False otherwise.
-    :type download_flow:                    boolean
-    :param publish_flow:                    Boolean flag; True if publishing a specific flow, False otherwise.
-    :type publish_flow:                     boolean
-    :param query_flow_connections:          Boolean flag; True if querying a flow's connections, False otherwise.
-    :type query_flow_connections:           boolean
-    :param query_flow_permissions           Boolean flag; True if querying flow permissions, False otherwise.
-    :type query_flow_permissions:           boolean
-    :param update_flow:                     Boolean flag; True if updating a specific flow, False otherwise.
-    :type update_flow:                      boolean
-    :param update_flow_connection:          Boolean flag; True if updating a flow's connection, False otherwise.
-    :type update_flow_connection:           boolean
-    :param add_flow_task_to_schedule:       Boolean flag; True if adding a flow task to an existing schedule,
-                                            False otherwise.
-    :type add_flow_task_to_schedule:        boolean
-    :param delete_flow:                     Boolean flag; True if deleting a specific flow, False otherwise.
-    :type delete_flow:                      boolean
-    :param parameter_dict:                  Dictionary of URL parameters to append. The value in each key-value pair
-                                            is the literal text that will be appended to the URL endpoint.
-    :type parameter_dict:                   dict
-    """
     def __init__(self,
                  ts_connection,
                  flow_id=None,
@@ -62,6 +20,28 @@ class FlowEndpoint(BaseEndpoint):
                  add_flow_task_to_schedule=False,
                  delete_flow=False,
                  parameter_dict=None):
+        """
+        Builds API endpoints for REST API flow methods.
+        :param class ts_connection: the Tableau Server connection object
+        :param str flow_id: the flow ID relevant to queries
+        :param str user_id: the user ID relevant to queries
+        :param str connection_id: the connection ID relevant to queries
+        :param str schedule_id: the schedule ID relevant to queries
+        :param bool query_flows_for_site: True if querying all flows on the site, False otherwise
+        :param bool query_flows_for_user: True if querying all flows for a user, False otherwise
+        :param bool query_flow: True if querying a specific flow, False otherwise
+        :param bool query_flows_for_site: True if querying all flows on the site, False otherwise
+        :param bool download_flow: True if downloading a specific flow, False otherwise
+        :param bool publish_flow: True if publishing a specific flow, False otherwise
+        :param bool query_flow_connections: True if querying a flow's connections, False otherwise
+        :param bool query_flow_permissions: True if querying flow permissions, False otherwise
+        :param bool update_flow: True if updating a specific flow, False otherwise
+        :param bool update_flow_connection: True if updating a flow's connection, False otherwise
+        :param bool add_flow_task_to_schedule: True if adding a flow task to an existing schedule, False otherwise
+        :param bool delete_flow: True if deleting a specific flow, False otherwise
+        :param dict parameter_dict: dictionary of URL parameters to append. The value in each key-value pair is the literal
+        text that will be appended to the URL endpoint
+        """
 
         super().__init__(ts_connection)
         self._flow_id = flow_id
@@ -80,6 +60,30 @@ class FlowEndpoint(BaseEndpoint):
         self._add_flow_task_to_schedule = add_flow_task_to_schedule
         self._delete_flow = delete_flow
         self._parameter_dict = parameter_dict
+        self._validate_inputs()
+
+    @property
+    def mutually_exclusive_params(self):
+        return [
+            self._query_flows_for_site,
+            self._query_flows_for_user,
+            self._query_flow,
+            self._download_flow,
+            self._publish_flow,
+            self._query_flow_connections,
+            self._query_flow_permissions,
+            self._update_flow,
+            self._update_flow_connection,
+            self._add_flow_task_to_schedule,
+            self._delete_flow
+        ]
+
+    def _validate_inputs(self):
+        valid = True
+        if sum(self.mutually_exclusive_params) != 1:
+            valid = False
+        if not valid:
+            self._invalid_parameter_exception()
 
     @property
     def base_flow_url(self):
@@ -117,6 +121,7 @@ class FlowEndpoint(BaseEndpoint):
                                                               self._user_id)
 
     def get_endpoint(self):
+        url = None
         if self._flow_id:
             if self._query_flow and not self._delete_flow:
                 url = self.base_flow_id_url

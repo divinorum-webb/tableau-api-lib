@@ -2,47 +2,6 @@ from tableau_api_lib.api_endpoints import BaseEndpoint
 
 
 class SiteEndpoint(BaseEndpoint):
-    """
-    Site endpoint for Tableau Server API api_requests.
-
-    :param ts_connection:       The Tableau Server connection object.
-    :type ts_connection:        class
-    :param site_id:             The site ID.
-    :type site_id:              string
-    :param site_name:           The site name (only required if deleting a site by name).
-    :type site_name:            string
-    :param content_url:         The site name (only required if deleting a site by contentUrl).
-    :type content_url:          string
-    :param create_site:         Boolean flag; True if creating a site, False otherwise.
-    :type create_site:          boolean
-    :param update_site:         Boolean flag; True if updating a specific site, False otherwise.
-    :type update_site:          boolean
-    :param delete_site:         Boolean flag; True if deleting a specific site, False otherwise.
-    :type delete_site:          boolean
-    :param query_site:          Boolean flag; True if querying a specific site, False otherwise.
-    :type query_site:           boolean
-    :param query_sites:         Boolean flag; True if querying all sites on the site, False otherwise.
-    :type query_sites:          boolean
-    :param get_users:           Boolean flag; True if getting all users, False otherwise.
-    :type get_users:            boolean
-    :param get_groups:          Boolean flag; True if getting all groups, False otherwise.
-    :type get_groups:           boolean
-    :param add_user:            Boolean flag; True if adding a user, False otherwise.
-    :type add_user:             boolean
-    :param add_group:           Boolean flag; True if adding a group, False otherwise.
-    :type add_group:            boolean
-    :param remove_user:         Boolean flag; True if removing a specific user, False otherwise.
-    :type remove_user:          boolean
-    :param remove_group:        Boolean flag; True if removing a specific group, False otherwise.
-    :type remove_group:         boolean
-    :param user_id:             The user ID.
-    :type user_id:              string
-    :param group_id:            The group ID.
-    :type group_id:             string
-    :param parameter_dict:      Dictionary of URL parameters to append. The value in each key-value pair
-                                is the literal text that will be appended to the URL endpoint.
-    :type parameter_dict:       dict
-    """
     def __init__(self, 
                  ts_connection, 
                  site_id=None,
@@ -63,6 +22,28 @@ class SiteEndpoint(BaseEndpoint):
                  user_id=None,
                  group_id=None,
                  parameter_dict=None):
+        """
+        Builds API endpoints for REST API site methods.
+        :param class ts_connection: the Tableau Server connection object
+        :param str site_id: the site ID
+        :param str site_name: the site name (only required if deleting a site by name)
+        :param str content_url: the site name (only required if deleting a site by contentUrl)
+        :param bool create_site: True if creating a site, False otherwise
+        :param bool update_site: True if updating a specific site, False otherwise
+        :param bool delete_site: True if deleting a specific site, False otherwise
+        :param bool query_site: True if querying a specific site, False otherwise
+        :param bool query_sites: True if querying all sites on the site, False otherwise
+        :param bool get_users: True if getting all users, False otherwise
+        :param bool get_groups: True if getting all groups, False otherwise
+        :param bool add_user: True if adding a user, False otherwise
+        :param bool add_group: True if adding a group, False otherwise
+        :param bool remove_user: True if removing a specific user, False otherwise
+        :param bool remove_group: True if removing a specific group, False otherwise
+        :param str user_id: the user ID
+        :param str group_id: the group ID
+        :param dict parameter_dict: dictionary of URL parameters to append. The value in each key-value pair is the
+        literal text that will be appended to the URL endpoint
+        """
         
         super().__init__(ts_connection)
         self._site_id = site_id
@@ -83,6 +64,31 @@ class SiteEndpoint(BaseEndpoint):
         self._user_id = user_id
         self._group_id = group_id
         self._parameter_dict = parameter_dict
+        self._validate_inputs()
+
+    @property
+    def mutually_exclusive_params(self):
+        return [
+            self._create_site,
+            self._update_site,
+            self._delete_site,
+            self._query_site,
+            self._query_sites,
+            self._query_views,
+            self._get_users,
+            self._get_groups,
+            self._add_user,
+            self._add_group,
+            self._remove_user,
+            self._remove_group
+        ]
+
+    def _validate_inputs(self):
+        valid = True
+        if sum(self.mutually_exclusive_params) != 1:
+            valid = False
+        if not valid:
+            self._invalid_parameter_exception()
         
     @property
     def base_site_url(self):
@@ -129,16 +135,17 @@ class SiteEndpoint(BaseEndpoint):
                                                    self._content_url)
     
     def get_endpoint(self):
+        url = None
         if not self._delete_site and (self._site_id or self._user_id or self._group_id):
             if self._update_site:
                 url = self.base_site_id_url
-            elif self._get_users and not self._add_user:
+            elif self._get_users:
                 url = self.base_site_user_url
-            elif self._add_user and not self._get_users:
+            elif self._add_user:
                 url = self.base_site_user_url
-            elif self._get_groups and not self._add_group:
+            elif self._get_groups:
                 url = self.base_site_group_url
-            elif self._add_group and not self._get_groups:
+            elif self._add_group:
                 url = self.base_site_group_url
             elif self._remove_user and self._user_id and self._site_id:
                 url = self.base_site_user_id_url

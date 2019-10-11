@@ -2,31 +2,6 @@ from tableau_api_lib.api_endpoints import BaseEndpoint
 
 
 class GroupEndpoint(BaseEndpoint):
-    """
-    Group endpoint for Tableau Server API api_requests.
-
-    :param ts_connection:       The Tableau Server connection object.
-    :type ts_connection:        class
-    :param query_groups:        Boolean flag; True if querying all groups on a specific site, False otherwise.
-    :type query_groups:         boolean
-    :param group_id:            The group ID.
-    :type group_id:             string
-    :param update_group:        Boolean flag; True if updating a specific group's information, False otherwise.
-    :type update_group:         boolean
-    :param delete_group:        Boolean flag; True if deleting a specific group, False otherwise.
-    :type delete_group:         boolean
-    :param get_users:           Boolean flag; True if querying all users in a specific group, False otherwise.
-    :type get_users:            boolean
-    :param add_user:            Boolean flag; True if adding a user to a specific group, False otherwise.
-    :type add_user:             boolean
-    :param remove_user:         Boolean flag; True if removing a user from a specific group, False otherwise.
-    :type remove_user:          boolean
-    :param user_id:             The user ID.
-    :type user_id:              string
-    :param parameter_dict:      Dictionary of URL parameters to append. The value in each key-value pair
-                                is the literal text that will be appended to the URL endpoint.
-    :type parameter_dict:       dict
-    """
     def __init__(self,
                  ts_connection,
                  query_groups=False,
@@ -39,6 +14,20 @@ class GroupEndpoint(BaseEndpoint):
                  remove_user=False,
                  user_id=None,
                  parameter_dict=None):
+        """
+        Builds API endpoints for REST API group methods.
+        :param class ts_connection: the Tableau Server connection object
+        :param bool query_groups: True if querying all groups on a specific site, False otherwise.
+        :param bool group_id: the group ID.
+        :param bool update_group:        Boolean flag; True if updating a specific group's information, False otherwise.
+        :param bool delete_group:        Boolean flag; True if deleting a specific group, False otherwise.
+        :param bool get_users:           Boolean flag; True if querying all users in a specific group, False otherwise.
+        :param bool add_user:            Boolean flag; True if adding a user to a specific group, False otherwise.
+        :param bool remove_user:         Boolean flag; True if removing a user from a specific group, False otherwise.
+        :param str user_id:             The user ID.
+        :param dict parameter_dict:      Dictionary of URL parameters to append. The value in each key-value pair
+                                    is the literal text that will be appended to the URL endpoint.
+        """
 
         super().__init__(ts_connection)
         self._query_groups = query_groups
@@ -51,6 +40,26 @@ class GroupEndpoint(BaseEndpoint):
         self._remove_user = remove_user
         self._user_id = user_id
         self._parameter_dict = parameter_dict
+        self._validate_inputs()
+
+    @property
+    def mutually_exclusive_params(self):
+        return [
+            self._query_groups,
+            self._update_group,
+            self._delete_group,
+            self._create_group,
+            self._get_users,
+            self._add_user,
+            self._remove_user
+        ]
+
+    def _validate_inputs(self):
+        valid = True
+        if sum(self.mutually_exclusive_params) != 1:
+            valid = False
+        if not valid:
+            self._invalid_parameter_exception()
 
     @property
     def base_group_url(self):
@@ -72,6 +81,7 @@ class GroupEndpoint(BaseEndpoint):
                                 self._user_id)
 
     def get_endpoint(self):
+        url = None
         if self._group_id:
             if self._update_group:
                 url = self.base_group_id_url

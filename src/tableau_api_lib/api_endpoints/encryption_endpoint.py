@@ -38,9 +38,10 @@ class EncryptionEndpoint(BaseEndpoint):
         ]
 
     def _validate_inputs(self):
-        if sum(self.mutually_exclusive_params) == 1:
-            pass
-        else:
+        valid = True
+        if sum(self.mutually_exclusive_params) != 1:
+            valid = False
+        if not valid:
             self._invalid_parameter_exception()
 
     @property

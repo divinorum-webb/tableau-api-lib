@@ -2,27 +2,6 @@ from tableau_api_lib.api_endpoints import BaseEndpoint
 
 
 class SubscriptionsEndpoint(BaseEndpoint):
-    """
-    Subscriptions endpoint for Tableau Server API api_requests.
-
-    :param ts_connection:       The Tableau Server connection object.
-    :type ts_connection:        class
-    :param create_subscription: Boolean flag; True if creating a subscription, False otherwise.
-    :type create_subscription:  boolean
-    :param query_subscriptions: Boolean flag; True if querying all subscriptions, False otherwise.
-    :type query_subscriptions:  boolean
-    :param query_subscription:  Boolean flag; True if querying a specific subscription, False otherwise.
-    :type query_subscription:   boolean
-    :param update_subscription: Boolean flag; True if updating a specific subscription, False otherwise.
-    :type update_subscription:  boolean
-    :param delete_subscription: Boolean flag; True if deleting a specific subscription, False otherwise.
-    :type delete_subscription:  boolean
-    :param subscription_id:     The subscription ID.
-    :type subscription_id:      string
-    :param parameter_dict:      Dictionary of URL parameters to append. The value in each key-value pair
-                                is the literal text that will be appended to the URL endpoint.
-    :type parameter_dict:       dict
-    """
     def __init__(self,
                  ts_connection,
                  create_subscription=False,
@@ -32,6 +11,18 @@ class SubscriptionsEndpoint(BaseEndpoint):
                  delete_subscription=False,
                  subscription_id=None,
                  parameter_dict=None):
+        """
+        Builds API endpoints for REST API subscription methods.
+        :param class ts_connection: the Tableau Server connection object
+        :param bool create_subscription: True if creating a subscription, False otherwise
+        :param bool query_subscriptions: True if querying all subscriptions, False otherwise
+        :param bool query_subscription: True if querying a specific subscription, False otherwise
+        :param bool update_subscription: True if updating a specific subscription, False otherwise
+        :param bool delete_subscription: True if deleting a specific subscription, False otherwise
+        :param str subscription_id: the subscription ID
+        :param dict parameter_dict: dictionary of URL parameters to append. The value in each key-value pair is the
+        literal text that will be appended to the URL endpoint
+        """
 
         super().__init__(ts_connection)
         self._create_subscription = create_subscription
@@ -41,6 +32,24 @@ class SubscriptionsEndpoint(BaseEndpoint):
         self._delete_subscription = delete_subscription
         self._subscription_id = subscription_id
         self._parameter_dict = parameter_dict
+        self._validate_inputs()
+
+    @property
+    def mutually_exclusive_params(self):
+        return [
+            self._create_subscription,
+            self._query_subscriptions,
+            self._query_subscription,
+            self._update_subscription,
+            self._delete_subscription
+        ]
+
+    def _validate_inputs(self):
+        valid = True
+        if sum(self.mutually_exclusive_params) != 1:
+            valid = False
+        if not valid:
+            self._invalid_parameter_exception()
 
     @property
     def base_subscription_url(self):
@@ -54,6 +63,7 @@ class SubscriptionsEndpoint(BaseEndpoint):
                                 self._subscription_id)
 
     def get_endpoint(self):
+        url = None
         if self._create_subscription:
             url = self.base_subscription_url
         elif self._query_subscriptions and not self._subscription_id:

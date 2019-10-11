@@ -2,33 +2,6 @@ from tableau_api_lib.api_endpoints import BaseEndpoint
 
 
 class ViewEndpoint(BaseEndpoint):
-    """
-    View endpoint for Tableau Server API api_requests.
-
-    :param ts_connection:       The Tableau Server connection object.
-    :type ts_connection:        class
-    :param query_views:         Boolean flag; True if querying all views, False otherwise.
-    :type query_views:          boolean
-    :param query_view:          Boolean flag; True if querying a specific view, False otherwise.
-    :type query_view:           boolean
-    :param view_id:             The view ID.
-    :type view_id:              string
-    :param add_tags:            Boolean flag; True if adding tags, False otherwise.
-    :type add_tags:             boolean
-    :param delete_tag:          Boolean flag; True if deleting a specific tag, False otherwise.
-    :type delete_tag:           boolean
-    :param tag_name:            The name of the tag.
-    :type tag_name:             string
-    :param query_view_pdf:      Boolean flag; True if querying a specific view's PDF, False otherwise.
-    :type query_view_pdf:       boolean
-    :param query_view_image:    Boolean flag; True if querying a specific view's image, False otherwise.
-    :type query_view_image:     boolean
-    :param query_view_data:     Boolean flag; True if querying a specific view's data, False otherwise.
-    :type query_view_data:      boolean
-    :param parameter_dict:      Dictionary of URL parameters to append. The value in each key-value pair
-                                is the literal text that will be appended to the URL endpoint.
-    :type parameter_dict:       dict
-    """
     def __init__(self,
                  ts_connection,
                  query_views=False,
@@ -41,6 +14,21 @@ class ViewEndpoint(BaseEndpoint):
                  query_view_image=False,
                  query_view_data=False,
                  parameter_dict=None):
+        """
+        Builds API endpoints for REST API view methods.
+        :param class ts_connection: the Tableau Server connection object
+        :param bool query_views: True if querying all views, False otherwise
+        :param bool query_view: True if querying a specific view, False otherwise
+        :param str view_id: the view ID
+        :param bool add_tags: True if adding tags, False otherwise
+        :param bool delete_tag: True if deleting a specific tag, False otherwise
+        :param str tag_name: the name of the tag
+        :param bool query_view_pdf: True if querying a specific view's PDF, False otherwise
+        :param bool query_view_image: True if querying a specific view's image, False otherwise
+        :param bool query_view_data: True if querying a specific view's data, False otherwise
+        :param dict parameter_dict: dictionary of URL parameters to append. The value in each key-value pair is the
+        literal text that will be appended to the URL endpoint
+        """
 
         super().__init__(ts_connection)
         self._view_id = view_id
@@ -53,6 +41,26 @@ class ViewEndpoint(BaseEndpoint):
         self._query_view_image = query_view_image
         self._query_view_data = query_view_data
         self._parameter_dict = parameter_dict
+        self._validate_inputs()
+
+    @property
+    def mutually_exclusive_params(self):
+        return [
+            self._add_tags,
+            self._delete_tag,
+            self._query_view,
+            self._query_views,
+            self._query_view_pdf,
+            self._query_view_image,
+            self._query_view_data
+        ]
+
+    def _validate_inputs(self):
+        valid = True
+        if sum(self.mutually_exclusive_params) != 1:
+            valid = False
+        if not valid:
+            self._invalid_parameter_exception()
 
     @property
     def base_view_url(self):
@@ -89,6 +97,7 @@ class ViewEndpoint(BaseEndpoint):
         return "{0}/data".format(self.base_view_id_url)
 
     def get_endpoint(self):
+        url = None
         if self._view_id:
             if self._query_view:
                 url = self.base_view_id_url

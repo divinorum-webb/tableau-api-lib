@@ -9,6 +9,15 @@ class TableEndpoint(BaseEndpoint):
                  update_table=False,
                  remove_table=False,
                  table_id=None):
+        """
+        Builds API endpoints for REST API table methods.
+        :param class ts_connection: the Tableau Server connection object
+        :param query_table: True if querying a specific database table, False otherwise
+        :param query_tables: True if querying all database tables, False otherwise
+        :param update_table: True if updating a specific database table, False otherwise
+        :param remove_table: True if removing a specific database table, False otherwise
+        :param table_id: the database table ID
+        """
 
         super().__init__(ts_connection)
         self._query_table = query_table
@@ -28,9 +37,10 @@ class TableEndpoint(BaseEndpoint):
         ]
 
     def _validate_inputs(self):
-        if sum(self.mutually_exclusive_params) == 1:
-            pass
-        else:
+        valid = True
+        if sum(self.mutually_exclusive_params) != 1:
+            valid = False
+        if not valid:
             self._invalid_parameter_exception()
 
     @property
