@@ -5,19 +5,13 @@ class AuthEndpoint(BaseEndpoint):
     """
     Authorization endpoint for Tableau Server API api_requests.
 
-    :param ts_connection:       The Tableau Server connection object.
-    :type ts_connection:        class
-    :param sign_in:             Boolean flag; True if signing in, False otherwise.
-    :type sign_in:              boolean
-    :param sign_out:            Boolean flag; True if signing out, False otherwise.
-    :type sign_out:             boolean
-    :param switch_site:         Boolean flag; True if switching site, False otherwise.
-    :type switch_site:          boolean
-    :param get_server_info:     Boolean flag; True if getting server info, False otherwise.
-    :type get_server_info:      boolean
-    :param parameter_dict:      Dictionary of URL parameters to append. The value in each key-value pair
-                                is the literal text that will be appended to the URL endpoint.
-    :type parameter_dict:       dict
+    :param class ts_connection: the Tableau Server connection object.
+    :param bool sign_in: True if signing in, False otherwise.
+    :param bool sign_out: True if signing out, False otherwise.
+    :param bool switch_site: True if switching site, False otherwise.
+    :param bool get_server_info: True if getting server info, False otherwise.
+    :param dict parameter_dict: dictionary of URL parameters to append; the value in each key-value pair is the literal
+    text that will be appended to the URL endpoint.
     """
     def __init__(self,
                  ts_connection,
@@ -57,6 +51,7 @@ class AuthEndpoint(BaseEndpoint):
                                                self._connection.api_version)
     
     def get_endpoint(self):
+        url = None
         if self._sign_in and not (self._sign_out or self._switch_site):
             url = self.base_sign_in_url
         elif self._sign_out and not (self._sign_in or self._switch_site):
