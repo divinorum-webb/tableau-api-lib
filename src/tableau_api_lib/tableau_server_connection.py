@@ -164,23 +164,26 @@ class TableauServerConnection:
                     commenting_enabled_flag=False,
                     revision_history_enabled_flag=False,
                     revision_limit=None,
-                    subscribe_others_enabled_flag=False):
+                    subscribe_others_enabled_flag=False,
+                    extract_encryption_mode=None):
         """
         Creates a new site via the active Tableau Server connection.
-        :param string site_name: The name for the new site.
-        :param string content_url: The content url for the new site (can be different than the site name).
-        :param string admin_mode: The admin mode for the new site.
-        :param string user_quota: The user quota for the site.
-        :param string storage_quota: The storage size quota for the site, in megabytes.
-        :param boolean disable_subscriptions_flag: True if disabling subscriptions, defaults to False.
-        :param boolean flows_enabled_flag: True if flows are enabled, defaults to True.
-        :param boolean guest_access_enabled_flag: True if guest access is enabled, defaults to False.
-        :param boolean cache_warmup_enabled_flag: True if cache warmup is enabled, defaults to False.
-        :param boolean commenting_enabled_flag: True if commenting is enabled, defaults to False.
-        :param boolean revision_history_enabled_flag: True if revision history is enabled, defaults to False.
+        :param str site_name: The name for the new site.
+        :param str content_url: The content url for the new site (can be different than the site name).
+        :param str admin_mode: The admin mode for the new site.
+        :param str user_quota: The user quota for the site.
+        :param str storage_quota: The storage size quota for the site, in megabytes.
+        :param bool disable_subscriptions_flag: True if disabling subscriptions, defaults to False.
+        :param bool flows_enabled_flag: True if flows are enabled, defaults to True.
+        :param bool guest_access_enabled_flag: True if guest access is enabled, defaults to False.
+        :param bool cache_warmup_enabled_flag: True if cache warmup is enabled, defaults to False.
+        :param bool commenting_enabled_flag: True if commenting is enabled, defaults to False.
+        :param bool revision_history_enabled_flag: True if revision history is enabled, defaults to False.
         :param string revision_limit: The maximum number of revisions stored on the server. The number can be
         between 2 and 10,000, or set to -1 in order to remove the limit.
-        :param boolean subscribe_others_enabled_flag: True if owners can subscribe other users, False otherwise.
+        :param bool subscribe_others_enabled_flag: True if owners can subscribe other users, False otherwise.
+        :param str extract_encryption_mode: enables, disables, or enforces extract encryption
+        [enforced, enabled, or disabled]
         :return: HTTP response
         """
         # This method can only be called by server administrators.
@@ -197,7 +200,8 @@ class TableauServerConnection:
                                                 commenting_enabled_flag=commenting_enabled_flag,
                                                 revision_history_enabled_flag=revision_history_enabled_flag,
                                                 revision_limit=revision_limit,
-                                                subscribe_others_enabled_flag=subscribe_others_enabled_flag
+                                                subscribe_others_enabled_flag=subscribe_others_enabled_flag,
+                                                extract_encryption_mode=extract_encryption_mode
                                                 ).get_request()
         self.active_endpoint = SiteEndpoint(ts_connection=self, create_site=True).get_endpoint()
         self.active_headers = self.default_headers
@@ -259,7 +263,9 @@ class TableauServerConnection:
                     commenting_enabled_flag=False,
                     revision_history_enabled_flag=False,
                     revision_limit=None,
-                    subscribe_others_enabled_flag=False):
+                    subscribe_others_enabled_flag=False,
+                    extract_encryption_mode=None
+                    ):
         """
         Update details for the specified site.
         :param string site_id: the site ID
@@ -276,7 +282,9 @@ class TableauServerConnection:
         :param boolean commenting_enabled_flag: enables or disables commenting
         :param boolean revision_history_enabled_flag: enables or disables versioning
         :param string revision_limit: sets the maximum number of revisions allowed for a versioned object
-        :param boolean subscribe_others_enabled_flag:
+        :param boolean subscribe_others_enabled_flag: True if users can subscribe on behalf of others, False otherwise
+        :param str extract_encryption_mode: enables, disables, or enforces extract encryption
+        [enforced, enabled, or disabled]
         :return: HTTP response
         """
         # This method can only be called by server administrators.
@@ -294,7 +302,8 @@ class TableauServerConnection:
                                                 commenting_enabled_flag=commenting_enabled_flag,
                                                 revision_history_enabled_flag=revision_history_enabled_flag,
                                                 revision_limit=revision_limit,
-                                                subscribe_others_enabled_flag=subscribe_others_enabled_flag
+                                                subscribe_others_enabled_flag=subscribe_others_enabled_flag,
+                                                extract_encryption_mode=extract_encryption_mode
                                                 ).get_request()
         self.active_endpoint = SiteEndpoint(ts_connection=self, site_id=site_id, update_site=True).get_endpoint()
         self.active_headers = self.default_headers

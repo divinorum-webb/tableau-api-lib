@@ -21,6 +21,7 @@ def sign_out(conn):
 
 def create_site(conn, site_name, site_content_url):
     response = conn.create_site(site_name, site_content_url)
+    print(response)
     return conn, response
 
 
@@ -113,6 +114,8 @@ def update_site_misc_flag(conn):
     response_list.append(conn.update_site(site_id=site_id, commenting_enabled_flag=False))
     response_list.append(conn.update_site(site_id=site_id, flows_enabled_flag=True))
     response_list.append(conn.update_site(site_id=site_id, flows_enabled_flag=False))
+    # response_list.append(conn.update_site(site_id=site_id, extract_encryption_mode='enabled'))
+    # response_list.append(conn.update_site(site_id=site_id, extract_encryption_mode='disabled'))
     return conn, response_list
 
 

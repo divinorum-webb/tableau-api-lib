@@ -38,6 +38,8 @@ class CreateSiteRequest(BaseRequest):
     :type revision_limit:                   string
     :param subscribe_others_enabled_flag:   Boolean flag; True if owners can subscribe other users, False otherwise.
     :type subscribe_others_enabled_flag:    boolean
+    :param str extract_encryption_mode: enables, disables, or enforces extract encryption
+    [enforced, enabled, or disabled]
     """
     def __init__(self,
                  ts_connection,
@@ -46,30 +48,49 @@ class CreateSiteRequest(BaseRequest):
                  admin_mode='ContentAndUsers',
                  user_quota=None,
                  storage_quota=None,
-                 disable_subscriptions_flag=False,
+                 disable_subscriptions_flag=None,
                  flows_enabled_flag=None,
-                 guest_access_enabled_flag=False,
-                 cache_warmup_enabled_flag=False,
-                 commenting_enabled_flag=False,
-                 revision_history_enabled_flag=False,
+                 guest_access_enabled_flag=None,
+                 cache_warmup_enabled_flag=None,
+                 commenting_enabled_flag=None,
+                 revision_history_enabled_flag=None,
                  revision_limit=None,
-                 subscribe_others_enabled_flag=False):
+                 subscribe_others_enabled_flag=None,
+                 extract_encryption_mode=None):
 
         super().__init__(ts_connection)
         self._site_name = site_name
         self._content_url = content_url
         self._admin_mode = admin_mode
         self._user_quota = user_quota
-        self._storage_quota = storage_quota
+        self._storage_quota = str(storage_quota) if storage_quota else None
         self._disable_subscriptions_flag = disable_subscriptions_flag
         self._flows_enabled_flag = flows_enabled_flag
         self._guest_access_enabled_flag = guest_access_enabled_flag
         self._cache_warmup_enabled_flag = cache_warmup_enabled_flag
         self._commenting_enabled_flag = commenting_enabled_flag
         self._revision_history_enabled_flag = revision_history_enabled_flag
-        self._revision_limit = revision_limit
+        self._revision_limit = str(revision_limit) if revision_limit else None
         self._subscribe_others_enabled_flag = subscribe_others_enabled_flag
+        self._extract_encryption_mode = str(extract_encryption_mode).lower() if extract_encryption_mode else None
+        self._validate_inputs()
         self.base_create_site_request()
+
+    @property
+    def valid_extract_encryption_modes(self):
+        return [
+            'enforced',
+            'enabled',
+            'disabled',
+            None
+        ]
+
+    def _validate_inputs(self):
+        valid = True
+        if self._extract_encryption_mode not in self.valid_extract_encryption_modes:
+            valid = False
+        if not valid:
+            self._invalid_parameter_exception()
 
     @property
     def optional_param_keys(self):
@@ -82,21 +103,23 @@ class CreateSiteRequest(BaseRequest):
             'commentingEnabled',
             'revisionHistoryEnabled',
             'revisionLimit',
-            'subscribeOthersEnabled'
+            'subscribeOthersEnabled',
+            'extractEncryptionMode'
         ]
 
     @property
     def optional_param_values(self):
         return [
-            str(self._storage_quota) if self._storage_quota else None,
-            'true' if self._disable_subscriptions_flag else None,
-            'true' if self._flows_enabled_flag else None,
-            'true' if self._guest_access_enabled_flag else None,
-            'true' if self._cache_warmup_enabled_flag else None,
-            'true' if self._commenting_enabled_flag else None,
-            'true' if self._revision_history_enabled_flag else None,
-            str(self._revision_limit) if self._revision_limit else None,
-            'true' if self._subscribe_others_enabled_flag else None
+            self._storage_quota,
+            self._disable_subscriptions_flag,
+            self._flows_enabled_flag,
+            self._guest_access_enabled_flag,
+            self._cache_warmup_enabled_flag,
+            self._commenting_enabled_flag,
+            self._revision_history_enabled_flag,
+            self._revision_limit,
+            self._subscribe_others_enabled_flag,
+            self._extract_encryption_mode
         ]
 
     def base_create_site_request(self):
