@@ -20,3 +20,4 @@ from .database_endpoint import DatabaseEndpoint
 from .table_endpoints import TableEndpoint
 from .column_endpoints import ColumnEndpoint
 from .dqwarning_endpoint import DQWarningEndpoint
+from .encryption_endpoint import EncryptionEndpoint

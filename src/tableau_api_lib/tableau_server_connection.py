@@ -3,7 +3,7 @@ import requests
 from tableau_api_lib.api_endpoints import AuthEndpoint, DataAlertEndpoint, DatabaseEndpoint, DatasourceEndpoint, \
     FavoritesEndpoint, FileUploadEndpoint, FlowEndpoint, GroupEndpoint, JobsEndpoint, PermissionsEndpoint, \
     ProjectEndpoint, SchedulesEndpoint, SiteEndpoint, SubscriptionsEndpoint, UserEndpoint, TableEndpoint, \
-    TasksEndpoint, ViewEndpoint, WorkbookEndpoint, ColumnEndpoint, DQWarningEndpoint
+    TasksEndpoint, ViewEndpoint, WorkbookEndpoint, ColumnEndpoint, DQWarningEndpoint, EncryptionEndpoint
 from tableau_api_lib.api_requests import AddDatasourcePermissionsRequest, AddDatasourceToFavoritesRequest, \
     AddDatasourceToScheduleRequest, AddDefaultPermissionsRequest, AddFlowPermissionsRequest, \
     AddFlowToScheduleRequest, AddProjectPermissionsRequest, AddProjectToFavoritesRequest, \
@@ -2971,4 +2971,36 @@ class TableauServerConnection:
                                                  delete_by_content=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        return response
+
+    # encryption methods
+
+    def encrypt_extracts(self):
+        """
+        Encrypts all extracts on the active site (encrypts .hyper extracts at rest).
+        :return: HTTP response
+        """
+        self.active_endpoint = EncryptionEndpoint(self, encrypt_extracts=True).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.post(url=self.active_endpoint, headers=self.active_headers)
+        return response
+
+    def decrypt_extracts(self):
+        """
+        Decrypts all extracts on the active site (decrypts .hyper extracts).
+        :return: HTTP response
+        """
+        self.active_endpoint = EncryptionEndpoint(self, decrypt_extracts=True).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.post(url=self.active_endpoint, headers=self.active_headers)
+        return response
+
+    def reencrypt_extracts(self):
+        """
+        Reencrypts all .hyper extracts on the active site with new encryption keys.
+        :return: HTTP response
+        """
+        self.active_endpoint = EncryptionEndpoint(self, reencrypt_extracts=True).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.post(url=self.active_endpoint, headers=self.active_headers)
         return response
