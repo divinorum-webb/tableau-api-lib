@@ -2720,6 +2720,15 @@ class TableauServerConnection:
                         certification_note=None,
                         new_description_value=None,
                         new_contact_id=None):
+        """
+        Updates the details for the specified database.
+        :param str database_id: the database ID
+        :param bool certification_status: certifies (True) or removes certification (False) for the specified database
+        :param str certification_note: custom text to accompany the certification status
+        :param str new_description_value: custom text describing the database
+        :param str new_contact_id: the ID for the Tableau Server user who is the contact for the specified database
+        :return: HTTP response
+        """
         self.active_request = UpdateDatabaseRequest(self,
                                                     certification_status=certification_status,
                                                     certification_note=certification_note,
@@ -2731,19 +2740,32 @@ class TableauServerConnection:
         return response
 
     def remove_database(self, database_id):
-        # method does not work, produces error
+        """
+        Removes the database asset.
+        :param str database_id: the database ID
+        :return: HTTP response
+        """
         self.active_endpoint = DatabaseEndpoint(self, database_id=database_id, remove_database=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
     def query_table(self, table_id):
+        """
+        Queries details for the specified database table.
+        :param str table_id: the table ID
+        :return: HTTP response
+        """
         self.active_endpoint = TableEndpoint(self, table_id=table_id, query_table=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
     def query_tables(self):
+        """
+        Queries details for all tables on the active site.
+        :return: HTTP response
+        """
         self.active_endpoint = TableEndpoint(self, query_tables=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
@@ -2755,6 +2777,15 @@ class TableauServerConnection:
                      certification_note=None,
                      new_description_value=None,
                      new_contact_id=None):
+        """
+        Updates details for the specified database table.
+        :param str table_id: the table ID
+        :param bool certification_status: certifies (True) or removes certification (False) for the specified table
+        :param str certification_note: custom text to accompany the certification status
+        :param str new_description_value: custom text describing the table
+        :param str new_contact_id: the ID for the Tableau Server user who is the contact for the specified database
+        :return: HTTP response
+        """
         self.active_request = UpdateTableRequest(self,
                                                  certification_status=certification_status,
                                                  certification_note=certification_note,
@@ -2766,12 +2797,23 @@ class TableauServerConnection:
         return response
 
     def remove_table(self, table_id):
+        """
+        Removes the database table asset.
+        :param str table_id:
+        :return: HTTP response
+        """
         self.active_endpoint = TableEndpoint(self, table_id=table_id, remove_table=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
     def query_table_column(self, table_id, column_id):
+        """
+        Queries details for the specified column in the specified database table.
+        :param str table_id: the database table ID
+        :param str column_id: the column ID
+        :return: HTTP response
+        """
         self.active_endpoint = ColumnEndpoint(self,
                                               table_id=table_id,
                                               column_id=column_id,
@@ -2781,12 +2823,24 @@ class TableauServerConnection:
         return response
 
     def query_table_columns(self, table_id):
+        """
+        Queries details for all columns in the specified database table.
+        :param str table_id: the database table ID
+        :return: HTTP response
+        """
         self.active_endpoint = ColumnEndpoint(self, table_id=table_id, query_columns=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
     def update_column(self, table_id, column_id, new_description_value=None):
+        """
+        Updates details for the specified column in the specified database table.
+        :param str table_id: the database table ID
+        :param str column_id: the column ID
+        :param str new_description_value: custom text describing the column
+        :return: HTTP response
+        """
         self.active_request = UpdateColumnRequest(self, new_description_value=new_description_value).get_request()
         self.active_endpoint = ColumnEndpoint(self,
                                               table_id=table_id,
@@ -2797,6 +2851,12 @@ class TableauServerConnection:
         return response
 
     def remove_column(self, table_id, column_id):
+        """
+        Removes the specified column asset.
+        :param str table_id: the database table ID
+        :param str column_id: the column ID
+        :return: HTTP response
+        """
         self.active_endpoint = ColumnEndpoint(self,
                                               table_id=table_id,
                                               column_id=column_id,
@@ -2811,6 +2871,17 @@ class TableauServerConnection:
                                  warning_type,
                                  message,
                                  status=None):
+        """
+        Adds a data quality warning to the specified content on Tableau Server.
+        :param str content_type: the content type receiving the data quality warning
+        [datasource, table, flow, or database]
+        :param str content_id: the content ID for the specific content receiving the data quality warning
+        :param str warning_type: the type of data quality warning
+        [Deprecated, Warning, Stale data, or Under maintenance]
+        :param str message: (optional) custom text accompanying the data quality warning
+        :param bool status: toggles the data quality warning on (True) or off (False)
+        :return: HTTP response
+        """
         self.active_request = AddDQWarningRequest(self,
                                                   warning_type=warning_type,
                                                   message=message,
@@ -2823,17 +2894,81 @@ class TableauServerConnection:
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
-    def query_data_quality_warning_by_id(self):
-        pass
+    def query_data_quality_warning_by_id(self, warning_id):
+        """
+        Queries details for the specified data quality warning, identified by its ID
+        :param str warning_id: the data quality warning ID
+        :return: HTTP response
+        """
+        self.active_endpoint = DQWarningEndpoint(self, warning_id=warning_id, query_by_id=True).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        return response
 
-    def query_data_quality_warning_by_asset(self):
-        pass
+    def query_data_quality_warning_by_asset(self, content_type, content_id):
+        """
+        Queries details for the data quality warning belonging to a specific piece of content on Tableau Server.
+        :param str content_type: the content type receiving the data quality warning
+        [datasource, table, flow, or database]
+        :param str content_id: the content ID for the specific content receiving the data quality warning
+        :return: HTTP response
+        """
+        self.active_endpoint = DQWarningEndpoint(self,
+                                                 content_type=content_type,
+                                                 content_id=content_id,
+                                                 query_by_content=True).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        return response
 
-    def update_data_quality_warning(self):
-        pass
+    def update_data_quality_warning(self,
+                                    warning_id,
+                                    warning_type=None,
+                                    message=None,
+                                    status=None):
+        """
+        Updates details for the specified data quality warning.
+        :param str warning_id: the data quality warning ID
+        :param str warning_type: the type of data quality warning
+        [Deprecated, Warning, Stale data, or Under maintenance]
+        :param str message: (optional) custom text accompanying the data quality warning
+        :param bool status: toggles the data quality warning on (True) or off (False)
+        :return: HTTP response
+        """
+        self.active_request = UpdateDQWarningRequest(self,
+                                                     warning_type=warning_type,
+                                                     message=message,
+                                                     status=status).get_request()
+        self.active_endpoint = DQWarningEndpoint(self, warning_id=warning_id, update_warning=True).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        return response
 
-    def delete_data_quality_warning_by_id(self):
-        pass
+    def delete_data_quality_warning_by_id(self, warning_id):
+        """
+        Removes the data quality warning from Tableau Server.
+        :param str warning_id: the data quality warning ID
+        :return: HTTP response
+        """
+        self.active_endpoint = DQWarningEndpoint(self,
+                                                 warning_id=warning_id,
+                                                 delete_by_id=True).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        return response
 
-    def delete_data_quality_warning_by_content(self):
-        pass
+    def delete_data_quality_warning_by_content(self, content_type, content_id):
+        """
+        Removes the data quality warning from the specified piece of content on Tableau Server.
+        :param str content_type: the content type receiving the data quality warning
+        [datasource, table, flow, or database]
+        :param str content_id: the content ID for the specific content receiving the data quality warning
+        :return: HTTP response
+        """
+        self.active_endpoint = DQWarningEndpoint(self,
+                                                 content_type=content_type,
+                                                 content_id=content_id,
+                                                 delete_by_content=True).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        return response

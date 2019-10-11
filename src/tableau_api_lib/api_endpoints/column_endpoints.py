@@ -10,6 +10,16 @@ class ColumnEndpoint(BaseEndpoint):
                  remove_column=False,
                  table_id=None,
                  column_id=None):
+        """
+        Builds the API endpoint for interacting with database table columns.
+        :param class ts_connection: the Tableau Server connection object
+        :param bool query_column: True if querying a specific column by ID, False by default
+        :param bool query_columns: True if querying all columns for the active site, False by default
+        :param bool update_column: True if updating a specific column, False by default
+        :param bool remove_column: True if removing a specific column, False by default
+        :param str table_id: the database table ID
+        :param str column_id: the column ID
+        """
 
         super().__init__(ts_connection)
         self._query_column = query_column

@@ -9,6 +9,14 @@ class UpdateTableRequest(BaseRequest):
                  new_description_value=None,
                  new_contact_id=None
                  ):
+        """
+        Builds the request body for updating a database table on Tableau Server.
+        :param class ts_connection: the Tableau Server connection object
+        :param bool certification_status: certifies (True) or removes certification (False) for the specified table
+        :param str certification_note: custom text to accompany the certification status
+        :param str new_description_value: custom text describing the table
+        :param str new_contact_id: the ID for the Tableau Server user who is the contact for the specified database
+        """
 
         super().__init__(ts_connection)
         self._certification_status = certification_status

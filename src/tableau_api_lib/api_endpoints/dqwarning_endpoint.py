@@ -13,6 +13,20 @@ class DQWarningEndpoint(BaseEndpoint):
                  update_warning=False,
                  delete_by_id=False,
                  delete_by_content=False):
+        """
+        Builds the API endpoint for creating and interacting with data quality warnings.
+        :param class ts_connection: the Tableau Server connection object
+        :param str warning_id: the data quality warning ID
+        :param str content_type: the content type receiving the data quality warning
+        [datasource, table, flow, or database]
+        :param str content_id: the content ID for the specific content receiving the data quality warning
+        :param bool add_warning: True if adding a data quality warning, False by default
+        :param bool query_by_id: True if querying a data quality warning by ID, False by default
+        :param bool query_by_content: True if querying a data quality warning for a piece of content, False by default
+        :param bool update_warning: True if updating a data quality warning, False by default
+        :param bool delete_by_id: True if deleting a data quality warning by ID, False by default
+        :param bool delete_by_content: True if deleting a data quality warning for a piece of content, False by default
+        """
 
         super().__init__(ts_connection)
         self._warning_id = warning_id
