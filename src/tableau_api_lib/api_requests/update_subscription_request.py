@@ -5,21 +5,38 @@ class UpdateSubscriptionRequest(BaseRequest):
     """
     Update subscription request for generating API request URLs to Tableau Server.
 
-    :param ts_connection:               The Tableau Server connection object.
-    :type ts_connection:                class
-    :param new_subscription_subject:    (Optional) A new subject for the subscription.
-    :type new_subscription_subject:     string
-    :param new_schedule_id:             (Optional) The ID of a schedule to associate this subscription with.
-    :type new_schedule_id:              string
+    :param class ts_connection: the Tableau Server connection object.
+    :param str new_subscription_subject:    (optional) A new subject for the subscription.
+    :param str new_schedule_id:             (optional) The ID of a schedule to associate this subscription with.
+    :param bool attach_image_flag: True if attaching a .png image to the subscription, defaults to False
+    :param bool attach_pdf_flag: True if attaching a .pdf file to the subscription, defaults to False
     """
     def __init__(self,
                  ts_connection,
                  new_subscription_subject=None,
-                 new_schedule_id=None):
+                 new_schedule_id=None,
+                 attach_image_flag=None,
+                 attach_pdf_flag=None):
 
         super().__init__(ts_connection)
         self._new_subscription_subject = new_subscription_subject
         self._new_schedule_id = new_schedule_id
+        self._attach_image_flag = attach_image_flag
+        self._attach_pdf_flag = attach_pdf_flag
+
+    @property
+    def optional_param_keys(self):
+        return [
+            'attachImage',
+            'attachPdf'
+        ]
+
+    @property
+    def optional_param_values(self):
+        return [
+            self._attach_image_flag,
+            self._attach_pdf_flag
+        ]
 
     def base_update_subscription_request(self):
         if self._new_subscription_subject and self._new_schedule_id:
@@ -41,6 +58,9 @@ class UpdateSubscriptionRequest(BaseRequest):
                     'schedule': {'id': self._new_schedule_id}
                 }
             })
+        if any(self.optional_param_values):
+            self._request_body['subscription'].update(self._get_parameters_dict(self.optional_param_keys,
+                                                                                self.optional_param_values))
         return self._request_body
 
     def get_request(self):

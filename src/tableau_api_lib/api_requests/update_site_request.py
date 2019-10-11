@@ -25,6 +25,7 @@ class UpdateSiteRequest(BaseRequest):
     otherwise
     :param bool flows_enabled_flag: True if flows are enabled on the site, False otherwise
     :param bool guest_access_enabled_flag: True if guest access is enabled on the site, False otherwise
+    :param bool allow_subscription_attachments_flag: True if subscription attachments are enabled, False otherwise
     :param bool cache_warmup_enabled_flag: True if cache warmup is enabled on the site, False otherwise
     :param bool commenting_enabled_flag: True if commenting is enabled on the site, False otherwise
     :param bool revision_history_enabled_flag: True if the site maintains revisions for changes made to workbooks and
@@ -47,6 +48,7 @@ class UpdateSiteRequest(BaseRequest):
                  disable_subscriptions_flag=None,
                  flows_enabled_flag=None,
                  guest_access_enabled_flag=None,
+                 allow_subscription_attachments_flag=None,
                  cache_warmup_enabled_flag=None,
                  commenting_enabled_flag=None,
                  revision_history_enabled_flag=None,
@@ -65,6 +67,7 @@ class UpdateSiteRequest(BaseRequest):
         self._disable_subscriptions_flag = disable_subscriptions_flag
         self._flows_enabled_flag = flows_enabled_flag
         self._guest_access_enabled_flag = guest_access_enabled_flag
+        self._allow_subscription_attachments_flag = allow_subscription_attachments_flag
         self._cache_warmup_enabled_flag = cache_warmup_enabled_flag
         self._commenting_enabled_flag = commenting_enabled_flag
         self._revision_history_enabled_flag = revision_history_enabled_flag
@@ -101,6 +104,7 @@ class UpdateSiteRequest(BaseRequest):
             'disableSubscriptions',
             'flowsEnabled',
             'guestAccessEnabled',
+            'allowSubscriptionAttachments',
             'cacheWarmupEnabled',
             'commentingEnabled',
             'revisionHistoryEnabled',

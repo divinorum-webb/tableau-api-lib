@@ -157,14 +157,15 @@ class TableauServerConnection:
                     admin_mode='ContentAndUsers',
                     user_quota=None,
                     storage_quota=None,
-                    disable_subscriptions_flag=False,
+                    disable_subscriptions_flag=None,
                     flows_enabled_flag=None,
-                    guest_access_enabled_flag=False,
-                    cache_warmup_enabled_flag=False,
-                    commenting_enabled_flag=False,
-                    revision_history_enabled_flag=False,
+                    guest_access_enabled_flag=None,
+                    allow_subscription_attachments_flag=None,
+                    cache_warmup_enabled_flag=None,
+                    commenting_enabled_flag=None,
+                    revision_history_enabled_flag=None,
                     revision_limit=None,
-                    subscribe_others_enabled_flag=False,
+                    subscribe_others_enabled_flag=None,
                     extract_encryption_mode=None):
         """
         Creates a new site via the active Tableau Server connection.
@@ -176,6 +177,7 @@ class TableauServerConnection:
         :param bool disable_subscriptions_flag: True if disabling subscriptions, defaults to False.
         :param bool flows_enabled_flag: True if flows are enabled, defaults to True.
         :param bool guest_access_enabled_flag: True if guest access is enabled, defaults to False.
+        :param bool allow_subscription_attachments_flag: True if subscription attachments are enabled, defaults to False
         :param bool cache_warmup_enabled_flag: True if cache warmup is enabled, defaults to False.
         :param bool commenting_enabled_flag: True if commenting is enabled, defaults to False.
         :param bool revision_history_enabled_flag: True if revision history is enabled, defaults to False.
@@ -196,6 +198,7 @@ class TableauServerConnection:
                                                 disable_subscriptions_flag=disable_subscriptions_flag,
                                                 flows_enabled_flag=flows_enabled_flag,
                                                 guest_access_enabled_flag=guest_access_enabled_flag,
+                                                allow_subscription_attachments_flag=allow_subscription_attachments_flag,
                                                 cache_warmup_enabled_flag=cache_warmup_enabled_flag,
                                                 commenting_enabled_flag=commenting_enabled_flag,
                                                 revision_history_enabled_flag=revision_history_enabled_flag,
@@ -256,14 +259,15 @@ class TableauServerConnection:
                     user_quota=None,
                     state=None,
                     storage_quota=None,
-                    disable_subscriptions_flag=False,
+                    disable_subscriptions_flag=None,
                     flows_enabled_flag=None,
-                    guest_access_enabled_flag=False,
-                    cache_warmup_enabled_flag=False,
-                    commenting_enabled_flag=False,
-                    revision_history_enabled_flag=False,
+                    guest_access_enabled_flag=None,
+                    allow_subscription_attachments_flag=None,
+                    cache_warmup_enabled_flag=None,
+                    commenting_enabled_flag=None,
+                    revision_history_enabled_flag=None,
                     revision_limit=None,
-                    subscribe_others_enabled_flag=False,
+                    subscribe_others_enabled_flag=None,
                     extract_encryption_mode=None
                     ):
         """
@@ -278,6 +282,7 @@ class TableauServerConnection:
         :param boolean disable_subscriptions_flag: enables or disables subscriptions
         :param boolean flows_enabled_flag: enables or disables flows
         :param boolean guest_access_enabled_flag: enables or disables guest access
+        :param bool allow_subscription_attachments_flag: enables or disables subscription attachments
         :param boolean cache_warmup_enabled_flag: enables or disables cache warmup
         :param boolean commenting_enabled_flag: enables or disables commenting
         :param boolean revision_history_enabled_flag: enables or disables versioning
@@ -298,6 +303,7 @@ class TableauServerConnection:
                                                 disable_subscriptions_flag=disable_subscriptions_flag,
                                                 flows_enabled_flag=flows_enabled_flag,
                                                 guest_access_enabled_flag=guest_access_enabled_flag,
+                                                allow_subscription_attachments_flag=allow_subscription_attachments_flag,
                                                 cache_warmup_enabled_flag=cache_warmup_enabled_flag,
                                                 commenting_enabled_flag=commenting_enabled_flag,
                                                 revision_history_enabled_flag=revision_history_enabled_flag,
