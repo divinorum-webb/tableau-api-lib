@@ -17,16 +17,16 @@ class GroupEndpoint(BaseEndpoint):
         """
         Builds API endpoints for REST API group methods.
         :param class ts_connection: the Tableau Server connection object
-        :param bool query_groups: True if querying all groups on a specific site, False otherwise.
-        :param bool group_id: the group ID.
-        :param bool update_group:        Boolean flag; True if updating a specific group's information, False otherwise.
-        :param bool delete_group:        Boolean flag; True if deleting a specific group, False otherwise.
-        :param bool get_users:           Boolean flag; True if querying all users in a specific group, False otherwise.
-        :param bool add_user:            Boolean flag; True if adding a user to a specific group, False otherwise.
-        :param bool remove_user:         Boolean flag; True if removing a user from a specific group, False otherwise.
-        :param str user_id:             The user ID.
-        :param dict parameter_dict:      Dictionary of URL parameters to append. The value in each key-value pair
-                                    is the literal text that will be appended to the URL endpoint.
+        :param bool query_groups: True if querying all groups on a specific site, False otherwise
+        :param str group_id: the group ID
+        :param bool update_group: True if updating a specific group's information, False otherwise
+        :param bool delete_group: True if deleting a specific group, False otherwise
+        :param bool get_users: True if querying all users in a specific group, False otherwise
+        :param bool add_user: True if adding a user to a specific group, False otherwise
+        :param bool remove_user: True if removing a user from a specific group, False otherwise
+        :param str user_id: the user ID
+        :param dict parameter_dict: dictionary of URL parameters to append. The value in each key-value pair is the
+        literal text that will be appended to the URL endpoint
         """
 
         super().__init__(ts_connection)
