@@ -124,6 +124,7 @@ class UpdateSiteRequest(BaseRequest):
             self._disable_subscriptions_flag,
             self._flows_enabled_flag,
             self._guest_access_enabled_flag,
+            self._allow_subscription_attachments_flag,
             self._cache_warmup_enabled_flag,
             self._commenting_enabled_flag,
             self._revision_history_enabled_flag,
