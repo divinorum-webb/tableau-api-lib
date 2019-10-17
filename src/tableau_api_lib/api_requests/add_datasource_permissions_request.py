@@ -3,20 +3,13 @@ from tableau_api_lib.api_requests import BaseRequest
 
 class AddDatasourcePermissionsRequest(BaseRequest):
     """
-    Add datasource request for generating API api_requests to Tableau Server.
-
-    :param ts_connection:           The Tableau Server connection object.
-    :type ts_connection:            class
-    :param user_capability_dict:    The dict defining user capabilities / permissions.
-    :type user_capability_dict:     dict
-    :param group_capability_dict:   The dict defining group capabilities / permissions.
-    :type group_capability_dict:    dict
-    :param datasource_id:           The datasource ID.
-    :type datasource_id:            string
-    :param user_id:                 The user ID.
-    :type user_id:                  string
-    :param group_id:                The group ID.
-    :type group_id:                 string
+    Builds the request body for Tableau Server REST API permissions requests.
+    :param class ts_connection: the Tableau Server connection object
+    :param dict user_capability_dict: the dict defining user capabilities / permissions
+    :param dict group_capability_dict: the dict defining group capabilities / permissins
+    :param str datasource_id: the datasource ID
+    :param str user_id: the user ID
+    :param str group_id: the group ID
     """
     def __init__(self,
                  ts_connection,
@@ -56,13 +49,14 @@ class AddDatasourcePermissionsRequest(BaseRequest):
         ]
 
     def _validate_inputs(self):
-        if self._user_id or self._group_id:
-            pass
-        else:
-            self._invalid_parameter_exception()
+        valid = True
+        if not (self._user_id or self._group_id):
+            valid = False
         if self._user_capability_dict or self._group_capability_dict:
             self._set_capability_variables()
         else:
+            valid = False
+        if not valid:
             self._invalid_parameter_exception()
 
     def _unpack_capability_dict(self, capability_dict):
