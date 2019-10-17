@@ -3,12 +3,9 @@ from tableau_api_lib.api_requests import BaseRequest
 
 class AddDatasourceToScheduleRequest(BaseRequest):
     """
-    Add datasource to schedule request for generating API api_requests to Tableau Server.
-
-    :param ts_connection:       The Tableau Server connection object.
-    :type ts_connection:        class
-    :param datasource_id:       The datasource ID.
-    :type datasource_id:        string
+    Builds the request body for Tableau Server REST API requests adding datasources to schedules.
+    :param class ts_connection: the Tableau Server connection object
+    :param str datasource_id:       The datasource ID
     """
     def __init__(self,
                  ts_connection,

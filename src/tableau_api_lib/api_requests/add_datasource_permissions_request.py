@@ -3,7 +3,7 @@ from tableau_api_lib.api_requests import BaseRequest
 
 class AddDatasourcePermissionsRequest(BaseRequest):
     """
-    Builds the request body for Tableau Server REST API permissions requests.
+    Builds the request body for Tableau Server REST API datasource permissions requests.
     :param class ts_connection: the Tableau Server connection object
     :param dict user_capability_dict: the dict defining user capabilities / permissions
     :param dict group_capability_dict: the dict defining group capabilities / permissins
