@@ -3,10 +3,8 @@ from tableau_api_lib.exceptions import InvalidParameterException
 
 class BaseRequest:
     """
-    Base request for issuing API api_requests to Tableau Server.
-
-    :param ts_connection:       The Tableau Server connection object.
-    :type ts_connection:        class
+    The base request from which all other API requests are built.
+    :param class ts_connection: the Tableau Server connection object
     """
     def __init__(self,
                  ts_connection):

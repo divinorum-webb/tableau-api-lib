@@ -3,7 +3,7 @@ from tableau_api_lib.api_requests import BaseRequest
 
 class UpdateSiteRequest(BaseRequest):
     """
-    Update site request for API api_requests to Tableau Server.
+    Builds the request body for Tableau Server REST API requests updating sites.
     :param class ts_connection: the Tableau Server connection object
     :param str site_name: (optional) the new name of the site
     :param str content_url: (optional) the new content url for the site (typically same as site name)

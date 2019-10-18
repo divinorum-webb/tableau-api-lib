@@ -3,10 +3,8 @@ from tableau_api_lib.api_requests import BaseRequest
 
 class EmptyRequest(BaseRequest):
     """
-    Empty request for generating API request URLs to Tableau Server.
-
-    :param ts_connection:       The Tableau Server connection object.
-    :type ts_connection:        class
+    Builds the request body for empty Tableau Server REST API requests.
+    :param class ts_connection: the Tableau Server connection object
     """
     def __init__(self,
                  ts_connection):

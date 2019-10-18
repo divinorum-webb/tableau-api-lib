@@ -3,39 +3,26 @@ from tableau_api_lib.api_requests import BaseRequest
 
 class CreateScheduleRequest(BaseRequest):
     """
-    Create schedule request for generating API request URLs to Tableau Server.
-
-    :param ts_connection:               The Tableau Server connection object.
-    :type ts_connection:                class
-    :param schedule_name:               The name of the schedule being created.
-    :type schedule_name:                string
-    :param schedule_priority:           The priority value (1-100) for the schedule
-    :type schedule_priority:            string or int
-    :param schedule_type:               The schedule type (Flow, Extract, or Subscription)
-    :type schedule_type:                string
-    :param schedule_execution_order:    Set this value to 'Parallel' to allow jobs associated with this schedule to
-                                        run in parallel; set the value to 'Serial' to require the jobs to run one at
-                                        a time.
-    :type schedule_execution_order:     string
-    :param schedule_frequency:          The granularity of the schedule (Hourly, Daily, Weekly, or Monthly).
-    :type schedule_frequency:           string
-    :param start_time:                  The time of day when the schedule should run (HH:MM:SS). If the frequency is
-                                        set to 'Hourly', this value indicates the hour the schedule starts running.
-    :type start_time:                   string
-    :param end_time:                    Only set this value if the schedule frequency has been set to 'Hourly'. This
-                                        value indicates the hour the schedule will stop running (HH:MM:SS).
-    :type end_time:                     string
-    :param interval_expression_list:    This list of dicts specifies the time interval(s) between jobs on the
-                                        schedule. The value required here depends on the 'schedule_frequency' value.
-                                        If 'schedule_frequency' = 'Hourly', the interval expression should be
-                                        hours="interval" (where "interval" is a number [1, 2, 4, 6, 8, 12] in quotes).
-                                        If 'schedule_frequency' = 'Daily', no interval needs to be specified.
-                                        If 'schedule_frequency' = 'Weekly, the interval is weekDay="weekday", where
-                                        weekday is one of ['Sunday', 'Monday', 'Tuesday', etc.] wrapped in quotes.
-                                        If 'schedule_frequency' = 'Monthly', the interval expression is monthDay="day",
-                                        where day is either the day of the month (1-31), or 'LastDay'. In both cases
-                                        the value is wrapped in quotes.
-    :type interval_expression_list:     list
+    Builds the request body for Tableau Server REST API requests creating schedules.
+    :param class ts_connection: the Tableau Server connection object
+    :param str schedule_name: the name of the schedule being created
+    :param str schedule_priority: the priority value (1-100) for the schedule
+    :param str schedule_type: the schedule type (Flow, Extract, or Subscription)
+    :param str schedule_execution_order: set this value to 'Parallel' to allow jobs associated with this schedule to run
+    in parallel; set the value to 'Serial' to require the jobs to run one at a time
+    :param str schedule_frequency: the granularity of the schedule (Hourly, Daily, Weekly, or Monthly)
+    :param str start_time: the time of day when the schedule should run (HH:MM:SS). If the frequency is set to 'Hourly',
+    this value indicates the hour the schedule starts running
+    :param str end_time: only set this value if the schedule frequency has been set to 'Hourly'. This value indicates
+    the hour the schedule will stop running (HH:MM:SS)
+    :param list interval_expression_list: this list of dicts specifies the time interval(s) between jobs on the
+    schedule. The value required here depends on the 'schedule_frequency' value. If 'schedule_frequency' = 'Hourly',
+    the interval expression should be hours="interval" (where "interval" is a number [1, 2, 4, 6, 8, 12] in quotes).
+    If 'schedule_frequency' = 'Daily', no interval needs to be specified.
+    If 'schedule_frequency' = 'Weekly, the interval is weekDay="weekday", where weekday is one of
+    ['Sunday', 'Monday', 'Tuesday', etc.] wrapped in quotes.
+    If 'schedule_frequency' = 'Monthly', the interval expression is monthDay="day", where day is either the day of the
+    month (1-31), or 'LastDay'. In both cases the value is wrapped in quotes.
     """
     def __init__(self,
                  ts_connection,
@@ -89,9 +76,12 @@ class CreateScheduleRequest(BaseRequest):
         ]
 
     def _validate_inputs(self):
+        valid = True
         if self._interval_expression_list:
             self._set_interval_expressions()
         else:
+            valid = False
+        if not valid:
             self._invalid_parameter_exception()
 
     @property

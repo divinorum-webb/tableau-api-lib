@@ -3,12 +3,9 @@ from tableau_api_lib.api_requests import BaseRequest
 
 class AddUserToAlertRequest(BaseRequest):
     """
-    Add user to alert request for generating API api_requests to Tableau Server.
-
-    :param ts_connection:       The Tableau Server connection object.
-    :type ts_connection:        class
-    :param user_id:             The user ID for the user being added to the alert.
-    :type user_id:              string
+    Builds the request body for Tableau Server REST API requests adding users to data alerts.
+    :param class ts_connection: the Tableau Server connection object
+    :param str user_id: the user ID for the user being added to the alert
     """
     def __init__(self,
                  ts_connection,

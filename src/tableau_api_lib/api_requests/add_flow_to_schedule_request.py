@@ -3,12 +3,9 @@ from tableau_api_lib.api_requests import BaseRequest
 
 class AddFlowToScheduleRequest(BaseRequest):
     """
-    Build the request body for adding a flow to a schedule via API api_requests to Tableau Server.
-
-    :param ts_connection:       The Tableau Server connection object.
-    :type ts_connection:        class
-    :param flow_id:             The flow ID for the flow being added to a schedule.
-    :type flow_id:        string
+    Builds the request body for Tableau Server REST API requests adding flows to schedules.
+    :param class ts_connection: the Tableau Server connection object
+    :param str flow_id: the flow ID for the flow being added to a schedule
     """
     def __init__(self,
                  ts_connection,

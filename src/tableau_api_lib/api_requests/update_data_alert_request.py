@@ -3,24 +3,16 @@ from tableau_api_lib.api_requests import BaseRequest
 
 class UpdateDataAlertRequest(BaseRequest):
     """
-    Update site request for generating API api_requests to Tableau Server.
-
-    :param ts_connection:           The Tableau Server connection object.
-    :type ts_connection:            class
-    :param data_alert_subject:      (Optional) The string to set as the new subject of the alert.
-    :type data_alert_subject:       string
-    :param data_alert_frequency:    (Optional) The frequency of the data-driven alert: once, frequently, hourly,
-                                    daily, or weekly.
-    :type data_alert_frequency:     string
-    :param data_alert_owner_id:     (Optional) The ID of the user to assign as owner of the data-driven alert.
-    :type data_alert_owner_id:      string
-    :param is_public_flag:          (Optional) Boolean flag.
-                                    Determines the visibility of the data-driven alert. If the flag is True,
-                                    users with access to the view containing the alert can see the alert and add
-                                    themselves as recipients. If the flag is False, then the alert is only visible
-                                    to the owner, site or server administrators, and specific users they add as
-                                    recipients.
-    :type is_public_flag:           boolean
+    Builds the request body for Tableau Server REST API requests updating database columns.
+    :param class ts_connection: the Tableau Server connection object
+    :param str data_alert_subject: (optional) the string to set as the new subject of the alert
+    :param str data_alert_frequency: (optional) the frequency of the data-driven alert: once, frequently, hourly, daily,
+    or weekly
+    :param str data_alert_owner_id: (optional) the ID of the user to assign as owner of the data-driven alert
+    :param bool is_public_flag: (optional) Determines the visibility of the data-driven alert. If the flag is
+    True, users with access to the view containing the alert can see the alert and add themselves as recipients. If the
+    flag is False, then the alert is only visible to the owner, site or server administrators, and specific users they
+    add as recipients
     """
     def __init__(self,
                  ts_connection,

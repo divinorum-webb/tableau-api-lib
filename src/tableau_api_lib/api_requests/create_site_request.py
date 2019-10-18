@@ -3,42 +3,26 @@ from tableau_api_lib.api_requests import BaseRequest
 
 class CreateSiteRequest(BaseRequest):
     """
-    Create site request for generating API request URLs to Tableau Server.
-
-    :param ts_connection:                   The Tableau Server connection object.
-    :type ts_connection:                    class
-    :param site_name:                       The name for the site being created.
-    :type site_name:                        string
-    :param content_url:                     The content url for the site (typically is the same as site name).
-    :type content_url:                      string
-    :param admin_mode:                      Set this to 'ContentAndUsers' to allow site administrators to use the
-                                            server interface and tabcmd commands to add and remove users.
-                                            Set this to 'ContentOnly' to prevent site administrators from adding or
-                                            removing users.
-    :type admin_mode:                       string
-    :param user_quota:                      The maximum number of users for the site in each of the user-based license
-                                            types (Creator, Explorer, Viewer).
-    :type user_quota:                       string
-    :param storage_quota:                   The maximum amount of space for storage.
-    :type storage_quota:                    string
-    :param disable_subscriptions_flag:      Boolean flag; True if disabling subscriptions, False otherwise.
-    :type disable_subscriptions_flag:       boolean
-    :param flows_enabled_flag:              Boolean flag; True if flows are enabled, False otherwise.
-    :type flows_enabled_flag:               boolean
-    :param guest_access_enabled_flag:       Boolean flag; True if guest access is enabled, False otherwise.
-    :type guest_access_enabled_flag:        boolean
+    Builds the request body for Tableau Server REST API requests creating sites.
+    :param class ts_connection: the Tableau Server connection object
+    :param str site_name: the name for the site being created
+    :param str content_url: the content url for the site (typically is the same as site name)
+    :param str admin_mode: set this to 'ContentAndUsers' to allow site administrators to use the server interface and
+    tabcmd commands to add and remove users; set this to 'ContentOnly' to prevent site administrators from adding or
+    removing users
+    :param str user_quota: the maximum number of users for the site in each of the user-based license types
+    [Creator, Explorer, or Viewer]
+    :param str storage_quota: the maximum amount of space for storage
+    :param bool disable_subscriptions_flag: True if disabling subscriptions, False otherwise
+    :param bool flows_enabled_flag: True if flows are enabled, False otherwise
+    :param bool guest_access_enabled_flag: True if guest access is enabled, False otherwise
     :param bool allow_subscription_attachments_flag: True if subscription attachments are enabled, False otherwise
-    :param cache_warmup_enabled_flag:       Boolean flag; True if cache warmup is enabled, False otherwise.
-    :type cache_warmup_enabled_flag:        boolean
-    :param commenting_enabled_flag:         Boolean flag; True if commenting is enabled, False otherwise.
-    :type commenting_enabled_flag:          boolean
-    :param revision_history_enabled_flag:   Boolean flag; True if revision history is enabled, False otherwise.
-    :type revision_history_enabled_flag:    boolean
-    :param revision_limit:                  The maximum number of revisions stored on the server. The number can be
-                                            between 2 and 10,000, or set to -1 in order to remove the limit entirely.
-    :type revision_limit:                   string
-    :param subscribe_others_enabled_flag:   Boolean flag; True if owners can subscribe other users, False otherwise.
-    :type subscribe_others_enabled_flag:    boolean
+    :param bool cache_warmup_enabled_flag: True if cache warmup is enabled, False otherwise
+    :param bool commenting_enabled_flag: True if commenting is enabled, False otherwise
+    :param bool revision_history_enabled_flag: True if revision history is enabled, False otherwise
+    :param str revision_limit: the maximum number of revisions stored on the server. The number can be between 2 and
+    10,000, or set to -1 in order to remove the limit entirely
+    :param bool subscribe_others_enabled_flag: True if owners can subscribe other users, False otherwise
     :param str extract_encryption_mode: enables, disables, or enforces extract encryption
     [enforced, enabled, or disabled]
     """

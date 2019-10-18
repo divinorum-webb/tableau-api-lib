@@ -3,16 +3,11 @@ from tableau_api_lib.api_requests import BaseRequest
 
 class CreateProjectRequest(BaseRequest):
     """
-    Update site request for generating API request URLs to Tableau Server.
-
-    :param ts_connection:           The Tableau Server connection object.
-    :type ts_connection:            class
-    :param project_name:            The name of the project being created.
-    :type project_name:             string
-    :param project_description:     The description of the project being created.
-    :type project_description:      string
-    :param parent_project_id:       The project ID for the parent project, if creating a child project.
-    :type parent_project_id:        string
+    Builds the request body for Tableau Server REST API requests creating projects.
+    :param class ts_connection: the Tableau Server connection object
+    :param str project_name: the name of the project being created
+    :param str project_description: the description of the project being created
+    :param str parent_project_id: the project ID for the parent project, if creating a child project
     """
     def __init__(self,
                  ts_connection,

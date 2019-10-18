@@ -3,20 +3,13 @@ from tableau_api_lib.api_requests import BaseRequest
 
 class AddWorkbookPermissionsRequest(BaseRequest):
     """
-    Add workbook permissions request for generating API request URLs to Tableau Server.
-
-    :param ts_connection:               The Tableau Server connection object.
-    :type ts_connection:                class
-    :param user_capability_dict:        The dict defining user capabilities / permissions.
-    :type user_capability_dict:         dict
-    :param group_capability_dict:       The dict defining group capabilities / permissions.
-    :type group_capability_dict:        dict
-    :param workbook_id:                 The workbook ID.
-    :type workbook_id:                  string
-    :param user_id:                     The user ID being assigned permissions.
-    :type user_id:                      string
-    :param group_id:                    The group ID being assigned permissions.
-    :type group_id:                     string
+    Builds the request body for Tableau Server REST API requests adding workbook permissions.
+    :param class ts_connection: the Tableau Server connection object
+    :param dict user_capability_dict: the dict defining user capabilities / permissions
+    :param dict group_capability_dict: the dict defining group capabilities / permissions
+    :param str workbook_id: the workbook ID
+    :param str user_id: the user ID being assigned permissions
+    :param str group_id: the group ID being assigned permissions
     """
     def __init__(self,
                  ts_connection,
@@ -63,13 +56,12 @@ class AddWorkbookPermissionsRequest(BaseRequest):
         ]
 
     def _validate_inputs(self):
-        if self._user_id or self._group_id:
-            pass
-        else:
-            self._invalid_parameter_exception()
+        valid = True
+        if not(self._user_id or self._group_id):
+            valid = False
         if self._user_capability_dict or self._group_capability_dict:
             self._set_capability_variables()
-        else:
+        if not valid:
             self._invalid_parameter_exception()
 
     def _unpack_capability_dict(self, capability_dict):

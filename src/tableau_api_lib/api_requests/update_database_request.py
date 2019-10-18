@@ -9,6 +9,14 @@ class UpdateDatabaseRequest(BaseRequest):
                  new_description_value=None,
                  new_contact_id=None
                  ):
+        """
+        Builds the request body for Tableau Server REST API requests updating databases.
+        :param class ts_connection: the Tableau Server connection object
+        :param bool certification_status: (optional) True if the database is certified, False otherwise
+        :param str certification_note: (optional) custom text accompanying the certification status
+        :param str new_description_value: (optional) custom text to describe the database asset
+        :param str new_contact_id: (optional) the user ID for the contact associated with the database
+        """
 
         super().__init__(ts_connection)
         self._certification_status = certification_status

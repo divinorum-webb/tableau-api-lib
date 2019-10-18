@@ -3,7 +3,7 @@ from tableau_api_lib.api_requests import BaseRequest
 
 class CreateSubscriptionRequest(BaseRequest):
     """
-    Builds the request body for the API call to create a subscription on Tableau Server.
+    Builds the request body for Tableau Server REST API requests creating subscriptions.
     :param class ts_connection: the Tableau Server connection object
     :param str subscription_subject: the subject to display to users receiving the subscription
     :param str content_type: set this value to 'Workbook' if the subscription is for a workbook; set this value to
@@ -43,9 +43,10 @@ class CreateSubscriptionRequest(BaseRequest):
         ]
 
     def _validate_content_type(self):
-        if self._content_type.lower().capitalize() in self.valid_content_types:
-            pass
-        else:
+        valid = True
+        if not(self._content_type.lower().capitalize() in self.valid_content_types):
+            valid = True
+        if not valid:
             self._invalid_parameter_exception()
 
     @property

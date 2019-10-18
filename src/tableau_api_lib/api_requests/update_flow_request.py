@@ -3,14 +3,10 @@ from tableau_api_lib.api_requests import BaseRequest
 
 class UpdateFlowRequest(BaseRequest):
     """
-    Update flow request for generating API request URLs to Tableau Server.
-
-    :param ts_connection:       The Tableau Server connection object.
-    :type ts_connection:        class
-    :param new_project_id:      (Optional) The ID of the project to add the data source to.
-    :type new_project_id:       string
-    :param new_owner_id:        (Optional) The ID of the user who will own the flow.
-    :type new_owner_id:         string
+    Builds the request body for Tableau Server REST API requests updating flows.
+    :param class ts_connection: the Tableau Server connection object
+    :param str new_project_id: (optional) the ID of the project to add the data source to
+    :param str new_owner_id: (optional) the ID of the user who will own the flow
     """
     def __init__(self,
                  ts_connection,

@@ -3,20 +3,13 @@ from tableau_api_lib.api_requests import BaseRequest
 
 class UpdateFlowConnectionRequest(BaseRequest):
     """
-    Update flow connection request for generating API request URLs to Tableau Server.
-
-    :param ts_connection:       The Tableau Server connection object.
-    :type ts_connection:        class
-    :param server_address:      The new server address for the connection.
-    :type server_address:       string
-    :param port:                The new port for the connection.
-    :type port:                 string
-    :param connection_username: The new username for the connection.
-    :type connection_username:  string
-    :param connection_password: The new password for the connection.
-    :type connection_password:  string
-    :param embed_password_flag: Boolean flag; True if embedding password in the flow connection, False otherwise.
-    :type embed_password_flag:  boolean
+    Builds the request body for Tableau Server REST API requests updating flow connections.
+    :param class ts_connection: the Tableau Server connection object
+    :param str server_address: the new server address for the connection
+    :param str port: the new port for the connection
+    :param str connection_username: the new username for the connection
+    :param str connection_password: the new password for the connection
+    :param bool embed_password_flag: True if embedding password in the flow connection, False otherwise
     """
     def __init__(self,
                  ts_connection,
@@ -66,13 +59,14 @@ class UpdateFlowConnectionRequest(BaseRequest):
         ]
 
     def _validate_inputs(self):
+        valid = True
         if self._embed_password_flag:
-            if self._connection_username and self._connection_password:
-                pass
-            else:
-                raise self._invalid_parameter_exception()
+            if not(self._connection_username and self._connection_password):
+                valid = False
         else:
             self._connection_password = ''
+        if not valid:
+            self._invalid_parameter_exception()
 
     def base_update_flow_connection_request(self):
         self._request_body.update({'connection': {}})

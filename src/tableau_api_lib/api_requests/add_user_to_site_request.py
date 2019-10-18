@@ -3,16 +3,11 @@ from tableau_api_lib.api_requests import BaseRequest
 
 class AddUserToSiteRequest(BaseRequest):
     """
-    Add user to site request for generating API api_requests to Tableau Server.
-
-    :param ts_connection:       The Tableau Server connection object.
-    :type ts_connection:        class
-    :param user_name:           The username for the user being added.
-    :type user_name:            string
-    :param site_role:           The site role to assign to the added user.
-    :type site_role:            string
-    :param auth_setting:        The auth setting to assign to the added user.
-    :type auth_setting:         string
+    Builds the request body for Tableau Server REST API requests adding users to sites.
+    :param class ts_connection: the Tableau Server connection object
+    :param str user_name: the username for the user being added
+    :param str site_role: the site role to assign to the added user
+    :param str auth_setting: the auth setting to assign to the added user
     """
     def __init__(self,
                  ts_connection,
@@ -21,7 +16,7 @@ class AddUserToSiteRequest(BaseRequest):
                  auth_setting=None):
         super().__init__(ts_connection)
         self._user_name = user_name
-        self._site_role = site_role
+        self._site_role = str(site_role).capitalize()
         self._auth_setting = auth_setting
         self._validate_site_role()
         self.base_add_user_request()
@@ -62,9 +57,10 @@ class AddUserToSiteRequest(BaseRequest):
         ]
 
     def _validate_site_role(self):
-        if self._site_role.lower() in self.valid_site_roles:
-            pass
-        else:
+        valid = True
+        if not(self._site_role.lower() in self.valid_site_roles):
+            valid = False
+        if not valid:
             self._invalid_parameter_exception()
 
     def base_add_user_request(self):

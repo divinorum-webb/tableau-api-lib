@@ -3,16 +3,11 @@ from tableau_api_lib.api_requests import BaseRequest
 
 class SignInRequest(BaseRequest):
     """
-    Sign in request for generating API request URLs to Tableau Server.
-
-    :param ts_connection:       The Tableau Server connection object.
-    :type ts_connection:        class
-    :param username:            The username credentials for signing in to Tableau Server.
-    :type username:             string
-    :param password:            The password credentials for signing in to Tableau Server.
-    :type password:             string
-    :param user_to_impersonate: If impersonating another user, set this value with their user ID.
-    :type user_to_impersonate:  string
+    Builds the request body for Tableau Server REST API requests when signing in.
+    :param class ts_connection: the Tableau Server connection object
+    :param str username: the username credentials for signing in to Tableau Server
+    :param str password: the password credentials for signing in to Tableau Server
+    :param str user_to_impersonate: if impersonating another user, set this value with their user ID
     """
     def __init__(self,
                  ts_connection,

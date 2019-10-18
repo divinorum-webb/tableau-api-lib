@@ -12,8 +12,7 @@ FILE_SIZE_LIMIT = 1024 * 1024 * 60  # 60MB
 
 class PublishFlowRequest(BaseRequest):
     """
-    Update site request for generating API request URLs to Tableau Server.
-
+    Builds the request body for Tableau Server REST API requests publishing flows.
     :param class ts_connection: the Tableau Server connection object
     :param string flow_name: the name for the flow being published
     :param string flow_file_path: the file path for the flow being published

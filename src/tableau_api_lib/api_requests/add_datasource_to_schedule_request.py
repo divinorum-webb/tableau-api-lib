@@ -5,7 +5,7 @@ class AddDatasourceToScheduleRequest(BaseRequest):
     """
     Builds the request body for Tableau Server REST API requests adding datasources to schedules.
     :param class ts_connection: the Tableau Server connection object
-    :param str datasource_id:       The datasource ID
+    :param str datasource_id: the datasource ID
     """
     def __init__(self,
                  ts_connection,

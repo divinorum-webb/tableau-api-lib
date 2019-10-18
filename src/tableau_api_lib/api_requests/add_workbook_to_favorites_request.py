@@ -3,14 +3,10 @@ from tableau_api_lib.api_requests import BaseRequest
 
 class AddWorkbookToFavoritesRequest(BaseRequest):
     """
-    Add workbook to favorites request for generating API request URLs to Tableau Server.
-
-    :param ts_connection:       The Tableau Server connection object.
-    :type ts_connection:        class
-    :param favorite_label:      The text label to assign to the favorite item.
-    :type favorite_label:       string
-    :param workbook_id:         The workbook ID.
-    :type workbook_id:          string
+    Builds the request body for Tableau Server REST API requests adding workbooks to favorites.
+    :param class ts_connection: the Tableau Server connection object
+    :param str favorite_label: the text label to assign to the favorite item
+    :param str workbook_id: the workbook ID
     """
     def __init__(self,
                  ts_connection,

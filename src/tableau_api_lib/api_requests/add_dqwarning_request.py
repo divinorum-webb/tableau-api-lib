@@ -8,7 +8,7 @@ class AddDQWarningRequest(BaseRequest):
                  message,
                  status=None):
         """
-        Builds the request body to add a data quality warning to content on Tableau Server.
+        Builds the request body for Tableau Server REST API requests adding data quality warnings.
         :param class ts_connection: the Tableau Server connection object
         :param string warning_type: the warning type [Deprecated, Warning, Stale data, Under maintenance]
         :param string message: a custom message accompanying the data warning

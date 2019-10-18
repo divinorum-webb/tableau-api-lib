@@ -3,48 +3,34 @@ from tableau_api_lib.api_requests import BaseRequest
 
 class UpdateScheduleRequest(BaseRequest):
     """
-    Update schedule request for API api_requests to Tableau Server.
-
-    :param ts_connection:               The Tableau Server connection object.
-    :type ts_connection:                class
-    :param schedule_name:               The new name to give to the schedule.
-    :type schedule_name:                string
-    :param schedule_priority:           An integer value (entered here as a string) between 1 and 100 that determines
-                                        the default priority of the schedule if multiple tasks are pending in the queue.
-                                        Higher numbers have higher priority.
-    :type schedule_priority:            string
-    :param schedule_state:              The state for the schedule. Can be either 'Active' or 'Suspended'.
-    :type schedule_state:               string
-    :param schedule_type:               This value (Extract or Subscription) indicates whether the schedule type is
-                                        an extract or a subscription schedule.
-    :type schedule_type:                string
-    :param schedule_execution_order:    Parallel to allow jobs associated with this schedule to run at the same time,
-                                        or Serial to require the jobs to run one after the other.
-    :type schedule_execution_order:     string
-    :param schedule_frequency:          The granularity of the schedule. Valid values are:
-                                        Hourly, Daily, Weekly, Monthly.
-    :type schedule_frequency:           string
-    :param start_time:                  The time of day on which scheduled jobs should run (or if the frequency is
-                                        hourly, on which they should start being run), in the format HH:MM:SS
-                                        (for example, 18:30:00). This value is required for all schedule frequencies.
-    :type start_time:                   string
-    :param end_time:                    If the schedule frequency is Hourly, the time of day on which scheduled jobs
-                                        should stop being run, in the format HH:MM:SS (for example, 23:30:00).
-                                        Hourly jobs will occur at the specified intervals between the start time and
-                                        the end time. For other schedule frequencies, this value is not required and
-                                        if the attribute is included, it is ignored.
-    :type end_time:                     string
-    :param interval_expression_list:    This list of dicts specifies the time interval(s) between jobs on the given
-                                        schedule. The value required here depends on the 'schedule_frequency' value.
-                                        If 'schedule_frequency' = 'Hourly', the interval expression should be either
-                                        hours="interval" (where "interval" is a number [1, 2, 4, 6, 8, 12] in quotes).
-                                        If 'schedule_frequency' = 'Daily', no interval needs to be specified.
-                                        If 'schedule_frequency' = 'Weekly, the interval is weekDay="weekday", where
-                                        weekday is one of ['Sunday', 'Monday', 'Tuesday', etc.] wrapped in quotes.
-                                        If 'schedule_frequency' = 'Monthly', the interval expression is monthDay="day",
-                                        where day is either the day of the month (1-31), or 'LastDay'. In both cases
-                                        the value is wrapped in quotes.
-    :type interval_expression_list:     list
+    Builds the request body for Tableau Server REST API requests updating schedules.
+    :param class ts_connection: the Tableau Server connection object
+    :param str schedule_name: the new name to give to the schedule
+    :param str schedule_priority: an integer value (entered here as a string) between 1 and 100 that determines the
+    default priority of the schedule if multiple tasks are pending in the queue; higher numbers have higher priority
+    :param str schedule_state: the state for the schedule. Can be either 'Active' or 'Suspended'
+    :param str schedule_type: this value (Extract or Subscription) indicates whether the schedule type is an extract or
+    a subscription schedule
+    :param str schedule_execution_order: parallel to allow jobs associated with this schedule to run at the same time,
+    or Serial to require the jobs to run one after the other
+    :param str schedule_frequency: the granularity of the schedule. Valid values are:
+    [Hourly, Daily, Weekly, or Monthly]
+    :param str start_time: the time of day on which scheduled jobs should run (or if the frequency is hourly, on which
+    they should start being run), in the format HH:MM:SS (for example, 18:30:00); this value is required for all
+    schedule frequencies
+    :param str end_time: if the schedule frequency is Hourly, the time of day on which scheduled jobs should stop being
+    run, in the format HH:MM:SS (for example, 23:30:00); hourly jobs will occur at the specified intervals between the
+    start time and the end time; for other schedule frequencies, this value is not required and if the attribute is
+    included, it is ignored
+    :param list interval_expression_list: this list of dicts specifies the time interval(s) between jobs on the given
+    schedule; the value required here depends on the 'schedule_frequency' value;
+    if 'schedule_frequency' = 'Hourly', the interval expression should be either hours="interval" (where "interval" is
+    a number [1, 2, 4, 6, 8, 12] in quotes);
+    if 'schedule_frequency' = 'Daily', no interval needs to be specified;
+    if 'schedule_frequency' = 'Weekly, the interval is weekDay="weekday", where weekday is one of
+    ['Sunday', 'Monday', 'Tuesday', etc.] wrapped in quotes;
+    if 'schedule_frequency' = 'Monthly', the interval expression is monthDay="day", where day is either the day of the
+    month (1-31), or 'LastDay'; in both cases the value is wrapped in quotes.
     """
 
     def __init__(self,

@@ -4,11 +4,8 @@ from tableau_api_lib.api_requests import BaseRequest
 class SwitchSiteRequest(BaseRequest):
     """
     Switch site request for generating API api_requests to Tableau Server.
-
-    :param ts_connection:       The Tableau Server connection object.
-    :type ts_connection:        class
-    :param site_name:           The name, AKA content url, of the site you are switching to.
-    :type site_name:            string
+    :param class ts_connection: the Tableau Server connection object
+    :param str site_name: the name, AKA content url, of the site you are switching to
     """
     def __init__(self,
                  ts_connection,

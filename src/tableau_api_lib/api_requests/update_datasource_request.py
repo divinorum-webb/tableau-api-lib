@@ -3,19 +3,13 @@ from tableau_api_lib.api_requests import BaseRequest
 
 class UpdateDatasourceRequest(BaseRequest):
     """
-    Update datasource request for generating API request URLs to Tableau Server.
-
-    :param ts_connection:       The Tableau Server connection object.
-    :type ts_connection:        class
-    :param new_project_id:      (Optional) The ID of the project to add the data source to.
-    :type new_project_id:       string
-    :param new_owner_id:        (Optional) The ID of the user who will own the datasource.
-    :type new_owner_id:         string
-    :param is_certified_flag:   (Optional) Boolean flag; True if the datasource is certified, False otherwise.
-    :type is_certified_flag:    boolean
-    :param certification_note:  (Optional) A note that provides more information on the certification of
-                                the datasource, if applicable.
-    :type certification_note:   string
+    Builds the request body for Tableau Server REST API requests updating datasources.
+    :param class ts_connection: the Tableau Server connection object
+    :param str new_project_id: (optional) the ID of the project to add the data source to
+    :param str new_owner_id: (optional) the ID of the user who will own the datasource
+    :param bool is_certified_flag: (optional) True if the datasource is certified, False otherwise
+    :param str certification_note: (optional) a note that provides more information on the certification of the
+    datasource, if applicable
     """
     def __init__(self,
                  ts_connection,

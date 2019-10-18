@@ -5,6 +5,11 @@ class UpdateColumnRequest(BaseRequest):
     def __init__(self,
                  ts_connection,
                  new_description_value=None):
+        """
+        Builds the request body for Tableau Server REST API requests updating database columns.
+        :param class ts_connection: the Tableau Server connection object
+        :param str new_description_value: (optional) the new description for the column
+        """
 
         super().__init__(ts_connection)
         self._new_description_value = new_description_value

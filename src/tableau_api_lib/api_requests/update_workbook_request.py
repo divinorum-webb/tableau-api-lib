@@ -3,17 +3,11 @@ from tableau_api_lib.api_requests import BaseRequest
 
 class UpdateWorkbookRequest(BaseRequest):
     """
-    Update workbook request for sending API api_requests to Tableau Server.
-
-    :param ts_connection:       The Tableau Server connection object.
-    :type ts_connection:        class
-    :param show_tabs_flag:      (Optional) Boolean flag; True if the workbook will show views as tabs, False otherwise.
-                                Default value is False.
-    :type show_tabs_flag:       boolean
-    :param project_id:          (Optional) The ID of a project to assign the workbook to.
-    :type project_id:           string
-    :param owner_id:            (Optional) The ID of the user who will own the workbook.
-    :type owner_id:             string
+    Builds the request body for Tableau Server REST API requests updating workbooks.
+    :param class ts_connection: the Tableau Server connection object
+    :param bool show_tabs_flag: (optional) true if the workbook will show views as tabs, False otherwise
+    :param str project_id: (optional) the ID of a project to assign the workbook to
+    :param str owner_id: (optional) the ID of the user who will own the workbook
     """
     def __init__(self,
                  ts_connection,

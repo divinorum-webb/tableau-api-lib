@@ -3,12 +3,9 @@ from tableau_api_lib.api_requests import BaseRequest
 
 class AddTagsRequest(BaseRequest):
     """
-    Add tags request for generating API api_requests to Tableau Server.
-
-    :param ts_connection:       The Tableau Server connection object.
-    :type ts_connection:        class
-    :param tags:                A list of tag names to add.
-    :type tags:                 list
+    Builds the request body for Tableau Server REST API requests adding tags to content.
+    :param class ts_connection: the Tableau Server connection object
+    :param list tags: a list of tag names to add
     """
     def __init__(self,
                  ts_connection,

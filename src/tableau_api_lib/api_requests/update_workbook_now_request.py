@@ -3,10 +3,8 @@ from tableau_api_lib.api_requests import BaseRequest
 
 class UpdateWorkbookNowRequest(BaseRequest):
     """
-    Update workbook now request for sending API api_requests to Tableau Server.
-
-    :param ts_connection:       The Tableau Server connection object.
-    :type ts_connection:        class
+    Builds the request body for Tableau Server REST API requests updating workbook extracts immediately.
+    :param class ts_connection: the Tableau Server connection object
     """
     def __init__(self,
                  ts_connection):

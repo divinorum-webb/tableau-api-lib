@@ -3,21 +3,14 @@ from tableau_api_lib.api_requests import BaseRequest
 
 class UpdateGroupRequest(BaseRequest):
     """
-    Update group request for API api_requests to Tableau Server.
-
-    :param ts_connection:                   The Tableau Server connection object.
-    :type ts_connection:                    class
-    :param new_group_name:                  The new name for the group.
-    :type new_group_name:                   string
-    :param active_directory_group_name:     The name of the Active Directory group to synchronize with.
-    :type active_directory_group_name:      string
-    :param active_directory_domain_name:    The domain for the Active Directory group.
-    :type active_directory_domain_name:     string
-    :param default_site_role:               The site role to assign to users that are synchronized with
-                                            Active Directory. You can assign the following roles:
-                                            Creator, Explorer, ExplorerCanPublish, SiteAdministratorExplorer,
-                                            SiteAdministratorCreator, Unlicensed, or Viewer.
-    :type default_site_role:                string
+    Builds the request body for Tableau Server REST API requests updating groups.
+    :param class ts_connection: the Tableau Server connection object
+    :param str new_group_name: the new name for the group
+    :param str active_directory_group_name: the name of the Active Directory group to synchronize with
+    :param str active_directory_domain_name: the domain for the Active Directory group
+    :param str default_site_role: the site role to assign to users that are synchronized with Active Directory. You can
+    assign the following roles:
+    [Creator, Explorer, ExplorerCanPublish, SiteAdministratorExplorer, SiteAdministratorCreator, Unlicensed, or Viewer]
     """
     def __init__(self,
                  ts_connection,

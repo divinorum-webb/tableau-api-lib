@@ -3,11 +3,10 @@ from tableau_api_lib.api_requests import BaseRequest
 
 class UpdateSubscriptionRequest(BaseRequest):
     """
-    Update subscription request for generating API request URLs to Tableau Server.
-
-    :param class ts_connection: the Tableau Server connection object.
-    :param str new_subscription_subject:    (optional) A new subject for the subscription.
-    :param str new_schedule_id:             (optional) The ID of a schedule to associate this subscription with.
+    Builds the request body for Tableau Server REST API requests updating subscriptions.
+    :param class ts_connection: the Tableau Server connection object
+    :param str new_subscription_subject: (optional) a new subject for the subscription
+    :param str new_schedule_id: (optional) the ID of a schedule to associate this subscription with
     :param bool attach_image_flag: True if attaching a .png image to the subscription, defaults to False
     :param bool attach_pdf_flag: True if attaching a .pdf file to the subscription, defaults to False
     """

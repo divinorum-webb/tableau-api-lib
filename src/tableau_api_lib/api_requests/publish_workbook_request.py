@@ -13,8 +13,7 @@ FILE_SIZE_LIMIT = 1024 * 1024 * 60  # 60MB
 
 class PublishWorkbookRequest(BaseRequest):
     """
-    Builds the JSON request to publish a workbook to Tableau Server via API.
-
+    Builds the request body for Tableau Server REST API requests publishing workbooks.
     :param class ts_connection: the Tableau Server connection object
     :param string workbook_name: the name the published workbook will have on Tableau Server
     :param string workbook_file_path: the file path for the workbook being published

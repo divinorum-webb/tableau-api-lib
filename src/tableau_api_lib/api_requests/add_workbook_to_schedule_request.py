@@ -3,12 +3,9 @@ from tableau_api_lib.api_requests import BaseRequest
 
 class AddWorkbookToScheduleRequest(BaseRequest):
     """
-    Add workbook to schedule request for generating API request URLs to Tableau Server.
-
-    :param ts_connection:       The Tableau Server connection object.
-    :type ts_connection:        class
-    :param workbook_id:         The workbook ID.
-    :type workbook_id:          string
+    Builds the request body for Tableau Server REST API requests adding workbooks to schedules.
+    :param class ts_connection: the Tableau Server connection object
+    :param str workbook_id: the workbook ID
     """
     def __init__(self,
                  ts_connection,

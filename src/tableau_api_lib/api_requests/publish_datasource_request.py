@@ -13,28 +13,15 @@ FILE_SIZE_LIMIT = 1024 * 1024 * 60  # 60MB
 
 class PublishDatasourceRequest(BaseRequest):
     """
-    Update site request for generating API request URLs to Tableau Server.
-
-    :param ts_connection:           The Tableau Server connection object.
-    :type ts_connection:            class
-    :param datasource_name:         The name for the datasource being published.
-    :type datasource_name:          string
-    :param datasource_file_path:    The file path for the datasource being published.
-    :type datasource_file_path:     string
-    :param project_id:              The project ID for the project the datasource belongs to.
-    :type project_id:               string
-    :param connection_username:     If the datasource requires credentials, this value specifies
-                                    the connection username.
-    :type connection_username:      string
-    :param connection_password:     If the datasource requires credentials, this value specifies
-                                    the connection password.
-    :type connection_password:      string
-    :param embed_credentials_flag:  Boolean flag; True if credentials are to be stored for when the connection is used,
-                                    False otherwise.
-    :type embed_credentials_flag:   boolean
-    :param oauth_flag:              Boolean flag; True if the data connection username is an OAuth username,
-                                    False otherwise.
-    :type oauth_flag:               boolean
+    Builds the request body for Tableau Server REST API requests publishing datasources.
+    :param class ts_connection: the Tableau Server connection object
+    :param str datasource_name: the name for the datasource being published
+    :param str datasource_file_path: the file path for the datasource being published
+    :param str project_id: the project ID for the project the datasource belongs to
+    :param str connection_username: if the datasource requires credentials, this value specifies the connection username
+    :param str connection_password: if the datasource requires credentials, this value specifies the connection password
+    :param bool embed_credentials_flag: True if credentials are to be embedded, False otherwise
+    :param bool oauth_flag: True if the data connection username is an OAuth username, False otherwise
     """
     def __init__(self,
                  ts_connection,

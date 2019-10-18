@@ -10,7 +10,7 @@ class UpdateTableRequest(BaseRequest):
                  new_contact_id=None
                  ):
         """
-        Builds the request body for updating a database table on Tableau Server.
+        Builds the request body for Tableau Server REST API requests updating database tables.
         :param class ts_connection: the Tableau Server connection object
         :param bool certification_status: certifies (True) or removes certification (False) for the specified table
         :param str certification_note: custom text to accompany the certification status
