@@ -585,7 +585,7 @@ class TableauServerConnection:
                        parent_project_id=None,
                        parameter_dict=None):
         """
-        Crates a new project on the active site.
+        Creates a new project on the active site.
         :param string project_name: the project name
         :param string project_description: the project description
         :param string content_permissions: the content permissions for the project
