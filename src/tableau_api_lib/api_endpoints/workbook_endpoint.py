@@ -100,6 +100,7 @@ class WorkbookEndpoint(BaseEndpoint):
             self._update_workbook,
             self._delete_workbook,
             self._update_workbook_connection,
+            self._add_tags,
             self._delete_tag,
             self._query_views,
             self._query_connections,
@@ -116,7 +117,7 @@ class WorkbookEndpoint(BaseEndpoint):
 
     def _validate_inputs(self):
         valid = True
-        if sum(self.mutually_exclusive_params) != 1:
+        if sum(self.mutually_exclusive_params) > 1:
             valid = False
         if not valid:
             self._invalid_parameter_exception()

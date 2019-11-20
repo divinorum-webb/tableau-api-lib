@@ -92,12 +92,16 @@ class TableauServerConnection:
 
     # authentication
 
-    def sign_in(self):
+    def sign_in(self, user_to_impersonate=None):
         """
         Signs in to Tableau Server.
+        :param str user_to_impersonate: (optional) the user ID for the user being impersonated
         :return: HTTP response
         """
-        request = SignInRequest(ts_connection=self, username=self.username, password=self.password).get_request()
+        request = SignInRequest(ts_connection=self,
+                                username=self.username,
+                                password=self.password,
+                                user_to_impersonate=user_to_impersonate).get_request()
         endpoint = AuthEndpoint(ts_connection=self, sign_in=True).get_endpoint()
         response = requests.post(url=endpoint, json=request, headers=self.sign_in_headers)
         if response.status_code == 200:

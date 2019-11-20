@@ -208,7 +208,6 @@ class PublishWorkbookRequest(BaseRequest):
                     'name': view,
                     'hidden': 'true'
                 })
-        print(self._request_body)
         return self._request_body
 
     def _file_requires_chunking(self):
