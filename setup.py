@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="tableau_api_lib",
-    version="0.0.43",
+    version="0.0.44",
     author="Elliott Stam",
     author_email="elliott.stam@gmail.com",
     description="This library enables developers to call any method seen in Tableau Server's REST API documentation.",
@@ -19,6 +19,7 @@ setuptools.setup(
     install_requires=[
         'requests>2',
         'urllib3',
+        'pandas',
         'requests-toolbelt>=0.9.0',
         'bleach>=3.0'
     ],
@@ -28,3 +29,4 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
 )
+
