@@ -85,9 +85,6 @@ def test_publish_workbook():
                                      project_id=test_project_id,
                                      show_tabs_flag=False,
                                      embed_credentials_flag=True,
-                                     server_address='interworks.snowflakecomputing.com',
-                                     connection_username='estam',
-                                     connection_password='Act1Andariel!',
                                      parameter_dict={
                                          'overwrite': 'overwrite=true',
                                          'asJob': 'asJob=true'
@@ -98,10 +95,6 @@ def test_publish_workbook():
                                      workbook_name=TEST_WORKBOOK_PREFIX+'a',
                                      project_id=test_project_id,
                                      show_tabs_flag=False,
-                                     server_address='interworks.snowflakecomputing.com',
-                                     embed_credentials_flag=True,
-                                     connection_username='estam',
-                                     connection_password='Act1Andariel!',
                                      parameter_dict={
                                          'overwrite': 'overwrite=true',
                                          'asJob': 'asJob=true'
@@ -111,10 +104,6 @@ def test_publish_workbook():
                                      workbook_name=TEST_WORKBOOK_PREFIX + 'b',
                                      project_id=test_project_id,
                                      show_tabs_flag=True,
-                                     server_address='interworks.snowflakecomputing.com',
-                                     embed_credentials_flag=True,
-                                     connection_username='estam',
-                                     connection_password='Act1Andariel!',
                                      parameter_dict={
                                          'overwrite': 'overwrite=true',
                                          'asJob': 'asJob=true'
