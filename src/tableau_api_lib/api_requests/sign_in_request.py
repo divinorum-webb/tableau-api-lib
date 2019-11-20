@@ -32,7 +32,7 @@ class SignInRequest(BaseRequest):
         return self._request_body
 
     def modified_signin_request(self):
-        self._request_body.update({
+        self._request_body['credentials'].update({
             "user": {
                 "id": self._user_to_impersonate
             }
