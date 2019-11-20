@@ -1,7 +1,11 @@
 """
 The functions below enable you to clone the schedules from Server A to Server B.
 This is particularly useful when doing site exports / imports.
-The only function that should be directly called upon from outside this file is the 'clone_schedules' function.
+The only functions are for use outside of this module:
+
+clone_schedules
+copy_schedule_state
+override_schedule_state
 """
 from tableau_api_lib.utils import extract_pages
 from tableau_api_lib.exceptions import InvalidParameterException
