@@ -84,7 +84,6 @@ def test_publish_workbook():
                                      workbook_name=TEST_WORKBOOK_PREFIX+'a',
                                      project_id=test_project_id,
                                      show_tabs_flag=False,
-                                     embed_credentials_flag=True,
                                      parameter_dict={
                                          'overwrite': 'overwrite=true',
                                          'asJob': 'asJob=true'
