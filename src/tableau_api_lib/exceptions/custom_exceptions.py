@@ -1,9 +1,10 @@
 class InvalidParameterException(Exception):
     """Raised when an invalid set of parameters are passed to an Endpoint or Request class"""
     def __init__(self, class_name, parameters):
-        error_message = "\n{} received an invalid combination of parameters. \
-         \nEvaluate the parameters below and correct accordingly:\n{}".format(class_name,
-                                                                              parameters)
+        error_message = """
+        "\n{} received an invalid combination of parameters.
+         Evaluate the parameters below and correct accordingly:\n{}
+         """.format(class_name, parameters)
         super().__init__(error_message)
 
 
