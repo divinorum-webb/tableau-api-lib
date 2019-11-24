@@ -22,8 +22,6 @@ def extract_pages(query_func,
                   limit=None,
                   parameter_dict={}):
     """
-
-
     :param query_func:          A callable function that will issue a GET request to Tableau Server.
     :type query_func:           function
     :param starting_page:       The page number to start on. Defaults to the first page (page_number = 1).
@@ -50,9 +48,12 @@ def extract_pages(query_func,
         query = query_func(parameter_dict=params).json()
         page_number, page_size, total_available = get_page_attributes(query)
 
-        outer_key = [key for key in query.keys() if key != 'pagination'].pop()
-        inner_key = list(query[outer_key].keys()).pop()
-        extracted_pages += query[outer_key][inner_key]
+        try:
+            outer_key = [key for key in query.keys() if key != 'pagination'].pop()
+            inner_key = list(query[outer_key].keys()).pop()
+            extracted_pages += query[outer_key][inner_key]
+        except IndexError:
+            print("Tableau Server did not find any items of the type you requested. Please confirm they exist.")
 
         if limit:
             if limit <= len(extracted_pages):
