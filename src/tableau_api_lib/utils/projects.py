@@ -122,8 +122,6 @@ def get_source_to_target_df(conn_source, conn_target, project_names=None):
     project_details_df = join_source_projects_and_users(project_df, source_user_df, target_user_df)
     return project_details_df
 
-# stuff below needs work
-
 
 def get_child_projects_df(project_details_df):
     """
@@ -215,7 +213,7 @@ def create_projects(project_details_df, conn_target):
     :return: list of HTTP responses
     """
     responses = []
-    for i, project_name in enumerate(project_details_df['source_project_name']):
+    for i, _ in enumerate(project_details_df['source_project_name']):
         response = conn_target.create_project(
             project_name=project_details_df['source_project_name'][i],
             project_description=project_details_df['source_project_description'][i],
