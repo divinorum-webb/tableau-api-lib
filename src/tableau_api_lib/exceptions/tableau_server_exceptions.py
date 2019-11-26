@@ -21,7 +21,7 @@ class ContentOverwriteDisabled(Exception):
     """
     def __init__(self, content_object):
         error_message = """
-        The target connection already has at least one named {} that already exists and cannot be overwritten.
+        The target connection has at least one named {} that already exists, and no 'overwrite_policy' was specified.
         If you'd like to overwrite the existing content, set the 'overwrite_policy' value to 'overwrite'.
         """.format(content_object)
         super().__init__(error_message)
