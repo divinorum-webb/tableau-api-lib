@@ -47,11 +47,17 @@ class AddUserToSiteRequest(BaseRequest):
     def valid_site_roles(self):
         return [
             'Creator',
+            'creator',
             'Explorer',
+            'explorer',
             'ExplorerCanPublish',
-            'siteAdministratorExplorer'
+            'explorercanpublish',
+            'siteAdministratorExplorer',
+            'siteadministratorexplorer',
             'SiteAdministratorCreator',
+            'siteadministratorcreator',
             'Unlicensed',
+            'unlicensed',
             'Viewer',
             'viewer'
         ]
