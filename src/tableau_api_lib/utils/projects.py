@@ -8,6 +8,7 @@ Functions to import: clone_projects
 import pandas as pd
 
 from tableau_api_lib.utils import extract_pages, get_users_df
+from tableau_api_lib.exceptions import ContentOverwriteDisabled
 
 
 def get_source_project_df(conn_source, project_names=None):
@@ -48,6 +49,25 @@ def get_target_project_df(conn_target, project_names=None):
         'parentProjectId': 'target_project_parent_id'
     }, inplace=True)
     return project_df
+
+
+def get_project_names(project_df, column_name) -> list:
+    """
+    Get the project names for the active site on the specified Tableau Server connection.
+    :param DataFrame project_df: the project details DataFrame for the server
+    :param str column_name: the name of the column containing project names [source_project_name, target_project_name]
+    :return: project names
+    """
+    project_names = list(project_df[column_name])
+    project_names = [project_name for project_name in project_names]
+    return project_names
+
+
+def get_overlapping_project_names(source_project_df, target_project_df) -> list:
+    source_project_names = set(get_project_names(source_project_df, 'source_project_name'))
+    target_project_names = set(get_project_names(target_project_df, 'target_project_name'))
+    overlapping_project_names = source_project_names.intersection(target_project_names)
+    return list(overlapping_project_names)
 
 
 def extract_project_owner_id(owner_dict, key='id'):
@@ -241,14 +261,45 @@ def update_project_hierarchies(project_details_df, conn_target):
     return responses
 
 
-def clone_projects(conn_source, conn_target, project_names=None):
+def validate_inputs(overwrite_policy):
+    valid_overwrite_policies = [
+        None,
+        'overwrite'
+    ]
+    if overwrite_policy in valid_overwrite_policies:
+        pass
+    else:
+        raise ValueError("Invalid overwrite policy provided: '{}'".format(overwrite_policy))
+
+
+def delete_projects(conn, project_details_df, project_names):
+    print("deleting overlapping target projects...")
+    responses = []
+    projects_to_delete = project_details_df[project_details_df['target_project_name'].isin(project_names)]
+    for i, project in projects_to_delete.iterrows():
+        responses.append(conn.delete_project(project_id=project['target_project_id']))
+    print("overlapping target sites deleted")
+    return conn
+
+
+def clone_projects(conn_source, conn_target, project_names=None, overwrite_policy=None):
     """
     Clones projects from the source server to the target server.
     :param class conn_source: the source server connection
     :param class conn_target: the target server connection
     :param list project_names: (optional) a list of project names to clone; specifying no names clones all projects
+    :param str overwrite_policy: (optional) set to 'overwrite' to overwrite content; defaults to not overwriting
     :return: None
     """
+    validate_inputs(overwrite_policy)
+    source_project_df = get_source_project_df(conn_source=conn_source, project_names=project_names)
+    target_project_df = get_target_project_df(conn_target=conn_target, project_names=project_names)
+    overlapping_project_names = get_overlapping_project_names(source_project_df=source_project_df,
+                                                              target_project_df=target_project_df)
+    if any(overlapping_project_names) and not overwrite_policy:
+        raise ContentOverwriteDisabled('project')
+    if any(overlapping_project_names) and overwrite_policy == 'overwrite':
+        delete_projects(conn_target, project_details_df=target_project_df, project_names=overlapping_project_names)
     project_details_df = get_source_to_target_df(conn_source, conn_target, project_names)
     create_projects(project_details_df, conn_target)
     update_project_hierarchies(create_final_target_df(conn_source, conn_target), conn_target)
