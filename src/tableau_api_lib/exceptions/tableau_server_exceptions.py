@@ -15,6 +15,17 @@ class InvalidTableauServerQuery(Exception):
         super().__init__(error_message)
 
 
+class ContentNotFound(Exception):
+    """
+    Exception for situations where Tableau Server content is queried but does not exist on the site.
+    """
+    def __init__(self):
+        error_message = """
+        The queried Tableau Server content [users, projects, etc.] does not exist on the active site.
+        """
+        super().__init__(error_message)
+
+
 class ContentOverwriteDisabled(Exception):
     """
     Exception for flagging that the target server has objects with the same name as those being cloned from the source.
@@ -24,4 +35,16 @@ class ContentOverwriteDisabled(Exception):
         The target connection has at least one named {} that already exists, and no 'overwrite_policy' was specified.
         If you'd like to overwrite the existing content, set the 'overwrite_policy' value to 'overwrite'.
         """.format(content_object)
+        super().__init__(error_message)
+
+
+class UsersNotFound(Exception):
+    """
+    Exception for situations where Tableau Server users are queried but non exist on the site.
+    """
+    def __init__(self):
+        error_message = """
+        An attempt was made to query Tableau Server users, but none exist for the active site.
+        Make sure users have been created on the site and try again.
+        """
         super().__init__(error_message)
