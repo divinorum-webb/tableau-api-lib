@@ -655,7 +655,9 @@ class TableauServerConnection:
         :param string project_id: the project ID
         :return: HTTP response
         """
-        self.active_endpoint = ProjectEndpoint(ts_connection=self, project_id=project_id).get_endpoint()
+        self.active_endpoint = ProjectEndpoint(ts_connection=self,
+                                               project_id=project_id,
+                                               delete_project=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
