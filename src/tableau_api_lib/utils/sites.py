@@ -137,7 +137,19 @@ def delete_sites(conn, site_details_df, site_names):
     return conn
 
 
+def validate_inputs(overwrite_policy):
+    valid_overwrite_policies = [
+        None,
+        'overwrite'
+    ]
+    if overwrite_policy in valid_overwrite_policies:
+        pass
+    else:
+        raise ValueError("Invalid overwrite policy provided: '{}'".format(overwrite_policy))
+
+
 def clone_sites(conn_source, conn_target, site_names=None, overwrite_policy=None):
+    validate_inputs(overwrite_policy)
     source_site_df = get_source_site_df(conn_source=conn_source, site_names=site_names)
     target_site_df = get_target_site_df(conn_target=conn_target, site_names=site_names)
     overlapping_site_names = get_overlapping_site_names(source_site_df=source_site_df, target_site_df=target_site_df)
@@ -149,5 +161,4 @@ def clone_sites(conn_source, conn_target, site_names=None, overwrite_policy=None
     target_site_df = get_target_site_df(conn_target=conn_target, site_names=site_names)
     merged_site_df = merge_source_and_target_df(source_site_df=source_site_df, target_site_df=target_site_df)
     updated_sites = update_sites(conn_target=conn_target, site_df=merged_site_df)
-    print("target_conn_site: ", conn_target.query_site().json())
     return updated_sites
