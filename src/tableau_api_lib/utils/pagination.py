@@ -1,3 +1,6 @@
+from tableau_api_lib.exceptions import ContentNotFound
+
+
 def get_page_attributes(query):
     """
     Get the page attributes (pageNumber, pageSize, totalAvailable) from a query and return their values.
@@ -53,7 +56,7 @@ def extract_pages(query_func,
             inner_key = list(query[outer_key].keys()).pop()
             extracted_pages += query[outer_key][inner_key]
         except IndexError:
-            print("Tableau Server did not find any items of the type you requested. Please confirm they exist.")
+            raise ContentNotFound()
 
         if limit:
             if limit <= len(extracted_pages):
