@@ -17,7 +17,7 @@ from tableau_api_lib.api_requests import AddDatasourcePermissionsRequest, AddDat
     UpdateProjectRequest, UpdateScheduleRequest, UpdateSiteRequest, UpdateSubscriptionRequest, \
     UpdateUserRequest, UpdateWorkbookConnectionRequest, UpdateWorkbookRequest, UpdateTableRequest, \
     UpdateColumnRequest, AddDQWarningRequest, UpdateDQWarningRequest
-from tableau_api_lib.decorators import verify_response, verify_signed_in
+from tableau_api_lib.decorators import verify_response, verify_signed_in, verify_config_variables, verify_api_version
 
 
 class TableauServerConnection:
@@ -92,6 +92,8 @@ class TableauServerConnection:
 
     # authentication
 
+    @verify_api_version
+    @verify_config_variables
     def sign_in(self, user_to_impersonate=None):
         """
         Signs in to Tableau Server.
