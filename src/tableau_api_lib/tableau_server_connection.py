@@ -17,7 +17,8 @@ from tableau_api_lib.api_requests import AddDatasourcePermissionsRequest, AddDat
     UpdateProjectRequest, UpdateScheduleRequest, UpdateSiteRequest, UpdateSubscriptionRequest, \
     UpdateUserRequest, UpdateWorkbookConnectionRequest, UpdateWorkbookRequest, UpdateTableRequest, \
     UpdateColumnRequest, AddDQWarningRequest, UpdateDQWarningRequest
-from tableau_api_lib.decorators import verify_response, verify_signed_in, verify_config_variables, verify_api_version
+from tableau_api_lib.decorators import verify_response, verify_signed_in, verify_config_variables, \
+    verify_rest_api_version, verify_api_method_exists
 
 
 class TableauServerConnection:
@@ -25,13 +26,10 @@ class TableauServerConnection:
                  config_json,
                  env='tableau_prod'):
         """
-        :param config_json:     A configuration dict or JSON file. This is typically a JSON file that defines the
-                                Tableau Server configuration details.
-        :type config_json:      JSON or dict
-        :param env:             The environment from the configuration file to use. This allows for multiple
-                                configurations to exist within the configuration file / dict, which could hold details
-                                for other servers (dev, test, prod, other Tableau Server instance, etc.)
-        :type env:              string
+        A connection to Tableau Server built upon the configuration details provided.
+
+        :param dict config_json: a dict or JSON object containing configuration details
+        :param str env: the configuration environment to reference from the configuration dict
         """
         self._config = config_json
         self._env = env
@@ -92,7 +90,7 @@ class TableauServerConnection:
 
     # authentication
 
-    @verify_api_version
+    @verify_rest_api_version
     @verify_config_variables
     def sign_in(self, user_to_impersonate=None):
         """
@@ -127,6 +125,7 @@ class TableauServerConnection:
         return response
 
     @verify_signed_in
+    @verify_api_method_exists('2.6')
     def switch_site(self, content_url):
         """
         Switches the connection to the specified site, whose site name is provided as 'content_url'.
@@ -145,6 +144,7 @@ class TableauServerConnection:
             self.user_id = response.json()['credentials']['user']['id']
         return response
 
+    @verify_api_method_exists('2.4')
     def server_info(self):
         """
         Provides information about the active Tableau Server connection.
@@ -157,6 +157,7 @@ class TableauServerConnection:
 
     # sites
 
+    @verify_api_method_exists('2.3')
     def create_site(self,
                     site_name,
                     content_url,
@@ -217,6 +218,7 @@ class TableauServerConnection:
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def query_site(self, parameter_dict=None):
         """
         Queries details for the active site.
@@ -231,6 +233,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def query_sites(self, parameter_dict=None):
         """
         Query details for all sites on the server.
@@ -244,6 +247,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def query_views_for_site(self, parameter_dict=None):
         """
         Query details for all views on the active site.
@@ -257,6 +261,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def update_site(self,
                     site_id,
                     site_name=None,
@@ -322,6 +327,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def delete_site(self,
                     site_id=None,
                     site_name=None,
@@ -345,6 +351,7 @@ class TableauServerConnection:
 
     # data driven alerts
 
+    @verify_api_method_exists('3.2')
     def delete_data_driven_alert(self, data_alert_id):
         """
         Deletes the specified data driven alert.
@@ -357,6 +364,7 @@ class TableauServerConnection:
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.2')
     def query_data_driven_alert_details(self, data_alert_id):
         """
         Queries details for the specified data driven alert.
@@ -370,6 +378,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.2')
     def query_data_driven_alerts(self, parameter_dict=None):
         """
         Queries the data driven alerts for the active site.
@@ -383,6 +392,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.2')
     def add_user_to_data_driven_alert(self,
                                       user_id,
                                       data_alert_id):
@@ -403,6 +413,7 @@ class TableauServerConnection:
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.2')
     def delete_user_from_data_driven_alert(self,
                                            user_id,
                                            data_alert_id):
@@ -420,6 +431,7 @@ class TableauServerConnection:
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.2')
     def update_data_driven_alert(self,
                                  data_alert_id,
                                  data_alert_subject=None,
@@ -447,6 +459,7 @@ class TableauServerConnection:
 
     # flows
 
+    @verify_api_method_exists('3.3')
     def query_flow(self, flow_id):
         """
         Queries details for the specified flow.
@@ -460,6 +473,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.3')
     def delete_flow(self, flow_id):
         """
         Deletes the specified flow.
@@ -473,6 +487,7 @@ class TableauServerConnection:
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.3')
     def download_flow(self, flow_id):
         """
         Downloads the specified flow.
@@ -486,6 +501,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.3')
     def query_flow_connections(self, flow_id):
         """
         Queries the connection details for the specified flow.
@@ -499,6 +515,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.3')
     def query_flows_for_site(self):
         """
         Queries details for all flows on the active site.
@@ -510,6 +527,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.3')
     def query_flows_for_user(self,
                              user_id,
                              parameter_dict=None):
@@ -527,6 +545,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.3')
     def update_flow(self,
                     flow_id,
                     new_project_id=None,
@@ -548,6 +567,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.3')
     def update_flow_connection(self,
                                flow_id,
                                connection_id,
@@ -584,6 +604,7 @@ class TableauServerConnection:
 
     # projects
 
+    @verify_api_method_exists('2.3')
     def create_project(self,
                        project_name,
                        project_description=None,
@@ -611,6 +632,7 @@ class TableauServerConnection:
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def query_projects(self, parameter_dict=None):
         """
         Queries details for all projects on the active site.
@@ -624,6 +646,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def update_project(self,
                        project_id,
                        project_name=None,
@@ -651,6 +674,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def delete_project(self, project_id):
         """
         Deletes the specified project.
@@ -666,6 +690,7 @@ class TableauServerConnection:
 
     # workbooks and views
 
+    @verify_api_method_exists('2.6')
     def add_tags_to_view(self, view_id, tags):
         """
         Adds one or more tags to the specified view.
@@ -679,6 +704,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def add_tags_to_workbook(self, workbook_id, tags):
         """
         Adds tags to the specified workbook.
@@ -693,6 +719,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def query_views_for_workbook(self,
                                  workbook_id,
                                  parameter_dict=None):
@@ -710,6 +737,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.8')
     def query_view_data(self,
                         view_id,
                         parameter_dict=None):
@@ -728,6 +756,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.5')
     def query_view_image(self,
                          view_id,
                          parameter_dict=None):
@@ -746,6 +775,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.8')
     def query_view_pdf(self,
                        view_id,
                        parameter_dict=None):
@@ -764,6 +794,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def query_view_preview_image(self,
                                  workbook_id,
                                  view_id,
@@ -812,6 +843,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def query_workbook(self,
                        workbook_id,
                        parameter_dict=None):
@@ -829,6 +861,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def query_workbook_connections(self,
                                    workbook_id,
                                    parameter_dict=None):
@@ -846,6 +879,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def get_workbook_revisions(self,
                                workbook_id,
                                parameter_dict=None):
@@ -880,6 +914,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def remove_workbook_revision(self,
                                  workbook_id,
                                  revision_number):
@@ -897,6 +932,7 @@ class TableauServerConnection:
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def query_workbook_preview_image(self,
                                      workbook_id,
                                      parameter_dict=None):
@@ -916,6 +952,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def query_workbooks_for_site(self, parameter_dict=None):
         """
         Queries details for all workbooks on the active site.
@@ -929,6 +966,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def query_workbooks_for_user(self,
                                  user_id,
                                  parameter_dict=None):
@@ -946,6 +984,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def download_workbook(self,
                           workbook_id,
                           parameter_dict=None):
@@ -964,6 +1003,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.4')
     def download_workbook_pdf(self,
                               workbook_id,
                               parameter_dict=None):
@@ -982,6 +1022,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def download_workbook_revision(self,
                                    workbook_id,
                                    revision_number,
@@ -1003,6 +1044,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def update_workbook(self,
                         workbook_id,
                         show_tabs_flag=None,
@@ -1026,6 +1068,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def update_workbook_connection(self,
                                    workbook_id,
                                    connection_id,
@@ -1063,6 +1106,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.8')
     def update_workbook_now(self, workbook_id, ):
         """
         Immediately executes extract refreshes for the specified workbook.
@@ -1077,6 +1121,7 @@ class TableauServerConnection:
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def delete_workbook(self, workbook_id):
         """
         Deletes the specified workbook.
@@ -1090,6 +1135,7 @@ class TableauServerConnection:
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.6')
     def delete_tag_from_view(self,
                              view_id,
                              tag_name):
@@ -1107,6 +1153,7 @@ class TableauServerConnection:
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def delete_tag_from_workbook(self, workbook_id, tag_name):
         """
         Deletes the named tag from the specified workbook.
@@ -1124,6 +1171,7 @@ class TableauServerConnection:
 
     # data sources
 
+    @verify_api_method_exists('2.6')
     def add_tags_to_data_source(self,
                                 datasource_id,
                                 tags):
@@ -1141,6 +1189,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.6')
     def delete_tag_from_data_source(self,
                                     datasource_id,
                                     tag_name):
@@ -1156,6 +1205,7 @@ class TableauServerConnection:
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def query_data_source(self, datasource_id):
         """
         Queries details for the specified datasource.
@@ -1168,6 +1218,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def query_data_sources(self, parameter_dict=None):
         """
         Queries details for all datasources on the active site.
@@ -1180,6 +1231,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def query_data_source_connections(self, datasource_id):
         """
         Queries details for the connections belonging to the specified datasource.
@@ -1192,6 +1244,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def get_data_source_revisions(self,
                                   datasource_id,
                                   parameter_dict=None):
@@ -1209,6 +1262,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def download_data_source(self,
                              datasource_id,
                              parameter_dict=None):
@@ -1226,6 +1280,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def download_data_source_revision(self,
                                       datasource_id,
                                       revision_number,
@@ -1246,6 +1301,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def update_data_source(self, datasource_id,
                            new_project_id=None,
                            new_owner_id=None,
@@ -1274,6 +1330,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def update_data_source_connection(self,
                                       datasource_id,
                                       connection_id,
@@ -1308,6 +1365,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.8')
     def update_data_source_now(self, datasource_id):
         """
         Immediately executes an extract refresh for the specified datasource.
@@ -1322,6 +1380,7 @@ class TableauServerConnection:
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def delete_data_source(self, datasource_id):
         """
         Deletes the specified datasource.
@@ -1335,6 +1394,7 @@ class TableauServerConnection:
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def remove_data_source_revision(self,
                                     datasource_id,
                                     revision_number):
@@ -1354,6 +1414,7 @@ class TableauServerConnection:
 
     # users and groups
 
+    @verify_api_method_exists('2.3')
     def create_group(self,
                      new_group_name,
                      active_directory_group_name=None,
@@ -1379,6 +1440,7 @@ class TableauServerConnection:
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def add_user_to_group(self,
                           group_id,
                           user_id):
@@ -1394,6 +1456,7 @@ class TableauServerConnection:
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def add_user_to_site(self,
                          user_name,
                          site_role,
@@ -1414,6 +1477,7 @@ class TableauServerConnection:
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def get_users_in_group(self,
                            group_id,
                            parameter_dict=None):
@@ -1431,6 +1495,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def get_users_on_site(self, parameter_dict=None):
         """
         Queries details for all users on the active site.
@@ -1444,6 +1509,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def query_groups(self, parameter_dict=None):
         """
         Queries details for all groups on the active site.
@@ -1457,6 +1523,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def query_user_on_site(self, user_id):
         """
         Queries details for the specified user on the active site.
@@ -1470,6 +1537,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def update_group(self,
                      group_id,
                      new_group_name=None,
@@ -1500,6 +1568,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def update_user(self,
                     user_id,
                     new_full_name=None,
@@ -1528,6 +1597,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.default_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def remove_user_from_group(self,
                                group_id,
                                user_id):
@@ -1545,6 +1615,7 @@ class TableauServerConnection:
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def remove_user_from_site(self, user_id):
         """
         Removes the specified user from the active site.
@@ -1558,6 +1629,7 @@ class TableauServerConnection:
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def delete_group(self, group_id):
         """
         Deletes the specified group from the active site.
@@ -1573,6 +1645,7 @@ class TableauServerConnection:
 
     # permissions
 
+    @verify_api_method_exists('2.3')
     def add_data_source_permissions(self,
                                     datasource_id,
                                     user_capability_dict=None,
@@ -1632,6 +1705,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def add_project_permissions(self,
                                 project_id,
                                 user_capability_dict=None,
@@ -1661,6 +1735,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def add_default_permissions(self,
                                 project_id,
                                 project_permissions_object,
@@ -1693,6 +1768,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.2')
     def add_view_permissions(self,
                              view_id,
                              user_capability_dict=None,
@@ -1721,6 +1797,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def add_workbook_permissions(self,
                                  workbook_id,
                                  user_capability_dict=None,
@@ -1749,6 +1826,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def query_data_source_permissions(self, datasource_id):
         """
         Queries permissions details for the specified datasource.
@@ -1763,6 +1841,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def query_flow_permissions(self, flow_id):
         """
         Queries permissions details for the specified flow.
@@ -1777,6 +1856,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def query_project_permissions(self, project_id):
         """
         Queries permissions details for the specified project.
@@ -1791,6 +1871,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def query_default_permissions(self,
                                   project_id,
                                   project_permissions_object):
@@ -1808,6 +1889,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.2')
     def query_view_permissions(self, view_id):
         """
         Queries permissions details for the specified view.
@@ -1822,6 +1904,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def query_workbook_permissions(self, workbook_id):
         """
         Query permissions details for the specified workbook.
@@ -1836,6 +1919,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def delete_data_source_permission(self,
                                       datasource_id,
                                       delete_permissions_object,
@@ -1889,6 +1973,7 @@ class TableauServerConnection:
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def delete_project_permission(self,
                                   project_id,
                                   delete_permissions_object,
@@ -1915,6 +2000,7 @@ class TableauServerConnection:
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def delete_default_permission(self,
                                   project_id,
                                   project_permissions_object,
@@ -1947,6 +2033,7 @@ class TableauServerConnection:
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.2')
     def delete_view_permission(self,
                                view_id,
                                delete_permissions_object,
@@ -1974,6 +2061,7 @@ class TableauServerConnection:
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def delete_workbook_permission(self, workbook_id, delete_permissions_object, delete_permissions_object_id,
                                    capability_name, capability_mode):
         """
@@ -1999,6 +2087,7 @@ class TableauServerConnection:
 
     # jobs, tasks, and schedules
 
+    @verify_api_method_exists('2.8')
     def add_data_source_to_schedule(self,
                                     datasource_id,
                                     schedule_id):
@@ -2035,6 +2124,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.8')
     def add_workbook_to_schedule(self,
                                  workbook_id,
                                  schedule_id):
@@ -2052,6 +2142,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.1')
     def cancel_job(self, job_id):
         """
         Cancels the specified job.
@@ -2063,6 +2154,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def query_job(self, job_id):
         """
         Queries the specified job.
@@ -2074,6 +2166,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.1')
     def query_jobs(self, parameter_dict=None):
         """
         Queries details for all jobs on the active site.
@@ -2086,6 +2179,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.6')
     def get_extract_refresh_task(self, task_id):
         """
         Query details for the specified extract refresh task.
@@ -2097,6 +2191,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def get_extract_refresh_tasks_for_site(self):
         """
         Query details for all extract refresh tasks on the active site.
@@ -2142,6 +2237,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def create_schedule(self,
                         schedule_name,
                         schedule_priority=50,
@@ -2194,6 +2290,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def query_schedules(self, parameter_dict=None):
         """
         Queries details for all schedules on the server.
@@ -2207,6 +2304,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.6')
     def run_extract_refresh_task(self, task_id):
         """
         Runs the specified extract refresh task.
@@ -2233,6 +2331,7 @@ class TableauServerConnection:
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def update_schedule(self,
                         schedule_id,
                         schedule_name=None,
@@ -2275,6 +2374,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def delete_schedule(self, schedule_id):
         """
         Deletes the specified schedule.
@@ -2290,6 +2390,7 @@ class TableauServerConnection:
 
     # subscriptions
 
+    @verify_api_method_exists('2.3')
     def create_subscription(self,
                             subscription_subject,
                             content_type,
@@ -2316,6 +2417,7 @@ class TableauServerConnection:
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def query_subscription(self, subscription_id):
         """
         Queries details for the specified subscription.
@@ -2329,6 +2431,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def query_subscriptions(self, parameter_dict=None):
         """
         Queries details for all subscriptions on the site.
@@ -2342,6 +2445,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def update_subscription(self,
                             subscription_id,
                             new_subscription_subject=None,
@@ -2363,6 +2467,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def delete_subscription(self, subscription_id):
         """
         Deletes the specified subscription.
@@ -2378,6 +2483,7 @@ class TableauServerConnection:
 
     # favorites
 
+    @verify_api_method_exists('2.3')
     def add_data_source_to_favorites(self,
                                      datasource_id,
                                      user_id,
@@ -2399,6 +2505,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.1')
     def add_project_to_favorites(self,
                                  project_id,
                                  user_id,
@@ -2419,6 +2526,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def add_view_to_favorites(self,
                               view_id,
                               user_id,
@@ -2440,6 +2548,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def add_workbook_to_favorites(self,
                                   workbook_id,
                                   user_id,
@@ -2461,6 +2570,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def delete_data_source_from_favorites(self,
                                           datasource_id,
                                           user_id):
@@ -2479,6 +2589,7 @@ class TableauServerConnection:
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.1')
     def delete_project_from_favorites(self,
                                       project_id,
                                       user_id):
@@ -2497,6 +2608,7 @@ class TableauServerConnection:
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def delete_view_from_favorites(self,
                                    view_id,
                                    user_id):
@@ -2515,6 +2627,7 @@ class TableauServerConnection:
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def delete_workbook_from_favorites(self,
                                        workbook_id,
                                        user_id):
@@ -2533,6 +2646,7 @@ class TableauServerConnection:
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.5')
     def get_favorites_for_user(self, user_id):
         """
         Queries the favorite items for a specified user.
@@ -2548,6 +2662,7 @@ class TableauServerConnection:
 
     # publishing
 
+    @verify_api_method_exists('2.3')
     def initiate_file_upload(self):
         """
         Initiates a file upload session with Tableau Server.
@@ -2558,6 +2673,7 @@ class TableauServerConnection:
         response = requests.post(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def append_to_file_upload(self,
                               upload_session_id,
                               payload,
@@ -2577,6 +2693,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, data=payload, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def publish_data_source(self,
                             datasource_file_path,
                             datasource_name,
@@ -2614,6 +2731,7 @@ class TableauServerConnection:
         response = requests.post(url=self.active_endpoint, data=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.3')
     def publish_workbook(self,
                          workbook_file_path,
                          workbook_name,
@@ -2669,6 +2787,7 @@ class TableauServerConnection:
         response = requests.post(url=self.active_endpoint, data=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.3')
     def publish_flow(self,
                      flow_file_path,
                      flow_name,
@@ -2716,6 +2835,7 @@ class TableauServerConnection:
 
     # metadata methods
 
+    @verify_api_method_exists('3.5')
     def query_database(self, database_id):
         """
         Query details for the specified database.
@@ -2727,6 +2847,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.5')
     def query_databases(self):
         """
         Queries details for databases stored on Tableau Server.
@@ -2737,6 +2858,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.5')
     def update_database(self,
                         database_id,
                         certification_status=None,
@@ -2762,6 +2884,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.5')
     def remove_database(self, database_id):
         """
         Removes the database asset.
@@ -2773,6 +2896,7 @@ class TableauServerConnection:
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.5')
     def query_table(self, table_id):
         """
         Queries details for the specified database table.
@@ -2784,6 +2908,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.5')
     def query_tables(self):
         """
         Queries details for all tables on the active site.
@@ -2794,6 +2919,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.5')
     def update_table(self,
                      table_id,
                      certification_status=None,
@@ -2819,6 +2945,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.5')
     def remove_table(self, table_id):
         """
         Removes the database table asset.
@@ -2830,6 +2957,7 @@ class TableauServerConnection:
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.5')
     def query_table_column(self, table_id, column_id):
         """
         Queries details for the specified column in the specified database table.
@@ -2845,6 +2973,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.5')
     def query_table_columns(self, table_id):
         """
         Queries details for all columns in the specified database table.
@@ -2856,6 +2985,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.5')
     def update_column(self, table_id, column_id, new_description_value=None):
         """
         Updates details for the specified column in the specified database table.
@@ -2873,6 +3003,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.5')
     def remove_column(self, table_id, column_id):
         """
         Removes the specified column asset.
@@ -2888,6 +3019,7 @@ class TableauServerConnection:
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.5')
     def add_data_quality_warning(self,
                                  content_type,
                                  content_id,
@@ -2917,6 +3049,7 @@ class TableauServerConnection:
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.5')
     def query_data_quality_warning_by_id(self, warning_id):
         """
         Queries details for the specified data quality warning, identified by its ID
@@ -2944,6 +3077,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.5')
     def update_data_quality_warning(self,
                                     warning_id,
                                     warning_type=None,
@@ -2967,6 +3101,7 @@ class TableauServerConnection:
         response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.5')
     def delete_data_quality_warning_by_id(self, warning_id):
         """
         Removes the data quality warning from Tableau Server.
@@ -2980,6 +3115,7 @@ class TableauServerConnection:
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.5')
     def delete_data_quality_warning_by_content(self, content_type, content_id):
         """
         Removes the data quality warning from the specified piece of content on Tableau Server.
@@ -2998,6 +3134,7 @@ class TableauServerConnection:
 
     # encryption methods
 
+    @verify_api_method_exists('3.5')
     def encrypt_extracts(self):
         """
         Encrypts all extracts on the active site (encrypts .hyper extracts at rest).
@@ -3008,6 +3145,7 @@ class TableauServerConnection:
         response = requests.post(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.5')
     def decrypt_extracts(self):
         """
         Decrypts all extracts on the active site (decrypts .hyper extracts).
@@ -3018,6 +3156,7 @@ class TableauServerConnection:
         response = requests.post(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.5')
     def reencrypt_extracts(self):
         """
         Reencrypts all .hyper extracts on the active site with new encryption keys.
