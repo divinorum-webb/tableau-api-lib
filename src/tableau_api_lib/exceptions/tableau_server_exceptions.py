@@ -1,3 +1,21 @@
+class InvalidRestApiVersion(Exception):
+    """
+    Exception for flagging API method calls to endpoints that do not exist for the (older) version being used.
+    """
+    def __init__(self, func, api_version_used, api_version_required):
+        """
+        Generates an error message citing the api_version_used and api_version_required.
+        :param str api_version_used: the REST API being used by the active connection
+        :param str api_version_required: the minimum REST API version required
+        """
+        error_message = """
+        The REST API endpoint referenced in function '{0}' requires a minimum API version of {1}.
+        The API version you are using is {2}, which pre-dates the endpoint referenced.
+        Please visit Tableau's REST API reference to identify the methods relevant for your legacy API version.
+        """.format(func.__name__, api_version_required, api_version_used)
+        super().__init__(error_message)
+
+
 class InvalidTableauServerQuery(Exception):
     """
     Exception for flagging invalid Tableau Server site queries.
