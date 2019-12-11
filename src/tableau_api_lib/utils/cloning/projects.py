@@ -279,7 +279,7 @@ def delete_projects(conn, project_details_df, project_names):
     projects_to_delete = project_details_df[project_details_df['target_project_name'].isin(project_names)]
     for i, project in projects_to_delete.iterrows():
         responses.append(conn.delete_project(project_id=project['target_project_id']))
-    print("overlapping target sites deleted")
+    print("overlapping target projects deleted")
     return conn
 
 
