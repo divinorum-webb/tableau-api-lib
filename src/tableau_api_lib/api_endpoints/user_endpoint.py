@@ -44,6 +44,7 @@ class UserEndpoint(BaseEndpoint):
             self._query_user,
             self._query_users,
             self._query_workbooks_for_user,
+            self._update_user,
             self._remove_user
         ]
 
