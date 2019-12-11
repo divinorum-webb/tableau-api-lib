@@ -23,6 +23,12 @@ from tableau_api_lib.utils.querying.sites import get_active_site_content_url, ge
 
 
 def verify_mapping_file_columns(mapping_file_columns, required_columns) -> None:
+    """
+    Throws an error if required columns in the mapping file are not present.
+    :param list mapping_file_columns: list of columns present in the mapping file
+    :param list required_columns: list of required columns for mapping users
+    :return: None
+    """
     missing_columns = [col for col in required_columns if col not in mapping_file_columns]
     if any(missing_columns):
         raise ValueError(""""
@@ -32,16 +38,27 @@ def verify_mapping_file_columns(mapping_file_columns, required_columns) -> None:
 
 
 def get_mapping_file_df(mapping_file_path) -> pd.DataFrame:
+    """
+    Creates a Pandas DataFrame from the CSV file located in the mapping_file_path.
+    :param str mapping_file_path: the file path to the mapping file CSV
+    :return: Pandas DataFrame
+    """
     required_columns = ['source_site_name', 'source_username', 'target_site_name', 'target_username']
     try:
         mapping_file_df = pd.read_csv(mapping_file_path)
-        verify_mapping_file_columns(mapping_file_df.columns, required_columns)
+        verify_mapping_file_columns(list(mapping_file_df.columns), required_columns)
         return mapping_file_df
     except FileNotFoundError:
         raise FileNotFoundError("The mapping file '{}' could not be found. Please verify the file path provided.")
 
 
 def get_source_user_df(conn_source, usernames=None) -> pd.DataFrame:
+    """
+    Creates a Pandas DataFrame populated with data for users on the source Tableau Server connection.
+    :param class conn_source: the source Tableau Server connection
+    :param list usernames: (optional) a subset of users; if specified, only these users will appear in the Dataframe
+    :return: Pandas DataFrame
+    """
     user_df = get_users_dataframe(conn_source)
     if usernames:
         user_df = user_df[user_df['name'].isin(usernames)]
@@ -58,6 +75,12 @@ def get_source_user_df(conn_source, usernames=None) -> pd.DataFrame:
 
 
 def get_target_user_df(conn_target, usernames=None) -> pd.DataFrame:
+    """
+    Creates a Pandas DataFrame populated with data for users on the target Tableau Server connection.
+    :param class conn_target: the source Tableau Server connection
+    :param list usernames: (optional) a subset of users; if specified, only these users will appear in the Dataframe
+    :return: Pandas DataFrame
+    """
     user_df = get_users_dataframe(conn_target)
     if usernames:
         user_df = user_df[user_df['name'].isin(usernames)]
@@ -74,6 +97,13 @@ def get_target_user_df(conn_target, usernames=None) -> pd.DataFrame:
 def get_overlapping_usernames(source_user_df,
                               target_user_df,
                               mapping_file_path=None) -> list:
+    """
+    Creates a list of usernames that appear in the source connection and the target connection.
+    :param pd.DataFrame source_user_df: a Pandas DataFrame populated with source connection user details
+    :param pd.DataFrame target_user_df: a Pandas DataFrame populated with target connection user details
+    :param str mapping_file_path: (optional) the file path for the mapping file CSV
+    :return: overlapping_usernames
+    """
     if mapping_file_path:
         source_usernames = set(source_user_df['target_username'])
     else:
@@ -84,6 +114,12 @@ def get_overlapping_usernames(source_user_df,
 
 
 def get_mapped_user_df(user_df, mapping_file_path) -> pd.DataFrame:
+    """
+    Creates a Pandas DataFrame that combines source user details with user mapping details.
+    :param pd.DataFrame user_df: a Pandas Dataframe with source connection user details
+    :param str mapping_file_path: the file path for the mapping file CSV
+    :return: user_df
+    """
     if mapping_file_path:
         mapping_file_df = get_mapping_file_df(mapping_file_path)
         user_df = user_df.merge(mapping_file_df,
@@ -94,6 +130,12 @@ def get_mapped_user_df(user_df, mapping_file_path) -> pd.DataFrame:
 
 
 def delete_users(conn, target_user_df) -> list:
+    """
+    Removes users from the specified connection.
+    :param class conn:
+    :param pd.DataFrame target_user_df:
+    :return: list of HTTP responses
+    """
     print("removing overlapping target users...")
     user_ids = target_user_df['id']
     responses = [conn.remove_user_from_site(user_id) for user_id in user_ids]
@@ -106,6 +148,8 @@ def create_users(conn_target, source_user_df, mapping_file_path, server_type) ->
     Create users on the target server, based on user details from the source server.
     :param class conn_target: the target server connection
     :param DataFrame source_user_df: the source user DataFrame containing details for the users being created
+    :param mapping_file_path: the file path to the user mapping file CSV
+    :param server_type: (optional) the product variety ['tableau_server', 'tableau_online']
     :return: list of HTTP responses
     """
     field_prefix = get_field_prefix(mapping_file_path)
@@ -127,13 +171,23 @@ def create_users(conn_target, source_user_df, mapping_file_path, server_type) ->
     return responses
 
 
-def reset_connection(conn):
+def reset_connection(conn) -> object:
+    """
+    Resets the connection to Tableau Server by signing out and signing in again.
+    :param class conn: the Tableau Server connection to reset
+    :return: TableauServerConnection
+    """
     conn.sign_out()
     conn.sign_in()
     return conn
 
 
-def get_field_prefix(mapping_file_path):
+def get_field_prefix(mapping_file_path) -> str:
+    """
+    Get the field prefix, depending on whether or not a mapping_file_path was provided.
+    :param str mapping_file_path: the file path to the user mapping file
+    :return: field_prefix
+    """
     if mapping_file_path:
         field_prefix = 'target_'
     else:
@@ -141,7 +195,14 @@ def get_field_prefix(mapping_file_path):
     return field_prefix
 
 
-def update_users(conn_target, source_user_df, mapping_file_path):
+def update_users(conn_target, source_user_df, mapping_file_path) -> list:
+    """
+    Updates users on the target connection to mirror values on the source connection.
+    :param class conn_target: the target Tableau Server connection
+    :param pd.DataFrame source_user_df: a Pandas DataFrame with source user details
+    :param str mapping_file_path: the file path to the user mapping file
+    :return: list of HTTP responses
+    """
     reset_connection(conn_target)
     target_user_df = get_target_user_df(conn_target)
     field_prefix = get_field_prefix(mapping_file_path)
@@ -158,12 +219,15 @@ def update_users(conn_target, source_user_df, mapping_file_path):
             new_site_role=row[field_prefix + 'site_role'],
             new_auth_setting=row[field_prefix + 'auth_setting'])
         responses.append(response)
-    for response in responses:
-        print(response.content)
     return responses
 
 
 def fill_expected_columns(source_user_df):
+    """
+    Populates any missing 'expected_columns' with None value if they do not yet exist.
+    :param pd.DataFrame source_user_df: a Pandas DataFrame with source user details
+    :return: source_user_df
+    """
     expected_columns = ['source_email', 'source_full_name', 'source_site_role', 'source_auth_setting']
     source_columns = source_user_df.columns
     for expected_column in expected_columns:
@@ -172,7 +236,18 @@ def fill_expected_columns(source_user_df):
     return source_user_df
 
 
-def process_overlapping_usernames(conn_target, target_user_df, overlapping_usernames, overwrite_policy) -> None:
+def process_overlapping_usernames(conn_target,
+                                  target_user_df,
+                                  overlapping_usernames,
+                                  overwrite_policy) -> None:
+    """
+    Processes overlapping usernames depending on the overwrite policy specified.
+    :param class conn_target: the target Tableau Server connection
+    :param pd.DataFrame target_user_df: a Pandas DataFrame with target user details
+    :param list overlapping_usernames: a list of usernames present on both the source and target connections
+    :param str overwrite_policy: must be set to 'overwrite' to enable overwriting existing content
+    :return:
+    """
     if any(overlapping_usernames) and not overwrite_policy:
         raise ContentOverwriteDisabled('users')
     if any(overlapping_usernames) and overwrite_policy == 'overwrite':
