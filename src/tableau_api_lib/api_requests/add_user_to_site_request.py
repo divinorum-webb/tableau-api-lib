@@ -12,11 +12,11 @@ class AddUserToSiteRequest(BaseRequest):
     def __init__(self,
                  ts_connection,
                  user_name,
-                 site_role,
+                 site_role='Viewer',
                  auth_setting=None):
         super().__init__(ts_connection)
         self._user_name = user_name
-        self._site_role = str(site_role).capitalize()
+        self._site_role = site_role
         self._auth_setting = auth_setting
         self._validate_site_role()
         self.base_add_user_request()
@@ -56,6 +56,8 @@ class AddUserToSiteRequest(BaseRequest):
             'siteadministratorexplorer',
             'SiteAdministratorCreator',
             'siteadministratorcreator',
+            'ServerAdministrator',
+            'serverAdministrator',
             'Unlicensed',
             'unlicensed',
             'Viewer',
@@ -64,7 +66,7 @@ class AddUserToSiteRequest(BaseRequest):
 
     def _validate_site_role(self):
         valid = True
-        if not(self._site_role.lower() in self.valid_site_roles):
+        if not(self._site_role in self.valid_site_roles):
             valid = False
         if not valid:
             self._invalid_parameter_exception()
