@@ -79,7 +79,7 @@ def extract_pages(query_func,
         page_number, page_size, total_available = get_page_attributes(query)
 
         if total_available == 0:
-            extracting = False
+            raise ValueError('The Tableau Server content being queried has at least one empty entity. Please Verify.')
         else:
             try:
                 outer_key = [key for key in query.keys() if key != 'pagination'].pop()
