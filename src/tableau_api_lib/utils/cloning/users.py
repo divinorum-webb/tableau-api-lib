@@ -19,7 +19,6 @@ import pandas as pd
 
 from tableau_api_lib.exceptions import ContentOverwriteDisabled
 from tableau_api_lib.utils.querying.users import get_users_dataframe
-from tableau_api_lib.utils.querying.sites import get_active_site_content_url, get_active_site_name
 
 
 def verify_mapping_file_columns(mapping_file_columns, required_columns) -> None:
@@ -158,16 +157,18 @@ def create_users(conn_target, source_user_df, mapping_file_path, server_type) ->
         for i, _ in enumerate(source_user_df['source_username']):
             response = conn_target.add_user_to_site(
                 user_name=source_user_df[field_prefix + 'username'][i],
-                site_role=source_user_df[field_prefix + 'site_role'][i],
-                auth_setting=source_user_df[field_prefix + 'auth_setting'][i])
+                site_role=source_user_df[field_prefix + 'site_role'][i])
+                # auth_setting=source_user_df[field_prefix + 'auth_setting'][i])
             responses.append(response)
     if server_type == 'tableau_online':
         for i, _ in enumerate(source_user_df['source_username']):
             response = conn_target.add_user_to_site(
                 user_name=source_user_df[field_prefix + 'email'][i],
-                site_role=source_user_df[field_prefix + 'site_role'][i],
-                auth_setting=source_user_df[field_prefix + 'auth_setting'][i])
+                site_role=source_user_df[field_prefix + 'site_role'][i])
+                # auth_setting=source_user_df[field_prefix + 'auth_setting'][i])
             responses.append(response)
+    for response in responses:
+        print(response.content)
     return responses
 
 
@@ -195,7 +196,7 @@ def get_field_prefix(mapping_file_path) -> str:
     return field_prefix
 
 
-def update_users(conn_target, source_user_df, mapping_file_path) -> list:
+def update_users(conn_target, source_user_df, mapping_file_path, server_type) -> list:
     """
     Updates users on the target connection to mirror values on the source connection.
     :param class conn_target: the target Tableau Server connection
@@ -203,6 +204,7 @@ def update_users(conn_target, source_user_df, mapping_file_path) -> list:
     :param str mapping_file_path: the file path to the user mapping file
     :return: list of HTTP responses
     """
+    print("updating users...")
     reset_connection(conn_target)
     target_user_df = get_target_user_df(conn_target)
     field_prefix = get_field_prefix(mapping_file_path)
@@ -211,14 +213,27 @@ def update_users(conn_target, source_user_df, mapping_file_path) -> list:
                                             right_on=field_prefix + 'username',
                                             suffixes=('_update', None))
     responses = []
-    for index, row in combined_user_df.iterrows():
-        response = conn_target.update_user(
-            user_id=row['id_update'],
-            new_full_name=row[field_prefix + 'full_name'],
-            new_email=row[field_prefix + 'email'],
-            new_site_role=row[field_prefix + 'site_role'],
-            new_auth_setting=row[field_prefix + 'auth_setting'])
-        responses.append(response)
+    if server_type == 'tableau_server':
+        for index, row in combined_user_df.iterrows():
+            response = conn_target.update_user(
+                user_id=row['id_update'],
+                new_full_name=row[field_prefix + 'full_name'],
+                new_email=row[field_prefix + 'email'],
+                new_site_role=row[field_prefix + 'site_role'],
+                new_auth_setting=row[field_prefix + 'auth_setting'])
+            responses.append(response)
+    if server_type == 'tableau_online':
+        for index, row in combined_user_df.iterrows():
+            response = conn_target.update_user(
+                user_id=row['id_update'],
+                new_full_name=row[field_prefix + 'full_name'],
+                new_email=row[field_prefix + 'email'],
+                new_site_role=row[field_prefix + 'site_role'],
+                new_auth_setting=row[field_prefix + 'auth_setting'])
+            responses.append(response)
+    for response in responses:
+        print(response.content)
+    print("users updated")
     return responses
 
 
@@ -266,9 +281,9 @@ def clone_users(conn_source,
     :param class conn_source: the source Tableau Server connection
     :param class conn_target: the target Tableau Server connection
     :param str server_type: (optional) the product variety ['tableau_server', 'tableau_online']
-    :param str usernames: (optional) a list of users to clone; if provided, only these users are cloned
+    :param list usernames: (optional) a list of users to clone; if provided, only these users are cloned
     :param str mapping_file_path: (optional) the path to a file mapping users from source to target
-    :param str overwrite_policy: (optional) must be set to 'overwrite' to enable overwriting existing content
+    :param  overwrite_policy: (optional) must be set to 'overwrite' to enable overwriting existing content
     :return:
     """
     source_user_df = get_source_user_df(conn_source, usernames)
@@ -279,5 +294,5 @@ def clone_users(conn_source,
     process_overlapping_usernames(conn_target, target_user_df, overlapping_usernames, overwrite_policy)
     cloned_users = create_users(conn_target, source_user_df, mapping_file_path, server_type)
     if server_type == 'tableau_server':
-        cloned_users = update_users(conn_target, source_user_df, mapping_file_path)
+        cloned_users = update_users(conn_target, source_user_df, mapping_file_path, server_type)
     return cloned_users
