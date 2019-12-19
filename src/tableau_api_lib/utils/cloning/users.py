@@ -213,24 +213,24 @@ def update_users(conn_target, source_user_df, mapping_file_path, server_type) ->
                                             right_on=field_prefix + 'username',
                                             suffixes=('_update', None))
     responses = []
-    if server_type == 'tableau_server':
+    if server_type == 'tableau_server' or server_type == 'tableau_online':
         for index, row in combined_user_df.iterrows():
             response = conn_target.update_user(
                 user_id=row['id_update'],
                 new_full_name=row[field_prefix + 'full_name'],
-                new_email=row[field_prefix + 'email'],
+                new_email=row[field_prefix + 'email'] if row[field_prefix + 'email'] else None,
                 new_site_role=row[field_prefix + 'site_role'],
                 new_auth_setting=row[field_prefix + 'auth_setting'])
             responses.append(response)
-    if server_type == 'tableau_online':
-        for index, row in combined_user_df.iterrows():
-            response = conn_target.update_user(
-                user_id=row['id_update'],
-                new_full_name=row[field_prefix + 'full_name'],
-                new_email=row[field_prefix + 'email'],
-                new_site_role=row[field_prefix + 'site_role'],
-                new_auth_setting=row[field_prefix + 'auth_setting'])
-            responses.append(response)
+    # if server_type == 'tableau_online':
+    #     for index, row in combined_user_df.iterrows():
+    #         response = conn_target.update_user(
+    #             user_id=row['id_update'],
+    #             new_full_name=row[field_prefix + 'full_name'],
+    #             new_email=row[field_prefix + 'email'] if row[field_prefix + 'email'] else None,
+    #             new_site_role=row[field_prefix + 'site_role'],
+    #             new_auth_setting=row[field_prefix + 'auth_setting'])
+    #         responses.append(response)
     for response in responses:
         print(response.content)
     print("users updated")
