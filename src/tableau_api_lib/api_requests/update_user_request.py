@@ -1,3 +1,4 @@
+import numpy as np
 from tableau_api_lib.api_requests import BaseRequest
 
 
@@ -27,11 +28,11 @@ class UpdateUserRequest(BaseRequest):
                  new_auth_setting=None):
 
         super().__init__(ts_connection)
-        self._new_full_name = new_full_name
-        self._new_email = new_email
+        self._new_full_name = new_full_name if isinstance(new_full_name, str) else None
+        self._new_email = new_email if isinstance(new_email, str) else None
         self._new_password = new_password
         self._new_site_role = new_site_role
-        self._new_auth_setting = new_auth_setting
+        self._new_auth_setting = new_auth_setting if isinstance(new_auth_setting, str) else None
         self.base_update_user_request()
 
     @property

@@ -15,9 +15,9 @@ class AddUserToSiteRequest(BaseRequest):
                  site_role='Viewer',
                  auth_setting=None):
         super().__init__(ts_connection)
-        self._user_name = user_name
+        self._user_name = user_name if isinstance(user_name, str) else None
         self._site_role = site_role
-        self._auth_setting = auth_setting
+        self._auth_setting = auth_setting if isinstance(auth_setting, str) else None
         self._validate_site_role()
         self.base_add_user_request()
 
