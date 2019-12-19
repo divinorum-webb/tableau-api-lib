@@ -154,18 +154,18 @@ def create_users(conn_target, source_user_df, mapping_file_path, server_type) ->
     field_prefix = get_field_prefix(mapping_file_path)
     responses = []
     if server_type == 'tableau_server':
-        for i, _ in enumerate(source_user_df['source_username']):
+        for index, row in source_user_df.iterrows():
             response = conn_target.add_user_to_site(
-                user_name=source_user_df[field_prefix + 'username'][i],
-                site_role=source_user_df[field_prefix + 'site_role'][i])
-                # auth_setting=source_user_df[field_prefix + 'auth_setting'][i])
+                user_name=row[field_prefix + 'username'],
+                site_role=row[field_prefix + 'site_role'],
+                auth_setting=row[field_prefix + 'auth_setting'])
             responses.append(response)
     if server_type == 'tableau_online':
-        for i, _ in enumerate(source_user_df['source_username']):
+        for index, row in source_user_df.iterrows():
             response = conn_target.add_user_to_site(
-                user_name=source_user_df[field_prefix + 'email'][i],
-                site_role=source_user_df[field_prefix + 'site_role'][i])
-                # auth_setting=source_user_df[field_prefix + 'auth_setting'][i])
+                user_name=row[field_prefix + 'email'],
+                site_role=row[field_prefix + 'site_role'],
+                auth_setting=row[field_prefix + 'auth_setting'])
             responses.append(response)
     for response in responses:
         print(response.content)
@@ -196,7 +196,7 @@ def get_field_prefix(mapping_file_path) -> str:
     return field_prefix
 
 
-def update_users(conn_target, source_user_df, mapping_file_path, server_type) -> list:
+def update_users(conn_target, source_user_df, mapping_file_path) -> list:
     """
     Updates users on the target connection to mirror values on the source connection.
     :param class conn_target: the target Tableau Server connection
@@ -213,24 +213,14 @@ def update_users(conn_target, source_user_df, mapping_file_path, server_type) ->
                                             right_on=field_prefix + 'username',
                                             suffixes=('_update', None))
     responses = []
-    if server_type == 'tableau_server' or server_type == 'tableau_online':
-        for index, row in combined_user_df.iterrows():
-            response = conn_target.update_user(
-                user_id=row['id_update'],
-                new_full_name=row[field_prefix + 'full_name'],
-                new_email=row[field_prefix + 'email'] if row[field_prefix + 'email'] else None,
-                new_site_role=row[field_prefix + 'site_role'],
-                new_auth_setting=row[field_prefix + 'auth_setting'])
-            responses.append(response)
-    # if server_type == 'tableau_online':
-    #     for index, row in combined_user_df.iterrows():
-    #         response = conn_target.update_user(
-    #             user_id=row['id_update'],
-    #             new_full_name=row[field_prefix + 'full_name'],
-    #             new_email=row[field_prefix + 'email'] if row[field_prefix + 'email'] else None,
-    #             new_site_role=row[field_prefix + 'site_role'],
-    #             new_auth_setting=row[field_prefix + 'auth_setting'])
-    #         responses.append(response)
+    for index, row in combined_user_df.iterrows():
+        response = conn_target.update_user(
+            user_id=row['id_update'],
+            new_full_name=row[field_prefix + 'full_name'],
+            new_email=row[field_prefix + 'email'],
+            new_site_role=row[field_prefix + 'site_role'],
+            new_auth_setting=row[field_prefix + 'auth_setting'])
+        responses.append(response)
     for response in responses:
         print(response.content)
     print("users updated")
@@ -293,6 +283,7 @@ def clone_users(conn_source,
     overlapping_usernames = get_overlapping_usernames(source_user_df, target_user_df, mapping_file_path)
     process_overlapping_usernames(conn_target, target_user_df, overlapping_usernames, overwrite_policy)
     cloned_users = create_users(conn_target, source_user_df, mapping_file_path, server_type)
-    if server_type == 'tableau_server':
-        cloned_users = update_users(conn_target, source_user_df, mapping_file_path, server_type)
+    cloned_users = update_users(conn_target, source_user_df, mapping_file_path)
+    # if server_type == 'tableau_server':
+    #     cloned_users = update_users(conn_target, source_user_df, mapping_file_path)
     return cloned_users
