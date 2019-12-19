@@ -136,8 +136,13 @@ def delete_users(conn, target_user_df) -> list:
     :return: list of HTTP responses
     """
     print("removing overlapping target users...")
+    if conn.username in list(target_user_df['target_username']):
+        target_user_df = target_user_df[~target_user_df['target_username'].isin([conn.username])]
+        print("preserving user '{}', which was used to authenticate into the target Tableau Server."
+              .format(conn.username))
     user_ids = target_user_df['id']
     responses = [conn.remove_user_from_site(user_id) for user_id in user_ids]
+    [print(response.content) for response in responses]
     print("overlapping target users removed")
     return responses
 
@@ -151,8 +156,9 @@ def create_users(conn_target, source_user_df, mapping_file_path, server_type) ->
     :param server_type: (optional) the product variety ['tableau_server', 'tableau_online']
     :return: list of HTTP responses
     """
-    field_prefix = get_field_prefix(mapping_file_path)
     responses = []
+    field_prefix = get_field_prefix(mapping_file_path)
+    source_user_df = source_user_df[~source_user_df[field_prefix + 'site_role'].isin(['ServerAdministrator'])]
     if server_type == 'tableau_server':
         for index, row in source_user_df.iterrows():
             response = conn_target.add_user_to_site(
@@ -207,6 +213,7 @@ def update_users(conn_target, source_user_df, mapping_file_path) -> list:
     print("updating users...")
     reset_connection(conn_target)
     target_user_df = get_target_user_df(conn_target)
+    target_user_df = target_user_df[~target_user_df['target_username'].isin([conn_target.username])]
     field_prefix = get_field_prefix(mapping_file_path)
     combined_user_df = target_user_df.merge(source_user_df,
                                             left_on='target_username',
