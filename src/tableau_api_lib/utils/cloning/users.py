@@ -142,7 +142,7 @@ def delete_users(conn, target_user_df) -> list:
               .format(conn.username))
     user_ids = target_user_df['id']
     responses = [conn.remove_user_from_site(user_id) for user_id in user_ids]
-    [print(response.content) for response in responses]
+    [print(response) for response in responses]
     print("overlapping target users removed")
     return responses
 
