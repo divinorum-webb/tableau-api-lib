@@ -92,7 +92,6 @@ class PublishDatasourceRequest(BaseRequest):
             self._request_body['datasource']['connectionCredentials'].update(
                 self._get_parameters_dict(self.optional_credentials_param_keys,
                                           self.optional_credentials_param_values))
-        print(self._request_body)
         return self._request_body
 
     def _file_requires_chunking(self):
