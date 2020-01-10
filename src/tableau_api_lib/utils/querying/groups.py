@@ -15,7 +15,7 @@ def get_all_group_fields(conn):
 
 def get_group_users(conn, group_id):
     all_group_users = extract_pages(conn.get_users_in_group,
-                                    group_id=group_id,
+                                    content_id=group_id,
                                     parameter_dict={'fields': 'fields=_all_'})
     return all_group_users
 
