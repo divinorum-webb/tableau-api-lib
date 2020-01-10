@@ -66,3 +66,17 @@ class UsersNotFound(Exception):
         Make sure users have been created on the site and try again.
         """
         super().__init__(error_message)
+
+
+class PaginationError(Exception):
+    """
+    Exception for when users attempt extract pages from a non-paginated REST API response.
+    """
+    def __init__(self, func):
+        error_message = """
+        The Tableau Server REST API method {} does not return paginated results. 
+        The extract_pages() method wrapping this call is intended for paginated results only.
+        Not all Tableau Server REST API methods support pagination. 
+        Try calling on this method directly rather than using extract_pages().
+        """.format(func.__name__)
+        super().__init__(error_message)
