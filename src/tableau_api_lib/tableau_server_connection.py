@@ -17,7 +17,7 @@ from tableau_api_lib.api_requests import AddDatasourcePermissionsRequest, AddDat
     UpdateProjectRequest, UpdateScheduleRequest, UpdateSiteRequest, UpdateSubscriptionRequest, \
     UpdateUserRequest, UpdateWorkbookConnectionRequest, UpdateWorkbookRequest, UpdateTableRequest, \
     UpdateColumnRequest, AddDQWarningRequest, UpdateDQWarningRequest
-from tableau_api_lib.decorators import verify_response, verify_signed_in, verify_config_variables, \
+from tableau_api_lib.decorators import verify_signed_in, verify_config_variables, \
     verify_rest_api_version, verify_api_method_exists
 
 
@@ -27,7 +27,6 @@ class TableauServerConnection:
                  env='tableau_prod'):
         """
         A connection to Tableau Server built upon the configuration details provided.
-
         :param dict config_json: a dict or JSON object containing configuration details
         :param str env: the configuration environment to reference from the configuration dict
         """
@@ -516,13 +515,14 @@ class TableauServerConnection:
         return response
 
     @verify_api_method_exists('3.3')
-    def query_flows_for_site(self):
+    def query_flows_for_site(self, parameter_dict=None):
         """
         Queries details for all flows on the active site.
         :return: HTTP Response
         """
         self.active_endpoint = FlowEndpoint(ts_connection=self,
-                                            query_flows_for_site=True).get_endpoint()
+                                            query_flows_for_site=True,
+                                            parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
