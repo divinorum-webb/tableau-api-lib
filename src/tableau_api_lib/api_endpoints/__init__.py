@@ -17,7 +17,7 @@ from .user_endpoint import UserEndpoint
 from .view_endpoint import ViewEndpoint
 from .workbook_endpoint import WorkbookEndpoint
 from .database_endpoint import DatabaseEndpoint
-from .table_endpoints import TableEndpoint
-from .column_endpoints import ColumnEndpoint
+from .table_endpoint import TableEndpoint
+from .column_endpoint import ColumnEndpoint
 from .dqwarning_endpoint import DQWarningEndpoint
 from .encryption_endpoint import EncryptionEndpoint
