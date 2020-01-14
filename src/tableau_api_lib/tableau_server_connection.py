@@ -12,7 +12,7 @@ from tableau_api_lib.api_requests import AddDatasourcePermissionsRequest, AddDat
     AddViewPermissionsRequest, AddViewToFavoritesRequest, AddWorkbookPermissionsRequest, \
     AddWorkbookToFavoritesRequest, AddWorkbookToScheduleRequest, CreateGroupRequest, \
     CreateProjectRequest, CreateScheduleRequest, CreateSiteRequest, CreateSubscriptionRequest, \
-    EmptyRequest, PublishDatasourceRequest, PublishFlowRequest, PublishWorkbookRequest, SignInRequest, \
+    EmptyRequest, GraphqlRequest, PublishDatasourceRequest, PublishFlowRequest, PublishWorkbookRequest, SignInRequest, \
     SwitchSiteRequest, UpdateDataAlertRequest, UpdateDatabaseRequest, UpdateDatasourceConnectionRequest, \
     UpdateDatasourceRequest, UpdateFlowConnectionRequest, UpdateFlowRequest, UpdateGroupRequest, \
     UpdateProjectRequest, UpdateScheduleRequest, UpdateSiteRequest, UpdateSubscriptionRequest, \
@@ -3145,9 +3145,10 @@ class TableauServerConnection:
         :param str query: the GraphQL query body (raw text)
         :return: HTTP response
         """
+        self.active_request = GraphqlRequest(self, query).get_request()
         self.active_endpoint = GraphqlEndpoint(self).get_endpoint()
         self.active_headers = self.graphql_headers
-        response = requests.post(url=self.active_endpoint, json={'query': query}, headers=self.active_headers)
+        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
     # encryption methods
