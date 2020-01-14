@@ -21,3 +21,4 @@ from .table_endpoint import TableEndpoint
 from .column_endpoint import ColumnEndpoint
 from .dqwarning_endpoint import DQWarningEndpoint
 from .encryption_endpoint import EncryptionEndpoint
+from .graphql_endpoint import GraphqlEndpoint
