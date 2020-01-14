@@ -3,7 +3,8 @@ import requests
 from tableau_api_lib.api_endpoints import AuthEndpoint, DataAlertEndpoint, DatabaseEndpoint, DatasourceEndpoint, \
     FavoritesEndpoint, FileUploadEndpoint, FlowEndpoint, GroupEndpoint, JobsEndpoint, PermissionsEndpoint, \
     ProjectEndpoint, SchedulesEndpoint, SiteEndpoint, SubscriptionsEndpoint, UserEndpoint, TableEndpoint, \
-    TasksEndpoint, ViewEndpoint, WorkbookEndpoint, ColumnEndpoint, DQWarningEndpoint, EncryptionEndpoint
+    TasksEndpoint, ViewEndpoint, WorkbookEndpoint, ColumnEndpoint, DQWarningEndpoint, EncryptionEndpoint, \
+    GraphqlEndpoint
 from tableau_api_lib.api_requests import AddDatasourcePermissionsRequest, AddDatasourceToFavoritesRequest, \
     AddDatasourceToScheduleRequest, AddDefaultPermissionsRequest, AddFlowPermissionsRequest, \
     AddFlowToScheduleRequest, AddProjectPermissionsRequest, AddProjectToFavoritesRequest, \
@@ -74,6 +75,11 @@ class TableauServerConnection:
     def default_headers(self):
         headers = self.sign_in_headers.copy()
         headers.update({"X-Tableau-Auth": self.auth_token})
+        return headers
+
+    @property
+    def graphql_headers(self):
+        headers = {"X-Tableau-Auth": self.auth_token}
         return headers
 
     @property
@@ -3130,6 +3136,18 @@ class TableauServerConnection:
                                                  delete_by_content=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        return response
+
+    @verify_api_method_exists('3.5')
+    def metadata_graphql_query(self, query):
+        """
+        Builds a GraphQL query to run against the Metadata API.
+        :param str query: the GraphQL query body (raw text)
+        :return: HTTP response
+        """
+        self.active_endpoint = GraphqlEndpoint(self).get_endpoint()
+        self.active_headers = self.graphql_headers
+        response = requests.post(url=self.active_endpoint, json={'query': query}, headers=self.active_headers)
         return response
 
     # encryption methods
