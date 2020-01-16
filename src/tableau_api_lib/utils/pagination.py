@@ -1,11 +1,11 @@
 from tableau_api_lib.exceptions import ContentNotFound, PaginationError
 
 
-def get_page_attributes(query):
+def get_page_attributes(query, query_func):
     """
     Get page attributes (pageNumber, pageSize, totalAvailable) from a REST API paginated response.
-
     :param dict query: the results of the GET request query, containing paginated data
+    :param function query_func: a callable function that will issue a GET request to Tableau Server
     :return: page_number, page_size, total_available
     """
     try:
@@ -15,7 +15,7 @@ def get_page_attributes(query):
         total_available = int(pagination['totalAvailable'])
         return page_number, page_size, total_available
     except KeyError:
-        raise PaginationError
+        raise PaginationError(query_func)
 
 
 def extract_pages(query_func,
@@ -46,7 +46,7 @@ def extract_pages(query_func,
             'pageSize': 'pageSize={}'.format(page_size)
         })
         query = process_query(query_func, content_id, parameter_dict)
-        page_number, page_size, total_available = get_page_attributes(query)
+        page_number, page_size, total_available = get_page_attributes(query, query_func)
         if total_available == 0:
             raise ContentNotFound()
         extracted_pages, extracting, page_number = update_pagination_params(query,
