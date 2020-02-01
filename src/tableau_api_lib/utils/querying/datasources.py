@@ -25,3 +25,9 @@ def get_datasources_dataframe(conn) -> pd.DataFrame:
     """
     datasources_df = pd.DataFrame(get_all_datasource_fields(conn))
     return datasources_df
+
+
+def get_datasource_connections_dataframe(conn, datasource_id) -> pd.DataFrame:
+    datasource_connections_json = conn.query_data_source_connections(datasource_id).json()['connections']['connection']
+    datasource_connections_df = pd.DataFrame(datasource_connections_json)
+    return datasource_connections_df
