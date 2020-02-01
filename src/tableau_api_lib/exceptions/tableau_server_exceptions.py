@@ -37,10 +37,15 @@ class ContentNotFound(Exception):
     """
     Exception for situations where Tableau Server content is queried but does not exist on the site.
     """
-    def __init__(self):
-        error_message = """
-        The queried Tableau Server content [users, projects, etc.] does not exist on the active site.
-        """
+    def __init__(self, content_type=None, content_id=None):
+        if content_type:
+            error_message = """
+            The {0} (id='{1}') does not exist on the active site.
+            """.format(content_type, content_id)
+        else:
+            error_message = """
+            The queried Tableau Server content [users, projects, etc.] does not exist on the active site.
+            """
         super().__init__(error_message)
 
 
