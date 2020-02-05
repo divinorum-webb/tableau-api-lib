@@ -31,8 +31,8 @@ class TableauServerConnection:
         :param dict config_json: a dict or JSON object containing configuration details
         :param str env: the configuration environment to reference from the configuration dict
         """
-        self._config = config_json
         self._env = env
+        self._config = config_json
         self._auth_token = None
         self.site_url = self._config[self._env]['site_url']
         self.site_name = self._config[self._env]['site_name']
@@ -41,6 +41,7 @@ class TableauServerConnection:
         self.active_endpoint = None
         self.active_request = None
         self.active_headers = None
+        self.auth_method = self._get_auth_method()
 
     @property
     def server(self):
@@ -52,11 +53,39 @@ class TableauServerConnection:
 
     @property
     def username(self):
-        return self._config[self._env]['username']
+        config_keys = self._config[self._env].keys()
+        if 'username' in config_keys and 'password' in config_keys:
+            username = self._config[self._env]['username']
+        else:
+            username = None
+        return username
 
     @property
     def password(self):
-        return self._config[self._env]['password']
+        config_keys = self._config[self._env].keys()
+        if 'password' in config_keys and 'username' in config_keys:
+            password = self._config[self._env]['password']
+        else:
+            password = None
+        return password
+
+    @property
+    def personal_access_token_name(self):
+        config_keys = self._config[self._env].keys()
+        if 'personal_access_token_name' in config_keys and 'personal_access_token_secret' in config_keys:
+            personal_access_token_name = self._config[self._env]['personal_access_token_name']
+        else:
+            personal_access_token_name = None
+        return personal_access_token_name
+
+    @property
+    def personal_access_token_secret(self):
+        config_keys = self._config[self._env].keys()
+        if 'personal_access_token_name' in config_keys and 'personal_access_token_secret' in config_keys:
+            personal_access_token_secret = self._config[self._env]['personal_access_token_secret']
+        else:
+            personal_access_token_secret = None
+        return personal_access_token_secret
 
     @property
     def sign_in_headers(self):
@@ -93,6 +122,19 @@ class TableauServerConnection:
         else:
             raise Exception('You are already signed in with a valid auth token.')
 
+    def _get_auth_method(self):
+        if self.username and self.password:
+            if not (self.personal_access_token_name or self.personal_access_token_secret):
+                return 'user_and_password'
+        elif self.personal_access_token_name and self.personal_access_token_secret:
+            if not (self.username or self.password):
+                return 'personal_access_token'
+        raise Exception("""
+        The Tableau Server configuration provided contains username, password, and personal access token credentials.
+        Successful authentication requires either username & password OR personal access token.
+        Please update the configuration details to only provide details for one of the available authentication methods.
+        """)
+
     # authentication
 
     @verify_rest_api_version
@@ -104,8 +146,11 @@ class TableauServerConnection:
         :return: HTTP response
         """
         request = SignInRequest(ts_connection=self,
+                                auth_method=self.auth_method,
                                 username=self.username,
                                 password=self.password,
+                                personal_access_token_name=self.personal_access_token_name,
+                                personal_access_token_secret=self.personal_access_token_secret,
                                 user_to_impersonate=user_to_impersonate).get_request()
         endpoint = AuthEndpoint(ts_connection=self, sign_in=True).get_endpoint()
         response = requests.post(url=endpoint, json=request, headers=self.sign_in_headers)

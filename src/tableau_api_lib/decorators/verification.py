@@ -59,8 +59,6 @@ def verify_config_variables(func):
         required_config_variables = [
             'server',
             'api_version',
-            'username',
-            'password',
             'site_name',
             'site_url'
         ]
