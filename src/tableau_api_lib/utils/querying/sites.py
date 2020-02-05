@@ -14,8 +14,12 @@ def get_all_site_fields(conn):
     return all_sites
 
 
-def get_sites_dataframe(conn):
+def get_sites_dataframe(conn, site_names=None, content_urls=None):
     sites_df = pd.DataFrame(get_all_site_fields(conn))
+    if site_names:
+        sites_df = sites_df[sites_df['name'].isin(site_names)]
+    if content_urls:
+        sites_df = sites_df[sites_df['contentUrl'].isin(content_urls)]
     return sites_df
 
 
