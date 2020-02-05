@@ -17,13 +17,16 @@ def get_all_datasource_fields(conn) -> list:
     return all_datasources
 
 
-def get_datasources_dataframe(conn) -> pd.DataFrame:
+def get_datasources_dataframe(conn, datasource_names=None) -> pd.DataFrame:
     """
     Returns a Pandas DataFrame of all available Tableau Server datasource fields.
     :param class conn: the Tableau Server connection
+    :param list datasource_names: a list of datasource names to filter the results by
     :return: pd.DataFrame
     """
     datasources_df = pd.DataFrame(get_all_datasource_fields(conn))
+    if datasource_names:
+        datasources_df = datasources_df[datasources_df['name'].isin(datasource_names)]
     return datasources_df
 
 
