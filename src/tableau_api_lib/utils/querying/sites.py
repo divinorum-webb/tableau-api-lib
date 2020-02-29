@@ -27,5 +27,9 @@ def get_active_site_name(conn):
     return conn.query_site().json()['site']['name']
 
 
+def get_active_site_id(conn):
+    return conn.query_site().json()['site']['id']
+
+
 def get_active_site_content_url(conn):
     return conn.query_site().json()['site']['contentUrl']

@@ -298,13 +298,15 @@ class TableauServerConnection:
         return response
 
     @verify_api_method_exists('2.3')
-    def query_views_for_site(self, parameter_dict=None):
+    def query_views_for_site(self, site_id, parameter_dict=None):
         """
         Query details for all views on the active site.
         :param dict parameter_dict: dict defining url parameters for API endpoint
+        :param str site_id: the site ID to be queried
         :return: HTTP response
         """
         self.active_endpoint = SiteEndpoint(ts_connection=self,
+                                            site_id=site_id,
                                             query_views=True,
                                             parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
@@ -2789,7 +2791,7 @@ class TableauServerConnection:
                          project_id,
                          show_tabs_flag=False,
                          user_id=None,
-                         server_address=None,
+                             server_address=None,
                          port_number=None,
                          connection_username=None,
                          connection_password=None,
