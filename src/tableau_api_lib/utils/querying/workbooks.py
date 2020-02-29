@@ -5,6 +5,7 @@ Helper functions for querying REST API data for workbooks and views
 
 import pandas as pd
 from tableau_api_lib.utils import extract_pages
+from tableau_api_lib.utils.querying.sites import get_active_site_id
 from tableau_api_lib.exceptions.tableau_server_exceptions import ContentNotFound
 
 
@@ -18,13 +19,15 @@ def get_workbooks_dataframe(conn):
     return workbooks_df
 
 
-def get_all_view_fields(conn):
-    all_workbooks = extract_pages(conn.query_views_for_site, parameter_dict={'fields': 'fields=_all_'})
-    return all_workbooks
+def get_all_view_fields(conn, site_id):
+    all_views = extract_pages(conn.query_views_for_site, content_id=site_id, parameter_dict={'fields': 'fields=_all_'})
+    return all_views
 
 
-def get_views_dataframe(conn):
-    views_df = pd.DataFrame(get_all_view_fields(conn))
+def get_views_dataframe(conn, site_id=None):
+    if not site_id:
+        site_id = get_active_site_id(conn)
+    views_df = pd.DataFrame(get_all_view_fields(conn, site_id))
     return views_df
 
 
