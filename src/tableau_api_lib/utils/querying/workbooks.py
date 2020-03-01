@@ -4,7 +4,7 @@ Helper functions for querying REST API data for workbooks and views
 
 
 import pandas as pd
-from tableau_api_lib.utils import extract_pages
+from tableau_api_lib.utils import extract_pages, flatten_dict_column
 from tableau_api_lib.utils.querying.sites import get_active_site_id
 from tableau_api_lib.exceptions.tableau_server_exceptions import ContentNotFound
 
@@ -28,6 +28,7 @@ def get_views_dataframe(conn, site_id=None):
     if not site_id:
         site_id = get_active_site_id(conn)
     views_df = pd.DataFrame(get_all_view_fields(conn, site_id))
+    views_df = flatten_dict_column(views_df, keys=['totalViewCount'], col_name='usage')
     return views_df
 
 
