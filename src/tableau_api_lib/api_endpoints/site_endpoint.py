@@ -15,6 +15,7 @@ class SiteEndpoint(BaseEndpoint):
                  query_views=False,
                  get_users=False,
                  get_groups=False,
+                 get_recently_viewed=False,
                  add_user=False,
                  add_group=False,
                  remove_user=False,
@@ -35,6 +36,7 @@ class SiteEndpoint(BaseEndpoint):
         :param bool query_sites: True if querying all sites on the site, False otherwise
         :param bool get_users: True if getting all users, False otherwise
         :param bool get_groups: True if getting all groups, False otherwise
+        :param bool get_recently_viewed: True if getting recently viewed content, False otherwise
         :param bool add_user: True if adding a user, False otherwise
         :param bool add_group: True if adding a group, False otherwise
         :param bool remove_user: True if removing a specific user, False otherwise
@@ -57,6 +59,7 @@ class SiteEndpoint(BaseEndpoint):
         self._query_views = query_views
         self._get_users = get_users
         self._get_groups = get_groups
+        self._get_recently_viewed = get_recently_viewed
         self._add_user = add_user
         self._add_group = add_group
         self._remove_user = remove_user
@@ -77,6 +80,7 @@ class SiteEndpoint(BaseEndpoint):
             self._query_views,
             self._get_users,
             self._get_groups,
+            self._get_recently_viewed,
             self._add_user,
             self._add_group,
             self._remove_user,
@@ -107,6 +111,10 @@ class SiteEndpoint(BaseEndpoint):
     @property
     def base_site_user_url(self):
         return "{0}/users".format(self.base_site_id_url)
+
+    @property
+    def base_site_content_recent_url(self):
+        return "{0}/content/recent".format(self.base_site_id_url)
     
     @property
     def base_site_user_id_url(self):
@@ -145,6 +153,8 @@ class SiteEndpoint(BaseEndpoint):
                 url = self.base_site_user_url
             elif self._get_groups:
                 url = self.base_site_group_url
+            elif self._get_recently_viewed:
+                url = self.base_site_content_recent_url
             elif self._add_group:
                 url = self.base_site_group_url
             elif self._remove_user and self._user_id and self._site_id:
