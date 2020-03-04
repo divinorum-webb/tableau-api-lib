@@ -297,6 +297,20 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.5')
+    def get_recently_viewed_for_site(self):
+        """
+        Gets the details of the views and workbooks on a site that have been most recently created, updated, or
+        accessed by the signed in user.
+        :return: HTTP response
+        """
+        self.active_endpoint = SiteEndpoint(ts_connection=self,
+                                            site_id=self.site_id,
+                                            get_recently_viewed=True).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        return response
+
     @verify_api_method_exists('2.3')
     def query_views_for_site(self, site_id, parameter_dict=None):
         """
