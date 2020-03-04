@@ -883,6 +883,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('2.0')
     def get_view(self, view_id):
         """
         Queries details for the specified view.
@@ -892,6 +893,22 @@ class TableauServerConnection:
         self.active_endpoint = ViewEndpoint(ts_connection=self,
                                             view_id=view_id,
                                             query_view=True).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        return response
+
+    @verify_api_method_exists('3.6')
+    def get_view_by_path(self, view_name):
+        """
+        Gets the details of all views in a site with a specified name.
+        :param str view_name: the name all view names will be matched against
+        :return: HTTP response
+        """
+        self.active_endpoint = ViewEndpoint(ts_connection=self,
+                                            query_views=True,
+                                            parameter_dict={
+                                                'filter': f'filter=viewUrlName:eq:{view_name.replace(" ", "")}'
+                                            }).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
