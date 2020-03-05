@@ -1571,6 +1571,24 @@ class TableauServerConnection:
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.7')
+    def get_groups_for_a_user(self,
+                              user_id,
+                              parameter_dict=None):
+        """
+        Gets a list of groups of which the specified user is a member.
+        :param str user_id: the ID for the user whose group membership is being queried
+        :param dict parameter_dict: dict defining url parameters for API endpoint
+        :return: HTTP response
+        """
+        self.active_endpoint = UserEndpoint(ts_connection=self,
+                                            user_id=user_id,
+                                            query_groups_for_user=True,
+                                            parameter_dict=parameter_dict).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        return response
+
     @verify_api_method_exists('2.3')
     def get_users_in_group(self,
                            group_id,
