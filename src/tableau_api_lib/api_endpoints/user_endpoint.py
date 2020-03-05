@@ -8,6 +8,7 @@ class UserEndpoint(BaseEndpoint):
                  query_user=False,
                  query_users=False,
                  query_workbooks_for_user=False,
+                 query_groups_for_user=False,
                  user_id=None,
                  update_user=False,
                  remove_user=False,
@@ -19,6 +20,7 @@ class UserEndpoint(BaseEndpoint):
         :param bool query_user: True if querying a specific user, False otherwise
         :param bool query_users: True if querying all users on the site, False otherwise
         :param bool query_workbooks_for_user: True if querying a specific user, False otherwise
+        :param bool query_groups_for_user: True if querying groups for a specific user, False otherwise
         :param str user_id: the user ID
         :param bool update_user: True if updating a specific user, False otherwise
         :param bool remove_user: True if removing a specific user from the site, False otherwise
@@ -31,6 +33,7 @@ class UserEndpoint(BaseEndpoint):
         self._query_user = query_user
         self._query_users = query_users
         self._query_workbooks_for_user = query_workbooks_for_user
+        self._query_groups_for_user = query_groups_for_user
         self._user_id = user_id
         self._update_user = update_user
         self._remove_user = remove_user
@@ -44,6 +47,7 @@ class UserEndpoint(BaseEndpoint):
             self._query_user,
             self._query_users,
             self._query_workbooks_for_user,
+            self._query_groups_for_user,
             self._update_user,
             self._remove_user
         ]
@@ -67,6 +71,10 @@ class UserEndpoint(BaseEndpoint):
                                 self._user_id)
 
     @property
+    def base_user_groups_url(self):
+        return "{0}/groups".format(self.base_user_id_url)
+
+    @property
     def base_user_workbooks_url(self):
         return "{0}/workbooks".format(self.base_user_id_url)
 
@@ -81,6 +89,8 @@ class UserEndpoint(BaseEndpoint):
                 url = self.base_user_id_url
             elif self._query_workbooks_for_user and self._user_id:
                 url = self.base_user_workbooks_url
+            elif self._query_groups_for_user:
+                url = self.base_user_groups_url
             else:
                 self._invalid_parameter_exception()
         else:
