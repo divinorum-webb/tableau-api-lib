@@ -16,6 +16,7 @@ class SiteEndpoint(BaseEndpoint):
                  get_users=False,
                  get_groups=False,
                  get_recently_viewed=False,
+                 get_recommendations=False,
                  add_user=False,
                  add_group=False,
                  remove_user=False,
@@ -37,6 +38,7 @@ class SiteEndpoint(BaseEndpoint):
         :param bool get_users: True if getting all users, False otherwise
         :param bool get_groups: True if getting all groups, False otherwise
         :param bool get_recently_viewed: True if getting recently viewed content, False otherwise
+        :param bool get_recommendations: True if getting recommendations, False otherwise
         :param bool add_user: True if adding a user, False otherwise
         :param bool add_group: True if adding a group, False otherwise
         :param bool remove_user: True if removing a specific user, False otherwise
@@ -60,6 +62,7 @@ class SiteEndpoint(BaseEndpoint):
         self._get_users = get_users
         self._get_groups = get_groups
         self._get_recently_viewed = get_recently_viewed
+        self._get_recommendations = get_recommendations
         self._add_user = add_user
         self._add_group = add_group
         self._remove_user = remove_user
@@ -81,6 +84,7 @@ class SiteEndpoint(BaseEndpoint):
             self._get_users,
             self._get_groups,
             self._get_recently_viewed,
+            self._get_recommendations,
             self._add_user,
             self._add_group,
             self._remove_user,
@@ -115,6 +119,10 @@ class SiteEndpoint(BaseEndpoint):
     @property
     def base_site_content_recent_url(self):
         return "{0}/content/recent".format(self.base_site_id_url)
+
+    @property
+    def base_site_recommendations_url(self):
+        return "{0}/recommendations".format(self.base_site_id_url)
     
     @property
     def base_site_user_id_url(self):
@@ -155,6 +163,8 @@ class SiteEndpoint(BaseEndpoint):
                 url = self.base_site_group_url
             elif self._get_recently_viewed:
                 url = self.base_site_content_recent_url
+            elif self._get_recommendations:
+                url = self.base_site_recommendations_url
             elif self._add_group:
                 url = self.base_site_group_url
             elif self._remove_user and self._user_id and self._site_id:
