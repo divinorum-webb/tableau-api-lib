@@ -913,6 +913,16 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response
 
+    @verify_api_method_exists('3.7')
+    def get_recommendations_for_views(self):
+        self.active_endpoint = SiteEndpoint(ts_connection=self,
+                                            site_id=self.site_id,
+                                            get_recommendations=True,
+                                            parameter_dict={'type': 'type=view'}).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        return response
+
     def query_view(self, view_id):
         """
         Queries details for the specified view.
