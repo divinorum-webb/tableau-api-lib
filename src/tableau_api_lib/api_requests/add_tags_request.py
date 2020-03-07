@@ -9,9 +9,9 @@ class AddTagsRequest(BaseRequest):
     """
     def __init__(self,
                  ts_connection,
-                 tags=[]):
+                 tags=None):
         super().__init__(ts_connection)
-        self._tags = tags
+        self._tags = tags or []
         self.base_add_tags_request()
 
     def base_add_tags_request(self):
