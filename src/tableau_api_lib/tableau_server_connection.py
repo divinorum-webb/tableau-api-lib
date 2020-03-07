@@ -2508,7 +2508,9 @@ class TableauServerConnection:
                             content_type,
                             content_id,
                             schedule_id,
-                            user_id):
+                            user_id,
+                            attach_image_flag=False,
+                            attach_pdf_flag=False):
         """
         Creates a new subscription for the specified user to receive the specified content on the specified schedule.
         :param string subscription_subject: the subject for the new subscription.
@@ -2516,6 +2518,8 @@ class TableauServerConnection:
         :param string content_id: the content ID [workbook ID or view ID]
         :param string schedule_id: the schedule ID the subscription will be executed on
         :param string user_id: the user ID for the user being subscribed to the content
+        :param bool attach_image_flag: True if an image will be attached to the subscription email, False otherwise
+        :param bool attach_pdf_flag: True if a PDF will be attached to the subscription email, False otherwise
         :return: HTTP response
         """
         self.active_request = CreateSubscriptionRequest(ts_connection=self,
@@ -2523,7 +2527,9 @@ class TableauServerConnection:
                                                         content_type=content_type,
                                                         content_id=content_id,
                                                         schedule_id=schedule_id,
-                                                        user_id=user_id).get_request()
+                                                        user_id=user_id,
+                                                        attach_image_flag=attach_image_flag,
+                                                        attach_pdf_flag=attach_pdf_flag).get_request()
         self.active_endpoint = SubscriptionsEndpoint(ts_connection=self, create_subscription=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
