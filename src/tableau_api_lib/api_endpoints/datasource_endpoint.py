@@ -12,6 +12,9 @@ class DatasourceEndpoint(BaseEndpoint):
                  connection_id=None,
                  add_tags=False,
                  delete_tag=False,
+                 create_extract=False,
+                 delete_extract=False,
+                 encryption_flag=False,
                  refresh_datasource=False,
                  update_datasource=False,
                  update_datasource_connection=False,
@@ -35,6 +38,9 @@ class DatasourceEndpoint(BaseEndpoint):
         :param str connection_id: the datasource connection id
         :param bool add_tags: True if adding tags to the datasource, False otherwise
         :param bool delete_tag: True if deleting a datasource tag, False otherwise
+        :param bool create_extract: True if creating an extract, False otherwise
+        :param bool delete_extract: True if deleting an extract, False otherwise
+        :param bool encryption_flag: True if encrypting a created extract, False otherwise
         :param bool refresh_datasource: True if refreshing the datasource, False otherwise
         :param bool update_datasource: True if updating a datasource, False otherwise
         :param bool update_datasource_connection: True if updating a datasource connection, False otherwise
@@ -57,6 +63,9 @@ class DatasourceEndpoint(BaseEndpoint):
         self._connection_id = connection_id
         self._add_tags = add_tags
         self._delete_tag = delete_tag
+        self._create_extract = create_extract
+        self._delete_extract = delete_extract
+        self._encryption_flag = encryption_flag
         self._refresh_datasource = refresh_datasource
         self._update_datasource = update_datasource
         self._update_datasource_connection = update_datasource_connection
@@ -69,6 +78,7 @@ class DatasourceEndpoint(BaseEndpoint):
         self._remove_datasource_revision = remove_datasource_revision
         self._revision_number = revision_number
         self._parameter_dict = parameter_dict
+        self._modify_parameter_dict()
 
     @property
     def mutually_exclusive_params(self):
@@ -78,6 +88,8 @@ class DatasourceEndpoint(BaseEndpoint):
             self._publish_datasource,
             self._add_tags,
             self._delete_tag,
+            self._create_extract,
+            self._delete_extract,
             self._refresh_datasource,
             self._update_datasource,
             self._update_datasource_connection,
@@ -96,6 +108,12 @@ class DatasourceEndpoint(BaseEndpoint):
         if not valid:
             self._invalid_parameter_exception()
 
+    def _modify_parameter_dict(self):
+        if self._encryption_flag and not self._parameter_dict:
+            self._parameter_dict = {}
+        if self._encryption_flag:
+            self._parameter_dict.update({"encryption_flag": f"encrypt={self._encryption_flag}"})
+
     @property
     def base_datasource_url(self):
         return "{0}/api/{1}/sites/{2}/datasources".format(self._connection.server,
@@ -110,6 +128,14 @@ class DatasourceEndpoint(BaseEndpoint):
     @property
     def base_datasource_tags_url(self):
         return "{0}/tags".format(self.base_datasource_id_url)
+
+    @property
+    def base_create_extract_url(self):
+        return "{0}/createExtract".format(self.base_datasource_id_url)
+
+    @property
+    def base_delete_extract_url(self):
+        return "{0}/deleteExtract".format(self.base_datasource_id_url)
 
     @property
     def base_delete_datasource_tag_url(self):
@@ -158,6 +184,10 @@ class DatasourceEndpoint(BaseEndpoint):
                 url = self.base_datasource_tags_url
             elif self._delete_tag and self._tag_name:
                 url = self.base_delete_datasource_tag_url
+            elif self._create_extract:
+                url = self.base_create_extract_url
+            elif self._delete_extract:
+                url = self.base_delete_extract_url
             elif self._query_datasource_connections:
                 url = self.base_datasource_connections_url
             elif self._get_datasource_revisions:

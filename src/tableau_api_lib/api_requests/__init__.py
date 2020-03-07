@@ -17,6 +17,7 @@ from .add_view_to_favorites_request import AddViewToFavoritesRequest
 from .add_workbook_permissions_request import AddWorkbookPermissionsRequest
 from .add_workbook_to_favorites_request import AddWorkbookToFavoritesRequest
 from .add_workbook_to_schedule_request import AddWorkbookToScheduleRequest
+from .create_extracts_for_workbook_request import CreateExtractsForWorkbookRequest
 from .create_group_request import CreateGroupRequest
 from .create_project_request import CreateProjectRequest
 from .create_schedule_request import CreateScheduleRequest
