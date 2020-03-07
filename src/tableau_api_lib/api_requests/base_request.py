@@ -16,7 +16,7 @@ class BaseRequest:
     def _get_parameters_dict(param_keys, param_values):
         params_dict = {}
         for i, key in enumerate(param_keys):
-            if param_values[i]:
+            if param_values[i] or param_values[i] is False:
                 params_dict.update({key: param_values[i]})
         return params_dict
 
