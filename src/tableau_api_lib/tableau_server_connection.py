@@ -10,7 +10,7 @@ from tableau_api_lib.api_requests import AddDatasourcePermissionsRequest, AddDat
     AddFlowToScheduleRequest, AddProjectPermissionsRequest, AddProjectToFavoritesRequest, \
     AddTagsRequest, AddUserToAlertRequest, AddUserToGroupRequest, AddUserToSiteRequest, \
     AddViewPermissionsRequest, AddViewToFavoritesRequest, AddWorkbookPermissionsRequest, \
-    AddWorkbookToFavoritesRequest, AddWorkbookToScheduleRequest, CreateGroupRequest, \
+    AddWorkbookToFavoritesRequest, AddWorkbookToScheduleRequest, CreateExtractsForWorkbookRequest, CreateGroupRequest, \
     CreateProjectRequest, CreateScheduleRequest, CreateSiteRequest, CreateSubscriptionRequest, \
     EmptyRequest, GraphqlRequest, PublishDatasourceRequest, PublishFlowRequest, PublishWorkbookRequest, SignInRequest, \
     SwitchSiteRequest, UpdateDataAlertRequest, UpdateDatabaseRequest, UpdateDatasourceConnectionRequest, \
@@ -3296,4 +3296,76 @@ class TableauServerConnection:
         self.active_endpoint = EncryptionEndpoint(self, reencrypt_extracts=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.post(url=self.active_endpoint, headers=self.active_headers)
+        return response
+
+    # extract methods
+
+    @verify_api_method_exists('3.5')
+    def create_extract_for_datasource(self, datasource_id, encryption_flag=False):
+        """
+        Creates an extract for the specified published datasource.
+        :param str datasource_id: the ID of the datasource being converted into an extract
+        :param bool encryption_flag: True if encrypting the new extract, False otherwise
+        :return: HTTP response
+        """
+        self.active_endpoint = DatasourceEndpoint(ts_connection=self,
+                                                  datasource_id=datasource_id,
+                                                  encryption_flag=encryption_flag,
+                                                  create_extract=True).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.post(url=self.active_endpoint, headers=self.active_headers)
+        return response
+
+    @verify_api_method_exists('3.5')
+    def delete_extract_from_datasource(self, datasource_id):
+        """
+        Deletes an extract for the specified published datasource.
+        :param str datasource_id: the ID of the datasource being converted from an extract to a live connection
+        :return: HTTP response
+        """
+        self.active_endpoint = DatasourceEndpoint(ts_connection=self,
+                                                  datasource_id=datasource_id,
+                                                  delete_extract=True).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.post(url=self.active_endpoint, headers=self.active_headers)
+        return response
+
+    @verify_api_method_exists('3.5')
+    def create_extracts_for_workbook(self,
+                                     workbook_id,
+                                     encryption_flag=False,
+                                     extract_all_datasources_flag=False,
+                                     datasource_ids=None):
+        """
+        Creates extracts for all embedded datasources or a subset of specified embedded datasources.
+        :param str workbook_id: the ID of the workbook whose embedded datasources are being converted
+        :param bool encryption_flag: True if the new extracts will be encrypted, False otherwise
+        :param bool extract_all_datasources_flag: True if extracting all datasources, False otherwise
+        :param list datasource_ids: a list of datasource IDs if only converting a subset of datasources to extracts
+        :return: HTTP response
+        """
+        self.active_endpoint = WorkbookEndpoint(ts_connection=self,
+                                                workbook_id=workbook_id,
+                                                create_extracts=True,
+                                                encryption_flag=encryption_flag).get_endpoint()
+        self.active_request = CreateExtractsForWorkbookRequest(ts_connection=self,
+                                                               extract_all_datasources_flag=extract_all_datasources_flag,
+                                                               datasource_ids=datasource_ids).get_request()
+        self.active_headers = self.default_headers
+        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        return response
+
+    @verify_api_method_exists('3.5')
+    def delete_extracts_from_workbook(self, workbook_id):
+        """
+        Deletes all extracts from the workbook; the connections are converted from extract to live.
+        :param str workbook_id: the ID of the workbook whose extracts will be deleted
+        :return: HTTP response
+        """
+        self.active_endpoint = WorkbookEndpoint(ts_connection=self,
+                                                workbook_id=workbook_id,
+                                                delete_extracts=True).get_endpoint()
+        self.active_request = {"datasources": {"includeAll": True}}
+        self.active_headers = self.default_headers
+        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
