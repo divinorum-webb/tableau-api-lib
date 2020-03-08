@@ -58,6 +58,7 @@ def get_embedded_datasources_dataframe(conn, workbooks_df, workbook_ids=None):
     :return:
     """
     workbook_ids = workbook_ids or []
+    workbook_ids = workbook_ids.to_list() if isinstance(workbook_ids, pd.core.series.Series) else workbook_ids
     if any(workbook_ids):
         workbooks_df = workbooks_df[workbooks_df['id'].isin(workbook_ids)]
     embedded_datasources_df = pd.DataFrame()
