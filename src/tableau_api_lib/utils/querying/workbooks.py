@@ -43,7 +43,7 @@ def get_workbook_connections_dataframe(conn, workbook_id):
     try:
         connections_json = conn.query_workbook_connections(workbook_id).json()['connections']['connection']
         connections_df = pd.DataFrame(connections_json)
-        connections_df = extract_datasource_details(connections_df, ['name'])
+        connections_df = flatten_dict_column(connections_df, keys=['id', 'name'], col_name='datasource')
         return connections_df
     except KeyError:
         raise ContentNotFound('workbook', workbook_id)
