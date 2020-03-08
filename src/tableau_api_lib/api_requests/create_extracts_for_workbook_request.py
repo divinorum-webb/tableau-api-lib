@@ -20,7 +20,9 @@ class CreateExtractsForWorkbookRequest(BaseRequest):
 
     def _validate_inputs(self):
         valid = True
-        if not self._extract_all_datasources_flag and not self._datasource_ids:
+        if self._extract_all_datasources_flag is False and not any(self._datasource_ids):
+            valid = False
+        if self._extract_all_datasources_flag is True and self._datasource_ids:
             valid = False
         if not valid:
             raise self._invalid_parameter_exception()

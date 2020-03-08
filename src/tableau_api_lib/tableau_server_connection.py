@@ -3334,7 +3334,7 @@ class TableauServerConnection:
     def create_extracts_for_workbook(self,
                                      workbook_id,
                                      encryption_flag=False,
-                                     extract_all_datasources_flag=False,
+                                     extract_all_datasources_flag=True,
                                      datasource_ids=None):
         """
         Creates extracts for all embedded datasources or a subset of specified embedded datasources.

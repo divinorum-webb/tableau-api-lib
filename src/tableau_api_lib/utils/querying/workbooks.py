@@ -61,6 +61,6 @@ def get_embedded_datasources_dataframe(conn, workbooks_df, workbook_ids=None):
         workbooks_df = workbooks_df[workbooks_df['id'].isin(workbook_ids)]
     embedded_datasources_df = pd.DataFrame()
     for index, workbook in workbooks_df.iterrows():
-        workbook_connections_df = get_workbook_connections_dataframe(conn=conn_a, workbook_id=workbook['id'])
+        workbook_connections_df = get_workbook_connections_dataframe(conn=conn, workbook_id=workbook['id'])
         embedded_datasources_df = embedded_datasources_df.append(workbook_connections_df, ignore_index=True, sort=True)
     return embedded_datasources_df
