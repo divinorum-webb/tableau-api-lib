@@ -14,7 +14,7 @@ class CreateExtractsForWorkbookRequest(BaseRequest):
                  datasource_ids=None):
         super().__init__(ts_connection)
         self._extract_all_datasources_flag = extract_all_datasources_flag
-        self._datasource_ids = datasource_ids
+        self._datasource_ids = datasource_ids or []
         self._validate_inputs()
         self.base_create_extracts_for_workbook_request()
 
