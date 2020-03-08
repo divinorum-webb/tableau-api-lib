@@ -57,7 +57,8 @@ def get_embedded_datasources_dataframe(conn, workbooks_df, workbook_ids=None):
     :param list workbook_ids: a list of workbook IDs whose embedded datasources will be queried
     :return:
     """
-    if workbook_ids:
+    workbook_ids = workbook_ids or []
+    if any(workbook_ids):
         workbooks_df = workbooks_df[workbooks_df['id'].isin(workbook_ids)]
     embedded_datasources_df = pd.DataFrame()
     for index, workbook in workbooks_df.iterrows():
