@@ -26,7 +26,7 @@ def get_all_view_fields(conn, site_id):
 
 def get_views_dataframe(conn, site_id=None):
     if not site_id:
-        site_id = get_active_site_id(conn)
+        site_id = conn.site_id
     views_df = pd.DataFrame(get_all_view_fields(conn, site_id))
     views_df = flatten_dict_column(views_df, keys=['totalViewCount'], col_name='usage')
     return views_df
