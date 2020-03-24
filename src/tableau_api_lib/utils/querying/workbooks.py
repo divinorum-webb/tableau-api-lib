@@ -33,8 +33,8 @@ def get_views_dataframe(conn, site_id=None):
     return views_df
 
 
-def get_view_data_dataframe(conn, view_id):
-    view_data = conn.query_view_data(view_id=view_id)
+def get_view_data_dataframe(conn, view_id, parameter_dict=None):
+    view_data = conn.query_view_data(view_id=view_id, parameter_dict=parameter_dict)
     view_df = pd.read_csv(StringIO(view_data.text))
     return view_df
 
