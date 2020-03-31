@@ -1,6 +1,7 @@
 import requests
 import warnings
 from functools import wraps
+
 from tableau_api_lib.exceptions import InvalidRestApiVersion
 
 

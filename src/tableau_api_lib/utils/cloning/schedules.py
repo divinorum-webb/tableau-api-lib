@@ -7,116 +7,131 @@ clone_schedules
 clone_schedule_state
 override_schedule_state
 """
-from tableau_api_lib.utils import extract_pages
+import pandas as pd
+import warnings
+
+from tableau_api_lib.utils.querying import get_schedules_dataframe
+from tableau_api_lib.decorators import validate_schedule_state_override
 from tableau_api_lib.exceptions import InvalidParameterException
 
 
-def get_schedule_ids(conn, schedule_names=None):
-    if schedule_names:
-        schedule_ids = [schedule['id'] for schedule in extract_pages(conn.query_schedules)
-                        if schedule['name'] in schedule_names]
-    else:
-        schedule_ids = [schedule['id'] for schedule in extract_pages(conn.query_schedules)]
-    return schedule_ids
-
-
-def get_schedule_details(conn, schedule_ids):
+def get_schedule_details(conn, schedule_names=None):
+    schedules_df = get_schedules_dataframe(conn)
+    if any(schedule_names):
+        schedules_df = schedules_df.loc[schedules_df['name'].isin(schedule_names)]
+    schedule_ids = list(schedules_df['id'])
     schedule_details = [conn.update_schedule(schedule_id).json()['schedule'] for schedule_id in schedule_ids]
-    return schedule_details
+    return pd.DataFrame(schedule_details)
 
 
-def create_base_schedules(destination_conn, schedules, clone_name_prefix=None):
+def create_base_schedules(conn,
+                          schedules_df,
+                          prefix=None,
+                          suffix=None):
+    prefix = prefix or ''
+    suffix = suffix or ''
     responses = []
-    for schedule in schedules:
-        response = destination_conn.create_schedule(schedule_name=clone_name_prefix + schedule['name'],
-                                                    schedule_priority=schedule['priority'],
-                                                    schedule_type=schedule['type'],
-                                                    schedule_execution_order=schedule['executionOrder'],
-                                                    schedule_frequency=schedule['frequency'],
-                                                    start_time=schedule['frequencyDetails']['start'],
-                                                    end_time=schedule['frequencyDetails'].get('end', None),
-                                                    interval_expression_list=
-                                                    schedule['frequencyDetails']['intervals']['interval'])
-        responses.append(response.json()['schedule'])
-    return responses
-
-
-def update_schedule_state(destination_conn, original_schedules, destination_schedules):
-    responses = []
-    for i, schedule in enumerate(destination_schedules):
-        response = destination_conn.update_schedule(schedule_id=destination_schedules[i]['id'],
-                                                    schedule_state=original_schedules[i]['state'])
-        responses.append(response.json()['schedule'])
-    return responses
-
-
-def is_valid_state(new_state):
-    new_state = new_state.lower().capitalize() if new_state else None
-    if new_state in ['Suspended', 'Active', None]:
-        return True
-    else:
-        return False
-
-
-def override_schedule_state(conn, new_state, schedule_names=None):
-
-    new_state = new_state.lower().capitalize() if new_state else None
-    if not is_valid_state(new_state):
-        raise InvalidParameterException('override_schedule_state()', new_state)
-
-    if new_state:
-        responses = []
-        schedule_ids = get_schedule_ids(conn, schedule_names)
-        for schedule_id in schedule_ids:
-            response = conn.update_schedule(schedule_id=schedule_id, schedule_state=new_state)
+    for index, schedule in schedules_df.iterrows():
+        response = conn.create_schedule(schedule_name=prefix + schedule['name'] + suffix,
+                                        schedule_priority=schedule['priority'],
+                                        schedule_type=schedule['type'],
+                                        schedule_execution_order=schedule['executionOrder'],
+                                        schedule_frequency=schedule['frequency'],
+                                        start_time=schedule['frequencyDetails']['start'],
+                                        end_time=schedule['frequencyDetails'].get('end', None),
+                                        interval_expression_list=schedule['frequencyDetails']['intervals']['interval'])
+        try:
             responses.append(response.json()['schedule'])
-        return responses
-    else:
-        pass
+        except KeyError:
+            warnings.warn(f"""
+            There is already a schedule named '{prefix + schedule['name'] + suffix}'. 
+            Duplicates .
+            """)
+    return responses
 
 
-def clone_schedule_state(origin_conn,
-                         destination_conn,
-                         origin_schedule_names=None,
-                         destination_schedule_names=None):
+def update_schedule_state(conn,
+                          source_schedules_df,
+                          destination_schedules_df):
+    responses = []
+    for index, schedule in destination_schedules_df.iterrows():
+        response = conn.update_schedule(schedule_id=schedule['id'],
+                                        schedule_state=source_schedules_df.iloc[index]['state'])
+        try:
+            responses.append(response.json()['schedule'])
+        except KeyError:
+            warnings.warn(f"Unable to update schedule '{schedule['name']}'")
+    return pd.DataFrame(responses)
 
-    if origin_schedule_names and destination_schedule_names:
-        if len(origin_schedule_names) != len(destination_schedule_names):
+
+@validate_schedule_state_override
+def override_schedule_state(conn, state_override_value, schedule_names=None):
+    if state_override_value:
+        responses = []
+        schedules_df = get_schedule_details(conn, schedule_names)
+        for index, schedule in schedules_df.iterrows():
+            response = conn.update_schedule(schedule_id=schedule['id'], schedule_state=state_override_value)
+            try:
+                responses.append(response.json()['schedule'])
+            except KeyError:
+                warnings.warn(f"Unable to update schedule '{schedule['name']}'")
+        return pd.DataFrame(responses)
+
+
+def verify_schedule_names_align(source_schedule_names, destination_schedule_names, func_name=None):
+    if source_schedule_names and destination_schedule_names:
+        if len(source_schedule_names) != len(destination_schedule_names):
             print("When specifying schedule names, \
             you must provide an equal number of names for both the origin and destination.")
-            raise InvalidParameterException('clone_schedule_state()',
-                                            (origin_schedule_names, destination_schedule_names))
-    elif origin_schedule_names or destination_schedule_names:
-        raise InvalidParameterException('clone_schedule_state()',
-                                        (origin_schedule_names, destination_schedule_names))
+            raise InvalidParameterException(func_name,
+                                            (source_schedule_names, destination_schedule_names))
+    elif source_schedule_names or destination_schedule_names:
+        raise InvalidParameterException(func_name,
+                                        (source_schedule_names, destination_schedule_names))
 
-    origin_schedule_ids = get_schedule_ids(origin_conn, schedule_names=origin_schedule_names)
-    origin_schedule_details = get_schedule_details(origin_conn, schedule_ids=origin_schedule_ids)
-    destination_schedule_ids = get_schedule_ids(destination_conn, schedule_names=destination_schedule_names)
-    destination_schedule_details = get_schedule_details(destination_conn, schedule_ids=destination_schedule_ids)
-    updated_schedules = update_schedule_state(destination_conn, origin_schedule_details, destination_schedule_details)
-    print(updated_schedules)
+
+def clone_schedule_state(conn_source,
+                         conn_destination,
+                         source_schedule_names=None,
+                         destination_schedule_names=None) -> pd.DataFrame:
+    """
+    Clone schedule states from Tableau Server environment 'conn_source' to 'conn_destination'.
+    :param TableauServerConnection conn_source: the source Tableau Server connection
+    :param TableauServerConnection conn_destination: the destination Tableau Server connection
+    :param list source_schedule_names: (optional) define a subset of source schedule names
+    :param list destination_schedule_names: (optional) define a subset of destination schedule names
+    :return:
+    """
+    verify_schedule_names_align(source_schedule_names, destination_schedule_names, func_name='clone_schedule_state()')
+    source_schedule_df = get_schedule_details(conn_source, schedule_names=source_schedule_names)
+    destination_schedule_df = get_schedule_details(conn_destination, schedule_names=destination_schedule_names)
+    updated_schedules = update_schedule_state(conn_destination, source_schedule_df, destination_schedule_df)
     return updated_schedules
 
 
-def clone_schedules(origin_conn,
-                    destination_conn,
-                    state_override=None,
+@validate_schedule_state_override
+def clone_schedules(conn_source,
+                    conn_destination,
+                    state_override_value=None,
                     schedule_names=None,
-                    clone_name_prefix=None):
+                    prefix=None,
+                    suffix=None) -> pd.DataFrame:
+    """
+    Clone schedules from Tableau Server environment 'conn_source' to 'conn_destination'.
+    :param TableauServerConnection conn_source: the source Tableau Server connection
+    :param TableauServerConnection conn_destination: the destination Tableau Server connection
+    :param str state_override_value: (optional) define a state value to override schedule states from the source
+    :param list schedule_names: (optional) define a subset of schedule names to clone
+    :param str prefix: (optional) define a prefix to add to the cloned schedule names
+    :param str suffix: (optional) define a suffix to add to the cloned schedule names
+    :return: list of HTTP responses
+    """
+    source_schedule_df = get_schedule_details(conn=conn_source, schedule_names=schedule_names)
+    base_schedules_responses = create_base_schedules(conn_destination, source_schedule_df, prefix, suffix)
+    base_schedule_names = [schedule['name'] for schedule in base_schedules_responses]
 
-    state_override = state_override.lower().capitalize() if state_override else None
-
-    if not is_valid_state(state_override):
-        raise InvalidParameterException('clone_schedules()', state_override)
-
-    origin_schedule_ids = get_schedule_ids(origin_conn, schedule_names)
-    origin_schedule_details = get_schedule_details(origin_conn, origin_schedule_ids)
-    base_schedules = create_base_schedules(destination_conn, origin_schedule_details, clone_name_prefix)
-    base_schedule_names = [schedule['name'] for schedule in base_schedules]
-
-    destination_schedule_ids = get_schedule_ids(destination_conn, base_schedule_names)
-    destination_schedule_details = get_schedule_details(destination_conn, destination_schedule_ids)
-    cloned_schedules = update_schedule_state(destination_conn, origin_schedule_details, destination_schedule_details)
-    override_schedule_state(destination_conn, state_override, schedule_names=base_schedule_names)
+    destination_schedule_df = get_schedule_details(conn=conn_destination, schedule_names=base_schedule_names)
+    cloned_schedules = update_schedule_state(conn_destination, source_schedule_df, destination_schedule_df)
+    if state_override_value:
+        cloned_schedules = override_schedule_state(conn_destination, state_override_value, base_schedule_names)
     return cloned_schedules
