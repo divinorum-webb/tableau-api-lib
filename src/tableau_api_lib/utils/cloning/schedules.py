@@ -100,7 +100,7 @@ def clone_schedule_state(conn_source,
     :param TableauServerConnection conn_destination: the destination Tableau Server connection
     :param list source_schedule_names: (optional) define a subset of source schedule names
     :param list destination_schedule_names: (optional) define a subset of destination schedule names
-    :return:
+    :return: pd.DataFrame
     """
     verify_schedule_names_align(source_schedule_names, destination_schedule_names, func_name='clone_schedule_state()')
     source_schedule_df = get_schedule_details(conn_source, schedule_names=source_schedule_names)
@@ -124,7 +124,7 @@ def clone_schedules(conn_source,
     :param list schedule_names: (optional) define a subset of schedule names to clone
     :param str prefix: (optional) define a prefix to add to the cloned schedule names
     :param str suffix: (optional) define a suffix to add to the cloned schedule names
-    :return: list of HTTP responses
+    :return: pd.DataFrame
     """
     source_schedule_df = get_schedule_details(conn=conn_source, schedule_names=schedule_names)
     base_schedules_responses = create_base_schedules(conn_destination, source_schedule_df, prefix, suffix)
