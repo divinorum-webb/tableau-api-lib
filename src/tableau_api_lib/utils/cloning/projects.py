@@ -234,11 +234,11 @@ def create_projects(project_details_df, conn_target):
     :return: list of HTTP responses
     """
     responses = []
-    for i, _ in enumerate(project_details_df['source_project_name']):
+    for index, project in project_details_df.iterrows():
         response = conn_target.create_project(
-            project_name=project_details_df['source_project_name'][i],
-            project_description=project_details_df['source_project_description'][i],
-            content_permissions=project_details_df['contentPermissions'][i],
+            project_name=project['source_project_name'],
+            project_description=project['source_project_description'],
+            content_permissions=project['contentPermissions'],
             parent_project_id=None)
         responses.append(response)
     return responses
@@ -253,23 +253,18 @@ def update_project_hierarchies(project_details_df, conn_target):
     """
     responses = []
     child_projects_df = get_child_projects_df(project_details_df)
-    for index, row in child_projects_df.iterrows():
+    for index, project in child_projects_df.iterrows():
         response = conn_target.update_project(
-            project_id=row['target_project_id'],
-            parent_project_id=row['target_project_parent_id']
+            project_id=project['target_project_id'],
+            parent_project_id=project['target_project_parent_id']
         )
         responses.append(response)
     return responses
 
 
 def validate_inputs(overwrite_policy):
-    valid_overwrite_policies = [
-        None,
-        'overwrite'
-    ]
-    if overwrite_policy in valid_overwrite_policies:
-        pass
-    else:
+    valid_overwrite_policies = [None, 'overwrite']
+    if overwrite_policy not in valid_overwrite_policies:
         raise ValueError("Invalid overwrite policy provided: '{}'".format(overwrite_policy))
 
 
@@ -277,7 +272,7 @@ def delete_projects(conn, project_details_df, project_names):
     print("deleting overlapping target projects...")
     responses = []
     projects_to_delete = project_details_df[project_details_df['target_project_name'].isin(project_names)]
-    for i, project in projects_to_delete.iterrows():
+    for index, project in projects_to_delete.iterrows():
         responses.append(conn.delete_project(project_id=project['target_project_id']))
     print("overlapping target projects deleted")
     return conn
@@ -303,4 +298,5 @@ def clone_projects(conn_source, conn_target, project_names=None, overwrite_polic
         delete_projects(conn_target, project_details_df=target_project_df, project_names=overlapping_project_names)
     project_details_df = get_source_to_target_df(conn_source, conn_target, project_names)
     create_projects(project_details_df, conn_target)
-    update_project_hierarchies(create_final_target_df(conn_source, conn_target), conn_target)
+    cloned_projects = update_project_hierarchies(create_final_target_df(conn_source, conn_target), conn_target)
+    return cloned_projects
