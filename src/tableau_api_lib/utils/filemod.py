@@ -172,3 +172,10 @@ def create_temp_dir_branches(path, content_type):
     os.makedirs(f"{path}/{content_type}/source")
     print(f"creating dir '{path}/{content_type}/target'")
     os.makedirs(f"{path}/{content_type}/target")
+
+
+def set_temp_dirs(temp_dir):
+    temp_dir = temp_dir or os.getcwd() + '/temp'
+    extraction_dir = temp_dir + '/extracted'
+    create_temp_dirs(temp_dir)
+    return temp_dir, extraction_dir

@@ -1,16 +1,19 @@
 import pandas as pd
 import os
+import warnings
 
 
 from tableau_api_lib.utils.querying import get_workbooks_dataframe, get_projects_dataframe, get_datasources_dataframe, \
     get_workbook_connections_dataframe, get_datasource_connections_dataframe
-from tableau_api_lib.utils.filemod import modify_tableau_zipfile, create_temp_dirs, delete_temp_files
+from tableau_api_lib.utils.filemod import modify_tableau_zipfile, set_temp_dirs, delete_temp_files
 from tableau_api_lib.utils import flatten_dict_column, get_server_netloc
 from tableau_api_lib.exceptions import ContentOverwriteDisabled
 
 
-def get_source_datasource_df(conn_source):
+def get_source_datasource_df(conn_source, datasource_ids):
     datasource_df = get_datasources_dataframe(conn_source)
+    if datasource_ids:
+        datasource_df = datasource_df.loc[datasource_df['id'].isin(datasource_ids)]
     datasource_df = flatten_dict_column(datasource_df, keys=['id', 'name'], col_name='project')
     datasource_df = flatten_dict_column(datasource_df, keys=['id', 'name'], col_name='owner')
     datasource_df.columns = ["source_" + column for column in datasource_df.columns]
@@ -80,11 +83,21 @@ def get_datasource_connection_ports(all_datasource_connections_df, all_workbook_
 
 
 def get_credentials_df(file_path):
-    if os.path.exists(file_path):
-        datasource_credentials_df = pd.read_csv(file_path)
-        return datasource_credentials_df
+    if file_path:
+        if os.path.exists(file_path):
+            datasource_credentials_df = pd.read_csv(file_path)
+            return datasource_credentials_df
+        else:
+            raise FileNotFoundError(f"No credentials CSV mapping file was found at '{file_path}'.")
     else:
-        raise FileNotFoundError(f"No credentials CSV mapping file was found at '{file_path}'.")
+        warnings.warn("""
+        No credentials mapping file path was provided.
+        Attempts to publish datasources that require credentials may fail.
+        If any datasources have live connections, or are published with embedded credentials, provide the 
+        clone_datasources() function a file path using the 'credentials_file_path' parameter.
+        The columns defined in the CSV must include: 'serverAddress', 'userName', 'password', and 'serverPort'.
+        """)
+        return pd.DataFrame(columns=['serverAddress', 'userName', 'password', 'serverPort'])
 
 
 def download_datasources(conn_source, datasource_df, download_dir=None):
@@ -106,15 +119,26 @@ def get_credential_mappings(datasource_df, credentials_df):
     return mapped_df[cols_to_keep]
 
 
-def set_temp_dirs(temp_dir):
-    temp_dir = temp_dir or os.getcwd() + '/temp'
-    extraction_dir = temp_dir + '/extracted'
-    create_temp_dirs(temp_dir)
-    return temp_dir, extraction_dir
+# def set_temp_dirs(temp_dir):
+#     temp_dir = temp_dir or os.getcwd() + '/temp'
+#     extraction_dir = temp_dir + '/extracted'
+#     create_temp_dirs(temp_dir)
+#     return temp_dir, extraction_dir
 
 
-def get_cloning_df(conn_source, conn_target, credentials_file_path):
-    source_datasource_df = get_source_datasource_df(conn_source)
+def get_cloning_df(conn_source,
+                   conn_target,
+                   datasource_ids,
+                   credentials_file_path) -> pd.DataFrame:
+    """
+    Get a Pandas DataFrame populated with details used to clone datasources from conn_source to conn_target.
+    :param TableauServerConnection conn_source: the source Tableau Server connection
+    :param TableauServerConnection conn_target: the target (destination) Tableau Server connection
+    :param list datasource_ids: if the list exists, only datasources whose ID values are present will be cloned
+    :param str credentials_file_path: defines the path to the CSV file containing database credentials
+    :return: pd.DataFrame
+    """
+    source_datasource_df = get_source_datasource_df(conn_source, datasource_ids)
     target_project_df = get_target_project_df(conn_target)
     mapped_datasource_df = get_mapped_datasource_df(source_datasource_df, target_project_df)
     source_connections_df = get_datasource_connection_ports(get_all_workbook_connections_df(conn_source),
@@ -161,7 +185,12 @@ def update_datasources_by_project(conn_target, project_datasources_df):
             conn_target.add_tags_to_data_source(datasource_id=datasource['target_id'], tags=tag_list)
 
 
-def clone_datasources_by_project(conn_source, conn_target, mapped_credentials_df, temp_dir, project, extraction_dir):
+def clone_datasources_by_project(conn_source,
+                                 conn_target,
+                                 mapped_credentials_df,
+                                 temp_dir,
+                                 project,
+                                 extraction_dir):
     source_project_dir = f"{temp_dir}/datasources/source/{project}"
     target_project_dir = f"{temp_dir}/datasources/target/{project}"
     os.makedirs(source_project_dir, exist_ok=False)
@@ -176,9 +205,24 @@ def clone_datasources_by_project(conn_source, conn_target, mapped_credentials_df
     update_datasources_by_project(conn_target, project_datasources)
 
 
-def clone_datasources(conn_source, conn_target, credentials_file_path=None, temp_dir=None, overwrite_policy=None):
+def clone_datasources(conn_source,
+                      conn_target,
+                      datasource_ids=None,
+                      credentials_file_path=None,
+                      temp_dir=None,
+                      overwrite_policy=None):
     temp_dir, extraction_dir = set_temp_dirs(temp_dir)
-    mapped_credentials_df = get_cloning_df(conn_source, conn_target, credentials_file_path)
-    for project in mapped_credentials_df['target_project_name'].unique():
-        clone_datasources_by_project(conn_source, conn_target, mapped_credentials_df, temp_dir, project, extraction_dir)
-    delete_temp_files(temp_dir)
+    try:
+        mapped_credentials_df = get_cloning_df(conn_source,
+                                               conn_target,
+                                               datasource_ids,
+                                               credentials_file_path)
+        for project in mapped_credentials_df['target_project_name'].unique():
+            clone_datasources_by_project(conn_source,
+                                         conn_target,
+                                         mapped_credentials_df,
+                                         temp_dir,
+                                         project,
+                                         extraction_dir)
+    finally:
+        delete_temp_files(temp_dir)
