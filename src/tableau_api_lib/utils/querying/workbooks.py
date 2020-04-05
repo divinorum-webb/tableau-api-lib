@@ -16,7 +16,10 @@ def get_all_workbook_fields(conn):
 
 
 def get_workbooks_dataframe(conn):
-    workbooks_df = pd.DataFrame(get_all_workbook_fields(conn))
+    try:
+        workbooks_df = pd.DataFrame(get_all_workbook_fields(conn))
+    except ContentNotFound:
+        workbooks_df = pd.DataFrame()
     return workbooks_df
 
 
@@ -56,22 +59,30 @@ def get_workbook_connections_dataframe(conn, workbook_id):
         raise ContentNotFound('workbook', workbook_id)
 
 
-def get_embedded_datasources_dataframe(conn, workbooks_df, workbook_ids=None):
+def get_embedded_datasources_dataframe(conn,
+                                       workbooks_df,
+                                       workbook_ids=None,
+                                       id_col='id',
+                                       name_col='name',
+                                       new_col_prefix=''):
     """
     Creates a Pandas DataFrame of all embedded workbook datasources, or specific workbooks if specified.
     :param TableauServerConnection conn: the Tableau Server connection
     :param pd.DataFrame workbooks_df: the workbook DataFrame containing details for all workbooks
+    :param str id_col: the name of the column containing the workbook ID; defaults to 'id'
+    :param str name_col: the name of the column containing the workbook name; defaults to 'name'
     :param list workbook_ids: a list of workbook IDs whose embedded datasources will be queried
     :return:
     """
     workbook_ids = workbook_ids.to_list() if isinstance(workbook_ids, pd.core.series.Series) else workbook_ids
     workbook_ids = workbook_ids or []
     if any(workbook_ids):
-        workbooks_df = workbooks_df[workbooks_df['id'].isin(workbook_ids)]
+        workbooks_df = workbooks_df[workbooks_df[id_col].isin(workbook_ids)]
     embedded_datasources_df = pd.DataFrame()
     for index, workbook in workbooks_df.iterrows():
-        workbook_connections_df = get_workbook_connections_dataframe(conn=conn, workbook_id=workbook['id'])
-        workbook_connections_df['workbook_name'] = workbook['name']
-        workbook_connections_df['site_name'] = conn.site_name
+        workbook_connections_df = get_workbook_connections_dataframe(conn=conn, workbook_id=workbook[id_col])
+        workbook_connections_df[new_col_prefix + 'workbook_name'] = workbook[name_col]
+        workbook_connections_df[new_col_prefix + 'workbook_id'] = workbook[id_col]
+        workbook_connections_df[new_col_prefix + 'site_name'] = conn.site_name
         embedded_datasources_df = embedded_datasources_df.append(workbook_connections_df, ignore_index=True, sort=True)
     return embedded_datasources_df

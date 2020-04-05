@@ -40,11 +40,15 @@ def copy_dir_to_zip(path, zip_file_obj) -> None:
     :return: None
     """
     for root, dirs, files in os.walk(path):
-        for file in files:
-            filename, file_extension = os.path.splitext(file)
-            if file_extension not in ['.twb', '.tds']:
-                # zip_file_obj.write(os.path.join(root, file))
-                zip_file_obj.write(os.path.join(root, file), arcname=os.path.join('Data/Extracts', file))
+        if str(root).__contains__('TwbxExternalCache'):
+            pass
+        else:
+            for file in files:
+                filename, file_extension = os.path.splitext(file)
+                if file_extension not in ['.twb', '.tds']:
+                    # zip_file_obj.write(os.path.join(root, file))
+                    dir_to_write = os.path.split(root)[-1]
+                    zip_file_obj.write(os.path.join(root, file), arcname=os.path.join(f'Data/{dir_to_write}', file))
 
 
 def replace_unzipped_xml_file(file_path, conn_source, conn_target, extraction_dir_path) -> None:

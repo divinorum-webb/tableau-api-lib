@@ -23,9 +23,13 @@ workflow logic:
 
 
 import pandas as pd
-import requests
+import os
 
-from tableau_api_lib.utils.querying import get_workbooks_dataframe, get_projects_dataframe, get_datasources_dataframe
+from tableau_api_lib.utils.querying import get_workbooks_dataframe, get_projects_dataframe, \
+    get_embedded_datasources_dataframe
+from tableau_api_lib.utils.filemod import modify_tableau_zipfile, set_temp_dirs, delete_temp_files, \
+    replace_unzipped_xml_file
+from tableau_api_lib.utils import flatten_dict_column, get_server_netloc
 from tableau_api_lib.exceptions import ContentOverwriteDisabled
 
 
@@ -40,9 +44,10 @@ def get_source_workbook_df(conn_source, workbook_names=None):
     workbook_df.fillna(value='', inplace=True)
     if workbook_names:
         workbook_df = workbook_df[workbook_df['name'].isin(workbook_names)]
-    workbook_df = extract_project_details(workbook_df, keys=['id', 'name'])
-    workbook_df = extract_owner_details(workbook_df, keys=['id', 'name', 'email'])
+    workbook_df = flatten_dict_column(workbook_df, keys=['id', 'name'], col_name='project')
+    workbook_df = flatten_dict_column(workbook_df, keys=['id', 'name', 'email'], col_name='owner')
     workbook_df.columns = ["source_" + column for column in workbook_df.columns]
+    workbook_df['source_project_name_lower'] = workbook_df['source_project_name'].apply(lambda x: str(x).lower())
     return workbook_df
 
 
@@ -58,10 +63,11 @@ def get_target_workbook_df(conn_target, workbook_names=None):
         workbook_df.fillna(value='', inplace=True)
         if workbook_names:
             workbook_df = workbook_df[workbook_df['name'].isin(workbook_names)]
-        workbook_df = extract_project_details(workbook_df, keys=['id', 'name'])
-        workbook_df = extract_owner_details(workbook_df, keys=['id', 'name', 'email'])
+        workbook_df = flatten_dict_column(workbook_df, keys=['id', 'name'], col_name='project')
+        workbook_df = flatten_dict_column(workbook_df, keys=['id', 'name', 'email'], col_name='owner')
         workbook_df.columns = ["target_" + column for column in workbook_df.columns]
-    except ValueError:
+        workbook_df['target_project_name_lower'] = workbook_df['target_project_name'].apply(lambda x: str(x).lower())
+    except KeyError:
         workbook_df = pd.DataFrame()
     return workbook_df
 
@@ -75,56 +81,53 @@ def get_source_to_target_wb_df(source_workbook_df, conn_target):
     """
     target_projects_df = get_projects_dataframe(conn_target)
     target_projects_df.columns = ["target_project_" + column for column in target_projects_df.columns]
+    target_projects_df['target_project_name_lower'] = target_projects_df['target_project_name'].apply(lambda x: str(x).lower())
     workbook_details_df = source_workbook_df.merge(target_projects_df,
                                                    how='left',
-                                                   left_on='source_project_name',
-                                                   right_on='target_project_name')
+                                                   left_on='source_project_name_lower',
+                                                   right_on='target_project_name_lower')
     return workbook_details_df
 
 
-def get_source_to_target_ds_df(conn_target, source_datasource_df):
-    """
-    Get a DataFrame with source datasource details, source user details, and source target details combined.
-    :param pd.DataFrame source_datasource_df: the source datasource details
-    :param class conn_target: the target Tableau Server connection
-    :return DataFrame: datasource_details_df
-    """
-    target_projects_df = get_projects_dataframe(conn_target)
-    target_projects_df.columns = ["target_project_" + column for column in target_projects_df.columns]
-    datasource_details_df = source_datasource_df.merge(target_projects_df,
-                                                       how='left',
-                                                       left_on='project_name',
-                                                       right_on='target_project_name')
-    return datasource_details_df
-
-
-def extract_project_details(df, keys):
-    for key in keys:
-        df['project_' + key] = df['project'].apply(lambda project: project[key])
-    df.drop(columns=['project'], inplace=True)
-    return df
-
-
-def extract_owner_details(df, keys):
-    for key in keys:
-        df['owner_' + key] = df['owner'].apply(lambda owner: owner[key])
-    df.drop(columns=['owner'], inplace=True)
-    return df
-
-
-def extract_datasource_details(df, keys):
-    for key in keys:
-        df['datasource_' + key] = df['datasource'].apply(lambda datasource: datasource[key])
-    df.drop(columns=['datasource'], inplace=True)
-    return df
-
-
-def add_connection_context(workbook, workbook_connections_df):
-    workbook_connections_df['workbook_name'] = workbook['source_name']
-    workbook_connections_df['workbook_id'] = workbook['source_id']
-    workbook_connections_df['project_name'] = workbook['source_project_name']
-    workbook_connections_df['project_id'] = workbook['source_project_id']
+def get_workbook_connections_df(conn_source, conn_target, workbooks_df):
+    workbook_connections_df = get_embedded_datasources_dataframe(conn_source,
+                                                                 workbooks_df=workbooks_df,
+                                                                 id_col='source_id',
+                                                                 name_col='source_name',
+                                                                 new_col_prefix='source_')
+    workbook_connections_df['serverAddress'] = workbook_connections_df['serverAddress'].\
+        apply(lambda x: x.replace(get_server_netloc(conn_source.server), get_server_netloc(conn_target.server)))
+    workbook_connections_df['serverPort'] = workbook_connections_df['serverPort'].fillna(0).astype('int').astype('str')
+    workbook_connections_df['userName'] = workbook_connections_df['userName'].fillna('')
     return workbook_connections_df
+
+
+def get_workbook_credentials_df(workbook_connections_df, credentials_file_path=None):
+    if not credentials_file_path:
+        workbook_connections_df['password'] = ''
+    else:
+        credentials_df = pd.read_csv(credentials_file_path)
+        credentials_df['password'].fillna('', inplace=True)
+        credentials_df['serverPort'].fillna(0, inplace=True)
+        # credentials_df['password'].fillna('', inplace=True)
+        credentials_df['serverPort'] = credentials_df['serverPort'].astype('int').astype('str')
+        workbook_connections_df = workbook_connections_df.merge(credentials_df,
+                                                                how='left',
+                                                                on=['serverAddress', 'userName'],
+                                                                suffixes=(None, '_delete'))
+    workbook_connections_df['password'] = workbook_connections_df['password'].fillna('')
+    credential_cols = [col for col in list(workbook_connections_df.columns) if not str(col).endswith('_delete')]
+    return workbook_connections_df[credential_cols]
+
+
+def get_project_workbook_credentials_df(workbook_credentials_df, source_to_target_wb_df):
+    source_to_target_abbreviated_df = source_to_target_wb_df[['source_id', 'source_project_name', 'target_project_name',
+                                                              'source_project_name_lower', 'target_project_name_lower']]
+    project_workbook_credentials_df = workbook_credentials_df.merge(source_to_target_abbreviated_df,
+                                                                    how='left',
+                                                                    left_on='source_workbook_id',
+                                                                    right_on='source_id')
+    return project_workbook_credentials_df
 
 
 def get_workbook_names(workbook_df, column_name) -> list:
@@ -132,10 +135,9 @@ def get_workbook_names(workbook_df, column_name) -> list:
     Get the workbook names for the active site on the specified Tableau Server connection.
     :param DataFrame workbook_df: the workbook details DataFrame for the server
     :param str column_name: the name of the column containing workbook names [source_workbook_name, target_workbook_name]
-    :return: workbook names
+    :return: list
     """
     workbook_names = list(workbook_df[column_name])
-    workbook_names = [workbook_name for workbook_name in workbook_names]
     return workbook_names
 
 
@@ -149,11 +151,64 @@ def get_overlapping_workbook_names(source_workbook_df, target_workbook_df) -> li
         return []
 
 
+def get_workbook_file_type(response):
+    try:
+        file_type = ''
+        content_type = dict(response.headers)['Content-Type']
+        if str(content_type.lower()) == 'application/xml':
+            file_type = 'twb'
+        elif str(content_type.lower()) == 'application/octet-stream':
+            file_type = 'twbx'
+        return file_type
+    except KeyError:
+        raise Exception(f"An error occurred while downloading the workbook: status code {response.status_code}")
+
+
+def download_workbooks(conn_source, workbooks_df, download_dir=None, target_project_dir=None):
+    download_dir = download_dir or os.getcwd() + '/temp/workbooks/source'
+    target_project_dir = target_project_dir or os.getcwd() + '/temp/workbooks/target'
+    workbook_file_names_df = pd.DataFrame()
+    for index, workbook in workbooks_df.iterrows():
+        response = conn_source.download_workbook(workbook_id=workbook['source_id'])
+        file_type = get_workbook_file_type(response)
+        print("downloading workbook '{0}' to '{1}/{0}.{2}'...".format(workbook['source_name'],
+                                                                      download_dir,
+                                                                      file_type))
+        with open(f"{download_dir}/{workbook['source_name']}.{file_type}", 'wb') as file:
+            file.write(response.content)
+        workbook_file_name_df = workbook[['source_name', 'source_project_name']].copy()
+        workbook_file_name_df['file_path'] = f"{target_project_dir}/{workbook['source_name']}.{file_type}"
+        workbook_file_names_df = workbook_file_names_df.append(workbook_file_name_df, ignore_index=True, sort=False)
+    return workbook_file_names_df
+
+
+def add_downloaded_file_names(workbooks_df, downloaded_file_names_df):
+    workbooks_df = workbooks_df.merge(downloaded_file_names_df,
+                                      how='left',
+                                      on=['source_name', 'source_project_name'])
+    return workbooks_df
+
+
+def modify_workbooks_by_project(conn_source, conn_target, source_project_dir, target_project_dir, extraction_dir):
+    for file in os.listdir(source_project_dir):
+        file_type = os.path.splitext(file)[-1]
+        if file_type == '.twbx':
+            modify_tableau_zipfile(zipfile_path=source_project_dir + '/' + file,
+                                   conn_source=conn_source, conn_target=conn_target,
+                                   extraction_dir_path=extraction_dir,
+                                   destination_dir_path=target_project_dir)
+        elif file_type == '.twb':
+            replace_unzipped_xml_file(file_path=source_project_dir + '/' + file,
+                                      conn_source=conn_source, conn_target=conn_target,
+                                      extraction_dir_path=target_project_dir)
+        delete_temp_files(extraction_dir)
+
+
 def delete_workbooks(conn, workbook_details_df, workbook_names):
     print("deleting overlapping target workbooks...")
     responses = []
     workbooks_to_delete = workbook_details_df[workbook_details_df['target_workbook_name'].isin(workbook_names)]
-    for i, workbook in workbooks_to_delete.iterrows():
+    for index, workbook in workbooks_to_delete.iterrows():
         print("deleting workbook: (name='{}', id='{}'".
               format(workbook['target_workbook_id'], workbook['target_workbook_name']))
         responses.append(conn.delete_workbook(workbook_id=workbook['target_workbook_id']))
@@ -167,86 +222,8 @@ def validate_inputs(overwrite_policy):
         'overwrite',
         'merge'  # add logic for merging (leave existing content as is and create any missing content)
     ]
-    if overwrite_policy in valid_overwrite_policies:
-        pass
-    else:
+    if overwrite_policy not in valid_overwrite_policies:
         raise ValueError("Invalid overwrite policy provided: '{}'".format(overwrite_policy))
-
-
-# def get_published_workbook_datasources(conn_source, source_workbook_df):
-#     published_workbook_datasources_df = pd.DataFrame()
-#     for index, workbook in source_workbook_df.iterrows():
-#         workbook_connections_df = pd.DataFrame(
-#             conn_source.query_workbook_connections(workbook['source_id']).json()['connections']['connection'])
-#         workbook_connections_df = extract_datasource_details(workbook_connections_df, ['id', 'name'])
-#         workbook_connections_df = add_connection_context(workbook, workbook_connections_df)
-#         published_workbook_datasources_df = pd.concat([published_workbook_datasources_df, workbook_connections_df],
-#                                                       sort=False)
-#     published_workbook_datasources_df = published_workbook_datasources_df[
-#         published_workbook_datasources_df['serverAddress'].isin([urlparse(conn_source.server).netloc])]
-#     all_datasources_df = get_datasources_dataframe(conn_source)
-#     print("published wb ds: \n: ", published_workbook_datasources_df['datasource_id'])
-#     print("all ds: \n: ", all_datasources_df['id'])
-#     published_workbook_datasources_df = published_workbook_datasources_df[
-#         published_workbook_datasources_df['datasource_id'].isin(all_datasources_df['id'])]
-#     return published_workbook_datasources_df
-
-
-def get_published_datasources(conn_source):
-    published_datasources_df = get_datasources_dataframe(conn_source)
-    published_datasources_df = extract_project_details(published_datasources_df, ['id', 'name'])
-    published_datasources_df = extract_owner_details(published_datasources_df, ['id', 'name'])
-    return published_datasources_df
-
-
-def download_published_datasources(conn_source, published_datasources_df, file_path='temp/'):
-    projects = published_datasources_df['project_name'].unique()
-    published_datasources_df['datasource_file_path'] = published_datasources_df['name']\
-        .apply(lambda x: file_path + str(x) + '.tdsx')
-    print("published_datasources_df_cols: \n", published_datasources_df.columns)
-    for project in projects:
-        print("downloading datasources from project '{}'...".format(project))
-        datasources_df = published_datasources_df[published_datasources_df['project_name'].isin([project])]
-        for index, datasource in datasources_df.iterrows():
-            print("downloading datasource '{}'...".format(datasource['name']))
-            file_contents = conn_source.download_data_source(datasource_id=datasource['id'])
-            with open(datasource['datasource_file_path'], 'wb') as file:
-                file.write(file_contents.content)
-            print("completed download of datasource '{}'".format(datasource['name']))
-        print("completed downloading datasources from project '{}'".format(project))
-    return published_datasources_df
-
-
-def publish_datasources(conn_target, datasources_df):
-    publish_responses = []
-    datasources_df['target_datasource_id'] = ''
-    for index, datasource in datasources_df.iterrows():
-        print("publishing datasource '{}'...".format(datasource['name']))
-        response = conn_target.publish_data_source(datasource_file_path=datasource['datasource_file_path'],
-                                                   datasource_name=datasource['name'],
-                                                   project_id=datasource['target_project_id'])
-        if response.status_code == 201:
-            datasources_df.loc[index, 'target_datasource_id'] = response.json()['datasource']['id']
-            print("successfully published datasource '{}'".format(datasource['name']))
-        publish_responses.append(response)
-    return datasources_df, publish_responses
-
-
-def clone_datasource_tags(conn_target, datasources_df):
-    responses = []
-    for index, datasource in datasources_df.iterrows():
-        print("cloning tags for datasource '{}'...".format(datasource['name']))
-        try:
-            datasource_tags = [tag['label'] for tag in datasource['tags']['tag']]
-            response = conn_target.add_tags_to_data_source(datasource['target_datasource_id'], datasource_tags)
-            responses.append(response)
-            if response.status_code == 200:
-                print("successfully cloned tags for datasource '{}'".format(datasource['name']))
-            else:
-                print("failed to clone tags for datasource '{}'".format(datasource['name']))
-        except KeyError:
-            print("no tags exist for datasource '{}'".format(datasource['name']))
-    return responses
 
 
 def process_overlapping_workbooks(conn_target,
@@ -268,33 +245,89 @@ def process_overlapping_workbooks(conn_target,
     pass
 
 
-def clone_workbooks(conn_source, conn_target, workbook_names=None, overwrite_policy=None):
+def publish_workbooks_by_project(conn_target, project_workbooks_df, project_workbook_credentials_df):
+    for index, workbook in project_workbooks_df.iterrows():
+        workbook_credentials_df = project_workbook_credentials_df.loc[
+            project_workbook_credentials_df['source_workbook_name'] == workbook['source_name']]
+        response = conn_target.publish_workbook(workbook_file_path=workbook['file_path'],
+                                                workbook_name=workbook['source_name'],
+                                                project_id=workbook['target_project_id'],
+                                                server_address=workbook_credentials_df['serverAddress'].to_list(),
+                                                port_number=workbook_credentials_df['serverPort'].to_list(),
+                                                connection_username=workbook_credentials_df['userName'].to_list(),
+                                                connection_password=workbook_credentials_df['password'].to_list(),
+                                                embed_credentials_flag=workbook_credentials_df['embedPassword'].to_list())
+        print("publish response for {}:\n{}".format(workbook['source_name'], response.json()))
+        if response.status_code in [200, 201]:
+            project_workbooks_df.at[index, 'target_id'] = response.json()['workbook']['id']
+    return project_workbooks_df
+
+
+def clone_workbooks_by_project(conn_source,
+                               conn_target,
+                               source_to_target_wb_df,
+                               project_workbook_credentials_df,
+                               temp_dir,
+                               project,
+                               extraction_dir):
+    source_project_dir = f"{temp_dir}/workbooks/source/{project}"
+    target_project_dir = f"{temp_dir}/workbooks/target/{project}"
+    os.makedirs(source_project_dir, exist_ok=False)
+    os.makedirs(target_project_dir, exist_ok=False)
+    project_workbooks_df = source_to_target_wb_df[
+        source_to_target_wb_df['target_project_name_lower'] == str(project).lower()].copy()
+    project_workbook_credentials_df = project_workbook_credentials_df[
+        project_workbook_credentials_df['target_project_name_lower'] == str(project).lower()].copy()
+    workbook_file_names_df = download_workbooks(conn_source, project_workbooks_df, download_dir=source_project_dir, target_project_dir=target_project_dir)
+    project_workbooks_df = add_downloaded_file_names(project_workbooks_df, workbook_file_names_df)
+    modify_workbooks_by_project(conn_source, conn_target, source_project_dir, target_project_dir, extraction_dir)
+    project_workbooks_df.to_csv(project + '_project_workbooks_df.csv')
+    project_workbook_credentials_df.to_csv(project + '_project_workbook_credentials_df.csv')
+    print("project_workbooks_df:\n", project_workbooks_df['file_path'])
+    print("project_workbook_credentials_df:\n", project_workbook_credentials_df)
+    published_workbooks = publish_workbooks_by_project(conn_target, project_workbooks_df, project_workbook_credentials_df)
+    print("published_workbooks_df:\n", published_workbooks)
+    # project_datasources = publish_datasources_by_project(conn_target, project_datasources_df)
+    # update_datasources_by_project(conn_target, project_datasources)
+
+
+def clone_workbooks(conn_source,
+                    conn_target,
+                    workbook_names=None,
+                    credentials_file_path=None,
+                    temp_dir=None,
+                    overwrite_policy=None):
     """
     Clones workbooks from the source server to the target server.
     :param class conn_source: the source server connection
     :param class conn_target: the target server connection
     :param list workbook_names: (optional) a list of workbook names to clone; specifying no names clones all workbooks
+    :param str temp_dir: (optional) designate the location where temp files will be stored
     :param str overwrite_policy: (optional) set to 'overwrite' to overwrite content; defaults to not overwriting
     :return: None
     """
+    temp_dir, extraction_dir = set_temp_dirs(temp_dir)
     validate_inputs(overwrite_policy)
     source_workbook_df = get_source_workbook_df(conn_source=conn_source, workbook_names=workbook_names)
     target_workbook_df = get_target_workbook_df(conn_target=conn_target, workbook_names=workbook_names)
     # refactor the overlapping checks to a new function: process_overwrite_policy()
-    overlapping_workbook_names = get_overlapping_workbook_names(source_workbook_df, target_workbook_df)
-    process_overlapping_workbooks(conn_target, target_workbook_df, overlapping_workbook_names, overwrite_policy)
-    workbook_details_df = get_source_to_target_wb_df(source_workbook_df, conn_target)
-    workbook_details_df.to_csv('delete_workbook_details_df.csv')
-    # published_datasources_df = get_published_datasources(conn_source)
-    # published_datasources_df = download_published_datasources(conn_source, published_datasources_df)
-    # -> modify the downloaded data source .tds files to reference the target server instead of the source server
-    # -> save the modified .tds files and zip them back into .tdsx files
-    # published_datasources_df = get_source_to_target_ds_df(conn_target, published_datasources_df)
-    # published_datasources_df, publish_responses = publish_datasources(conn_target, published_datasources_df)
-    # clone_tag_responses = clone_datasource_tags(conn_target, published_datasources_df)
-    # -> download source site's workbooks
-    # -> modify downloaded workbook .twb files to reflect the target server instead of the source server
-    # -> repackage files if they were .twbx, otherwise leave as .twb
-    # -> publish source site's workbooks to target site
+    if any(target_workbook_df.columns):
+        overlapping_workbook_names = get_overlapping_workbook_names(source_workbook_df, target_workbook_df)
+        process_overlapping_workbooks(conn_target, target_workbook_df, overlapping_workbook_names, overwrite_policy)
+    source_to_target_wb_df = get_source_to_target_wb_df(source_workbook_df=source_workbook_df, conn_target=conn_target)
+    workbook_conn_df = get_workbook_connections_df(conn_source, conn_target, source_to_target_wb_df)
+    workbook_credentials_df = get_workbook_credentials_df(workbook_conn_df, credentials_file_path)
+    project_workbook_credentials_df = get_project_workbook_credentials_df(workbook_credentials_df, source_to_target_wb_df)
+    try:
+        for project in source_to_target_wb_df['source_project_name'].unique():
+            clone_workbooks_by_project(conn_source=conn_source,
+                                       conn_target=conn_target,
+                                       source_to_target_wb_df=source_to_target_wb_df,
+                                       project_workbook_credentials_df=project_workbook_credentials_df,
+                                       temp_dir=temp_dir,
+                                       project=project,
+                                       extraction_dir=extraction_dir)
+    finally:
+        delete_temp_files(temp_dir)
     # -> update workbooks to have the correct owner (and other metadata)
     #   -> optional mapping stage: map_workbook_owners (searches for original owner on target site, otherwise default)
