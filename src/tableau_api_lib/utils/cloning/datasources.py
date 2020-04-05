@@ -171,6 +171,7 @@ def publish_datasources_by_project(conn_target, project_datasources_df):
                                                    embed_credentials_flag=True if datasource['userName'] else False)
         if response.status_code in [200, 201]:
             project_datasources_df.at[index, 'target_id'] = response.json()['datasource']['id']
+        print(f"publish response for {datasource['source_name']}: ", response.json())
     return project_datasources_df
 
 
@@ -201,8 +202,8 @@ def clone_datasources_by_project(conn_source,
     project_datasources_df.fillna('', inplace=True)
     download_datasources(conn_source, project_datasources_df, download_dir=source_project_dir)
     modify_datasources_by_project(conn_source, conn_target, source_project_dir, target_project_dir, extraction_dir)
-    project_datasources = publish_datasources_by_project(conn_target, project_datasources_df)
-    update_datasources_by_project(conn_target, project_datasources)
+    published_datasources = publish_datasources_by_project(conn_target, project_datasources_df)
+    update_datasources_by_project(conn_target, published_datasources)
 
 
 def clone_datasources(conn_source,
