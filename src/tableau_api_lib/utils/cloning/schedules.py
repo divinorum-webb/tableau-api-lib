@@ -65,7 +65,14 @@ def update_schedule_state(conn,
 
 
 @validate_schedule_state_override
-def override_schedule_state(conn, state_override_value, schedule_names=None):
+def override_schedule_state(conn, state_override_value=None, schedule_names=None):
+    """
+    Replace the existing schedule state (Active or Suspended) with the specified state override value.
+    :param TableauServerConnection conn: the Tableau Server connection
+    :param str state_override_value: specify a state override value ('Active' or 'Suspended')
+    :param list schedule_names: specify schedule names if overriding a subset of existing schedules.
+    :return: pd.DataFrame
+    """
     if state_override_value:
         responses = []
         schedules_df = get_schedule_details(conn, schedule_names)
@@ -76,6 +83,8 @@ def override_schedule_state(conn, state_override_value, schedule_names=None):
             except KeyError:
                 warnings.warn(f"Unable to update schedule '{schedule['name']}'")
         return pd.DataFrame(responses)
+    else:
+        return pd.DataFrame()
 
 
 def verify_schedule_names_align(source_schedule_names, destination_schedule_names, func_name=None):
