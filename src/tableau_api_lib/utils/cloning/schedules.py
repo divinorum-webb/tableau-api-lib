@@ -70,7 +70,7 @@ def override_schedule_state(conn, state_override_value=None, schedule_names=None
     Replace the existing schedule state (Active or Suspended) with the specified state override value.
     :param TableauServerConnection conn: the Tableau Server connection
     :param str state_override_value: specify a state override value ('Active' or 'Suspended')
-    :param list schedule_names: specify schedule names if overriding a subset of existing schedules.
+    :param list schedule_names: specify schedule names if overriding a subset of existing schedules
     :return: pd.DataFrame
     """
     if state_override_value:
