@@ -31,6 +31,9 @@ def get_datasources_dataframe(conn, datasource_names=None) -> pd.DataFrame:
 
 
 def get_datasource_connections_dataframe(conn, datasource_id) -> pd.DataFrame:
-    datasource_connections_json = conn.query_data_source_connections(datasource_id).json()['connections']['connection']
+    try:
+        datasource_connections_json = conn.query_data_source_connections(datasource_id).json()['connections']['connection']
+    except KeyError:
+        datasource_connections_json = {}
     datasource_connections_df = pd.DataFrame(datasource_connections_json)
     return datasource_connections_df

@@ -5,7 +5,6 @@ get_favorites_dataframe
 
 
 import pandas as pd
-from tableau_api_lib.utils import extract_pages
 
 
 def get_all_favorite_fields(conn, user_id) -> list:
@@ -15,7 +14,10 @@ def get_all_favorite_fields(conn, user_id) -> list:
     :param str user_id: the Tableau Server user whose favorites will be queried
     :return: list
     """
-    all_favorites = conn.get_favorites_for_user(user_id).json()['favorites']['favorite']
+    try:
+        all_favorites = conn.get_favorites_for_user(user_id).json()['favorites']['favorite']
+    except KeyError:
+        all_favorites = {}
     return all_favorites
 
 

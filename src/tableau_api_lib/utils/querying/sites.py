@@ -24,12 +24,21 @@ def get_sites_dataframe(conn, site_names=None, content_urls=None):
 
 
 def get_active_site_name(conn):
-    return conn.query_site().json()['site']['name']
+    try:
+        return conn.query_site().json()['site']['name']
+    except KeyError:
+        raise Exception("Unable to query the site. Only site admins and server admins can query the site.")
 
 
 def get_active_site_id(conn):
-    return conn.query_site().json()['site']['id']
+    try:
+        return conn.query_site().json()['site']['id']
+    except KeyError:
+        raise Exception("Unable to query the site. Only site admins and server admins can query the site.")
 
 
 def get_active_site_content_url(conn):
-    return conn.query_site().json()['site']['contentUrl']
+    try:
+        return conn.query_site().json()['site']['contentUrl']
+    except KeyError:
+        raise Exception("Unable to query the site. Only site admins and server admins can query the site.")
