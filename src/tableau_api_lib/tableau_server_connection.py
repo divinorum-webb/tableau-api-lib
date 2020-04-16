@@ -4,14 +4,14 @@ from tableau_api_lib.api_endpoints import AuthEndpoint, DataAlertEndpoint, Datab
     FavoritesEndpoint, FileUploadEndpoint, FlowEndpoint, GroupEndpoint, JobsEndpoint, PermissionsEndpoint, \
     ProjectEndpoint, SchedulesEndpoint, SiteEndpoint, SubscriptionsEndpoint, UserEndpoint, TableEndpoint, \
     TasksEndpoint, ViewEndpoint, WorkbookEndpoint, ColumnEndpoint, DQWarningEndpoint, EncryptionEndpoint, \
-    GraphqlEndpoint
+    GraphqlEndpoint, WebhookEndpoint
 from tableau_api_lib.api_requests import AddDatasourcePermissionsRequest, AddDatasourceToFavoritesRequest, \
     AddDatasourceToScheduleRequest, AddDefaultPermissionsRequest, AddFlowPermissionsRequest, \
     AddFlowToScheduleRequest, AddProjectPermissionsRequest, AddProjectToFavoritesRequest, \
     AddTagsRequest, AddUserToAlertRequest, AddUserToGroupRequest, AddUserToSiteRequest, \
     AddViewPermissionsRequest, AddViewToFavoritesRequest, AddWorkbookPermissionsRequest, \
     AddWorkbookToFavoritesRequest, AddWorkbookToScheduleRequest, CreateExtractsForWorkbookRequest, CreateGroupRequest, \
-    CreateProjectRequest, CreateScheduleRequest, CreateSiteRequest, CreateSubscriptionRequest, \
+    CreateProjectRequest, CreateScheduleRequest, CreateSiteRequest, CreateSubscriptionRequest, CreateWebhookRequest, \
     EmptyRequest, GraphqlRequest, PublishDatasourceRequest, PublishFlowRequest, PublishWorkbookRequest, SignInRequest, \
     SwitchSiteRequest, UpdateDataAlertRequest, UpdateDatabaseRequest, UpdateDatasourceConnectionRequest, \
     UpdateDatasourceRequest, UpdateFlowConnectionRequest, UpdateFlowRequest, UpdateGroupRequest, \
@@ -3344,13 +3344,13 @@ class TableauServerConnection:
         :param list datasource_ids: a list of datasource IDs if only converting a subset of datasources to extracts
         :return: HTTP response
         """
+        self.active_request = CreateExtractsForWorkbookRequest(ts_connection=self,
+                                                               extract_all_datasources_flag=extract_all_datasources_flag,
+                                                               datasource_ids=datasource_ids).get_request()
         self.active_endpoint = WorkbookEndpoint(ts_connection=self,
                                                 workbook_id=workbook_id,
                                                 create_extracts=True,
                                                 encryption_flag=encryption_flag).get_endpoint()
-        self.active_request = CreateExtractsForWorkbookRequest(ts_connection=self,
-                                                               extract_all_datasources_flag=extract_all_datasources_flag,
-                                                               datasource_ids=datasource_ids).get_request()
         self.active_headers = self.default_headers
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
         return response
@@ -3362,10 +3362,45 @@ class TableauServerConnection:
         :param str workbook_id: the ID of the workbook whose extracts will be deleted
         :return: HTTP response
         """
+        self.active_request = {"datasources": {"includeAll": True}}
         self.active_endpoint = WorkbookEndpoint(ts_connection=self,
                                                 workbook_id=workbook_id,
                                                 delete_extracts=True).get_endpoint()
-        self.active_request = {"datasources": {"includeAll": True}}
         self.active_headers = self.default_headers
         response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        return response
+
+    #  webhook methods
+
+    @verify_api_method_exists('3.6')
+    def create_webhook(self,
+                       webhook_name=None,
+                       webhook_source_api_event_name=None,
+                       url=None):
+        """
+        Creates a new webhook for a site.
+        :param str webhook_name: the name of the new webhook
+        :param str webhook_source_api_event_name: the API event name for the source event
+        :param str url: the destination URL for the webhook; must be https and have a valid certificate
+        :return: HTTP response
+        """
+        self.active_request = CreateWebhookRequest(self,
+                                                   webhook_name=webhook_name,
+                                                   webhook_source_api_event_name=webhook_source_api_event_name,
+                                                   http_request_method='POST',
+                                                   url=url).get_request()
+        self.active_endpoint = WebhookEndpoint(self, create_webhook=True).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        return response
+
+    @verify_api_method_exists('3.6')
+    def query_webhooks(self):
+        """
+        Queries all webhooks for the active site.
+        :return: HTTP response
+        """
+        self.active_endpoint = WebhookEndpoint(self, query_webhook=True).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
         return response

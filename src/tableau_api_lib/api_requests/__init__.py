@@ -23,6 +23,7 @@ from .create_project_request import CreateProjectRequest
 from .create_schedule_request import CreateScheduleRequest
 from .create_site_request import CreateSiteRequest
 from .create_subscription_request import CreateSubscriptionRequest
+from .create_webhook_request import CreateWebhookRequest
 from .empty_request import EmptyRequest
 from .graphql_request import GraphqlRequest
 from .publish_datasource_request import PublishDatasourceRequest
