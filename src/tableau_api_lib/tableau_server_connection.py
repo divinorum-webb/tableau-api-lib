@@ -3395,6 +3395,18 @@ class TableauServerConnection:
         return response
 
     @verify_api_method_exists('3.6')
+    def query_webhook(self, webhook_id):
+        """
+        Queries information for the specified webhook.
+        :param str webhook_id: the ID of the webhook being queried
+        :return: HTTP response
+        """
+        self.active_endpoint = WebhookEndpoint(self, webhook_id=webhook_id, query_webhook=True).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        return response
+
+    @verify_api_method_exists('3.6')
     def query_webhooks(self):
         """
         Queries all webhooks for the active site.
@@ -3403,4 +3415,28 @@ class TableauServerConnection:
         self.active_endpoint = WebhookEndpoint(self, query_webhook=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        return response
+
+    @verify_api_method_exists('3.6')
+    def test_webhook(self, webhook_id):
+        """
+        Tests the specified webhook, sending a payload to the webhook's destination URL.
+        :param str webhook_id: the ID of the webhook being tested
+        :return: HTTP response
+        """
+        self.active_endpoint = WebhookEndpoint(self, webhook_id=webhook_id, test_webhook=True).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        return response
+
+    @verify_api_method_exists('3.6')
+    def delete_webhook(self, webhook_id):
+        """
+        Deletes the specified webhook.
+        :param str webhook_id: the ID of the webhook being deleted
+        :return: HTTP response
+        """
+        self.active_endpoint = WebhookEndpoint(self, webhook_id=webhook_id, delete_webhook=True).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
