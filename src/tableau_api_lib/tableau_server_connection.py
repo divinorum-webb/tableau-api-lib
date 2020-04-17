@@ -1142,14 +1142,14 @@ class TableauServerConnection:
     def update_workbook(self,
                         workbook_id,
                         show_tabs_flag=None,
-                        project_id=None,
-                        owner_id=None):
+                        new_project_id=None,
+                        new_owner_id=None):
         """
         Updates the details of the specified workbook.
         :param string workbook_id: the workbook ID
         :param boolean show_tabs_flag: (optional) enables or disables showing tabs
-        :param string project_id: (optional) the new project ID
-        :param string owner_id: (optional) the new owner ID
+        :param string new_project_id: (optional) the new project ID
+        :param string new_owner_id: (optional) the new owner ID
         :return: HTTP response
         """
         self.active_request = UpdateWorkbookRequest(ts_connection=self,
