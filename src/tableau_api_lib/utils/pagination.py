@@ -48,7 +48,7 @@ def extract_pages(query_func,
         query = process_query(query_func, content_id, parameter_dict)
         page_number, page_size, total_available = get_page_attributes(query, query_func)
         if total_available == 0:
-            raise ContentNotFound()
+            return {}
         extracted_pages, extracting, page_number = update_pagination_params(query,
                                                                             extracted_pages,
                                                                             page_number,
