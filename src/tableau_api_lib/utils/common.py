@@ -16,7 +16,7 @@ def flatten_dict_column(df, keys, col_name):
     return df
 
 
-def flatten_dict_list_column1(df, col_name):
+def flatten_dict_list_column(df, col_name):
     """
     Extract the dicts contained within the specified list column ('col_name'), creating new rows and columns.
     :param pd.DataFrame df: the Pandas DataFrame whose list of dicts (column) will be flattened
