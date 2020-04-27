@@ -2,12 +2,13 @@ import urllib
 import pandas as pd
 
 
-def flatten_dict_column(df, keys, col_name):
+def flatten_dict_column(df, keys, col_name, add_col_prefix=True):
     """
     Extract the specified Pandas DataFrame dict column ('col_name'), creating new columns from the given keys.
     :param pd.DataFrame df: the Pandas DataFrame whose dict column will be flattened
     :param list keys: the keys of the dict column which will be extracted into new columns
     :param str col_name: the name of the Pandas DataFrame column whose content will be flattened
+    :param bool add_col_prefix: adds the original 'col_name' value as a prefix to generated columns if True
     :return: pd.DataFrame
     """
     for key in keys:
