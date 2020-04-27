@@ -12,7 +12,12 @@ def flatten_dict_column(df, keys, col_name, add_col_prefix=True):
     :return: pd.DataFrame
     """
     for key in keys:
-        df[col_name + '_' + key] = df[col_name].apply(lambda col: col[key])
+        if add_col_prefix is True:
+            df[col_name + '_' + key] = df[col_name].apply(lambda col: col[key])
+        elif add_col_prefix is False:
+            df[key] = df[col_name].apply(lambda col: col[key])
+        else:
+            raise ValueError("The 'add_col_prefix' value must be set to either True or False.")
     df.drop(columns=[col_name], inplace=True)
     return df
 
