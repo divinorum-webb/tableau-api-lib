@@ -79,9 +79,10 @@ class PaginationError(Exception):
     """
     def __init__(self, func):
         error_message = """
-        The Tableau Server REST API method {} does not return paginated results. 
-        The extract_pages() method wrapping this call is intended for paginated results only.
+        The Tableau Server REST API method {} did not return paginated results. 
+        Please verify that your connection is logged in and has a valid auth token.
+        If using personal access tokens, note that only one session can be active at a time using a single token.
+        Also note that the extract_pages() method wrapping this call is intended for paginated results only.
         Not all Tableau Server REST API methods support pagination. 
-        Try calling on this method directly rather than using extract_pages().
         """.format(func.__name__)
         super().__init__(error_message)
