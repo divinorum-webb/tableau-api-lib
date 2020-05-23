@@ -1,5 +1,5 @@
 *.idea
 *.ipynb
-config.py
+HEYNOWconfig.py
 **/test_env
 *__pycache__*
