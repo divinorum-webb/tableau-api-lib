@@ -123,7 +123,7 @@ def verify_rest_api_version(func):
                     The REST API version you specified is {1}.
                     For optimal results, please change the 'api_version' config variable to {0}.
                     """.format(server_api_version, self._config[self._env]['api_version']))
-            except AttributeError:
+            except (AttributeError, KeyError):
                 warnings.warn("""
                 Warning: could not verify your Tableau Server's API version.
                 If using a legacy version of Tableau Server, be sure to reference the legacy Tableau Server
