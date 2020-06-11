@@ -2139,9 +2139,9 @@ class TableauServerConnection:
                                                    capability_name=capability_name,
                                                    capability_mode=capability_mode).get_endpoint()
         self.active_headers = self.default_headers
-        print('endpoint: ', self.active_endpoint)
-        print('request: ', self.active_request)
-        print('headers: ', self.active_headers)
+        # print('endpoint: ', self.active_endpoint)
+        # print('request: ', self.active_request)
+        # print('headers: ', self.active_headers)
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
         return response
 
