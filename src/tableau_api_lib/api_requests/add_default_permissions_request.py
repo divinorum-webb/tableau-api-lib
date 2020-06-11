@@ -34,6 +34,7 @@ class AddDefaultPermissionsRequest(BaseRequest):
             'AddComment',
             'ChangeHierarchy',
             'ChangePermissions',
+            'Connect',
             'Delete',
             'ExportData',
             'ExportImage',
