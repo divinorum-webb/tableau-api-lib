@@ -17,7 +17,7 @@ from tableau_api_lib.exceptions import InvalidParameterException
 
 def get_schedule_details(conn, schedule_names=None):
     schedules_df = get_schedules_dataframe(conn)
-    if any(schedule_names):
+    if schedule_names:
         schedules_df = schedules_df.loc[schedules_df['name'].isin(schedule_names)]
     schedule_ids = list(schedules_df['id'])
     schedule_details = [conn.update_schedule(schedule_id).json()['schedule'] for schedule_id in schedule_ids]
