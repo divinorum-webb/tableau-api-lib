@@ -79,7 +79,7 @@ class CreateScheduleRequest(BaseRequest):
         valid = True
         if self._interval_expression_list:
             self._set_interval_expressions()
-        else:
+        elif self._schedule_frequency != 'Daily':
             valid = False
         if not valid:
             self._invalid_parameter_exception()

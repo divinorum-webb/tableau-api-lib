@@ -39,7 +39,8 @@ def create_base_schedules(conn,
                                         schedule_frequency=schedule['frequency'],
                                         start_time=schedule['frequencyDetails']['start'],
                                         end_time=schedule['frequencyDetails'].get('end', None),
-                                        interval_expression_list=schedule['frequencyDetails']['intervals']['interval'])
+                                        interval_expression_list=schedule['frequencyDetails']['intervals']['interval']
+                                        if schedule['frequencyDetails'].get('intervals') else None)
         try:
             responses.append(response.json()['schedule'])
         except KeyError:
