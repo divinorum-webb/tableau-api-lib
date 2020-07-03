@@ -23,6 +23,7 @@ class SiteEndpoint(BaseEndpoint):
                  remove_group=False,
                  user_id=None,
                  group_id=None,
+                 include_usage_flag=False,
                  parameter_dict=None):
         """
         Builds API endpoints for REST API site methods.
@@ -45,6 +46,7 @@ class SiteEndpoint(BaseEndpoint):
         :param bool remove_group: True if removing a specific group, False otherwise
         :param str user_id: the user ID
         :param str group_id: the group ID
+        :param bool include_usage_flag: True if including usage metrics, False otherwise
         :param dict parameter_dict: dictionary of URL parameters to append. The value in each key-value pair is the
         literal text that will be appended to the URL endpoint
         """
@@ -69,8 +71,10 @@ class SiteEndpoint(BaseEndpoint):
         self._remove_group = remove_group
         self._user_id = user_id
         self._group_id = group_id
+        self._include_usage_flag = include_usage_flag
         self._parameter_dict = parameter_dict
         self._validate_inputs()
+        self.set_parameter_dict()
 
     @property
     def mutually_exclusive_params(self):
@@ -97,6 +101,11 @@ class SiteEndpoint(BaseEndpoint):
             valid = False
         if not valid:
             self._invalid_parameter_exception()
+
+    def set_parameter_dict(self):
+        self._parameter_dict = self._parameter_dict or dict()
+        if self._include_usage_flag is True:
+            self._parameter_dict.update({"includeUsage": "includeUsage=True"})
         
     @property
     def base_site_url(self):
