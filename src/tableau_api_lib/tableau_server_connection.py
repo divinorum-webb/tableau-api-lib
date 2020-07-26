@@ -274,15 +274,17 @@ class TableauServerConnection:
         return response
 
     @verify_api_method_exists('2.3')
-    def query_site(self, parameter_dict=None):
+    def query_site(self, include_usage_flag=False, parameter_dict=None):
         """
         Queries details for the active site.
+        :param bool include_usage_flag: True if including usage metrics, False otherwise
         :param dict parameter_dict: dict defining url parameters for API endpoint
         :return: HTTP response
         """
         self.active_endpoint = SiteEndpoint(ts_connection=self,
                                             query_site=True,
                                             site_id=self.site_id,
+                                            include_usage_flag=include_usage_flag,
                                             parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
@@ -2171,9 +2173,12 @@ class TableauServerConnection:
                                                    capability_name=capability_name,
                                                    capability_mode=capability_mode).get_endpoint()
         self.active_headers = self.default_headers
+<<<<<<< HEAD
         print('endpoint: ', self.active_endpoint)
         print('request: ', self.active_request)
         print('headers: ', self.active_headers)
+=======
+>>>>>>> 448a1f8b51b4b2e79bf3f827744e786e6202d90b
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
