@@ -2173,12 +2173,6 @@ class TableauServerConnection:
                                                    capability_name=capability_name,
                                                    capability_mode=capability_mode).get_endpoint()
         self.active_headers = self.default_headers
-<<<<<<< HEAD
-        print('endpoint: ', self.active_endpoint)
-        print('request: ', self.active_request)
-        print('headers: ', self.active_headers)
-=======
->>>>>>> 448a1f8b51b4b2e79bf3f827744e786e6202d90b
         response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
