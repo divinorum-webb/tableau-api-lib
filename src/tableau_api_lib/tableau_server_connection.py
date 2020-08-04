@@ -1332,6 +1332,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
+    @verify_signed_in
     @verify_api_method_exists('2.3')
     def query_data_sources(self, parameter_dict=None):
         """
