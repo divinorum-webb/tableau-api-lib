@@ -2861,6 +2861,7 @@ class TableauServerConnection:
                             datasource_file_path,
                             datasource_name,
                             project_id,
+                            datasource_description=None,
                             connection_username=None,
                             connection_password=None,
                             embed_credentials_flag=False,
@@ -2871,6 +2872,7 @@ class TableauServerConnection:
         :param string datasource_file_path: the path to the datasource file
         :param string datasource_name: the desired name for the datasource
         :param string project_id: the project ID where the file will be published
+        :param string datasource_description: the description for the datasource
         :param string connection_username: the username for the datasource's connection
         :param string connection_password: the password for the datasource's connection
         :param boolean embed_credentials_flag: enables or disables embedding the connection's password
@@ -2882,6 +2884,7 @@ class TableauServerConnection:
                                                    datasource_name=datasource_name,
                                                    datasource_file_path=datasource_file_path,
                                                    project_id=project_id,
+                                                   datasource_description=datasource_description,
                                                    connection_username=connection_username,
                                                    connection_password=connection_password,
                                                    embed_credentials_flag=embed_credentials_flag,
