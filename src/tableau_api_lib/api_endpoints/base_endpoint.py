@@ -22,7 +22,7 @@ class BaseEndpoint:
     @property
     def _params_text(self):
         if self._parameter_dict:
-            return list(self._parameter_dict.values())
+            return [f'{k}={v}' for k, v in self._parameter_dict.items()]
         else:
             return []
 
