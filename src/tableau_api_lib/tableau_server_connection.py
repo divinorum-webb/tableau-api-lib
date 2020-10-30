@@ -2906,7 +2906,7 @@ class TableauServerConnection:
                          project_id,
                          show_tabs_flag=False,
                          user_id=None,
-                             server_address=None,
+                         server_address=None,
                          port_number=None,
                          connection_username=None,
                          connection_password=None,

@@ -25,15 +25,18 @@ from tableau_api_lib.decorators import verify_signed_in, verify_config_variables
 class TableauServerConnection:
     def __init__(self,
                  config_json,
-                 env='tableau_prod'):
+                 env='tableau_prod',
+                 ssl_verify=True):
         """
         A connection to Tableau Server built upon the configuration details provided.
         :param dict config_json: a dict or JSON object containing configuration details
         :param str env: the configuration environment to reference from the configuration dict
+        :param bool ssl_verify: verifies SSL certs for HTTP requests if True, skips verification if False.
         """
         self._env = env
         self._config = config_json
         self._auth_token = None
+        self.ssl_verify = ssl_verify
         self.site_url = self._config[self._env]['site_url']
         self.site_name = self._config[self._env]['site_name']
         self.site_id = None
@@ -153,7 +156,7 @@ class TableauServerConnection:
                                 personal_access_token_secret=self.personal_access_token_secret,
                                 user_to_impersonate=user_to_impersonate).get_request()
         endpoint = AuthEndpoint(ts_connection=self, sign_in=True).get_endpoint()
-        response = requests.post(url=endpoint, json=request, headers=self.sign_in_headers)
+        response = requests.post(url=endpoint, json=request, headers=self.sign_in_headers, verify=self.ssl_verify)
         if response.status_code == 200:
             self.auth_token = response.json()['credentials']['token']
             self.site_id = response.json()['credentials']['site']['id']
@@ -167,7 +170,7 @@ class TableauServerConnection:
         :return: HTTP response
         """
         endpoint = AuthEndpoint(ts_connection=self, sign_out=True).get_endpoint()
-        response = requests.post(url=endpoint, headers=self.x_auth_header)
+        response = requests.post(url=endpoint, headers=self.x_auth_header, verify=self.ssl_verify)
         if response.status_code == 204:
             self.auth_token = None
             self.site_id = None
@@ -185,7 +188,8 @@ class TableauServerConnection:
         self.active_request = SwitchSiteRequest(ts_connection=self, site_name=content_url).get_request()
         self.active_endpoint = AuthEndpoint(ts_connection=self, switch_site=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                 verify=self.ssl_verify)
         if response.status_code == 200:
             self.auth_token = response.json()['credentials']['token']
             self.site_id = response.json()['credentials']['site']['id']
@@ -202,7 +206,7 @@ class TableauServerConnection:
         """
         self.active_endpoint = AuthEndpoint(ts_connection=self, get_server_info=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     # sites
@@ -265,22 +269,25 @@ class TableauServerConnection:
                                                 ).get_request()
         self.active_endpoint = SiteEndpoint(ts_connection=self, create_site=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                 verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
-    def query_site(self, parameter_dict=None):
+    def query_site(self, include_usage_flag=False, parameter_dict=None):
         """
         Queries details for the active site.
+        :param bool include_usage_flag: True if including usage metrics, False otherwise
         :param dict parameter_dict: dict defining url parameters for API endpoint
         :return: HTTP response
         """
         self.active_endpoint = SiteEndpoint(ts_connection=self,
                                             query_site=True,
                                             site_id=self.site_id,
+                                            include_usage_flag=include_usage_flag,
                                             parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -294,7 +301,7 @@ class TableauServerConnection:
                                             query_sites=True,
                                             parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.5')
@@ -308,7 +315,7 @@ class TableauServerConnection:
                                             site_id=self.site_id,
                                             get_recently_viewed=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -324,7 +331,7 @@ class TableauServerConnection:
                                             query_views=True,
                                             parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -390,7 +397,8 @@ class TableauServerConnection:
                                                 ).get_request()
         self.active_endpoint = SiteEndpoint(ts_connection=self, site_id=site_id, update_site=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -412,7 +420,7 @@ class TableauServerConnection:
                                             site_name=site_name,
                                             content_url=content_url).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     # data driven alerts
@@ -427,7 +435,7 @@ class TableauServerConnection:
         self.active_endpoint = DataAlertEndpoint(ts_connection=self,
                                                  data_alert_id=data_alert_id).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.2')
@@ -441,7 +449,7 @@ class TableauServerConnection:
                                                  query_data_alert=True,
                                                  data_alert_id=data_alert_id).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.2')
@@ -455,7 +463,7 @@ class TableauServerConnection:
                                                  query_data_alerts=True,
                                                  parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.2')
@@ -476,7 +484,8 @@ class TableauServerConnection:
                                                  user_id=user_id,
                                                  data_alert_id=data_alert_id).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                 verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.2')
@@ -494,7 +503,7 @@ class TableauServerConnection:
                                                  user_id=user_id,
                                                  data_alert_id=data_alert_id).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.2')
@@ -520,7 +529,8 @@ class TableauServerConnection:
                                                      is_public_flag=is_public_flag).get_request()
         self.active_endpoint = DataAlertEndpoint(ts_connection=self, data_alert_id=data_alert_id).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     # flows
@@ -536,7 +546,7 @@ class TableauServerConnection:
                                             flow_id=flow_id,
                                             query_flow=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.3')
@@ -550,7 +560,7 @@ class TableauServerConnection:
                                             flow_id=flow_id,
                                             delete_flow=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.3')
@@ -564,7 +574,7 @@ class TableauServerConnection:
                                             flow_id=flow_id,
                                             download_flow=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.3')
@@ -578,7 +588,7 @@ class TableauServerConnection:
                                             flow_id=flow_id,
                                             query_flow_connections=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.3')
@@ -591,7 +601,7 @@ class TableauServerConnection:
                                             query_flows_for_site=True,
                                             parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.3')
@@ -609,7 +619,7 @@ class TableauServerConnection:
                                             query_flows_for_user=True,
                                             parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.3')
@@ -631,7 +641,8 @@ class TableauServerConnection:
                                             flow_id=flow_id,
                                             update_flow=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.3')
@@ -666,7 +677,8 @@ class TableauServerConnection:
                                             connection_id=connection_id,
                                             update_flow_connection=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     # projects
@@ -696,7 +708,8 @@ class TableauServerConnection:
                                                create_project=True,
                                                parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                 verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -710,7 +723,7 @@ class TableauServerConnection:
                                                query_projects=True,
                                                parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -738,7 +751,8 @@ class TableauServerConnection:
                                                update_project=True,
                                                project_id=project_id).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -752,7 +766,7 @@ class TableauServerConnection:
                                                project_id=project_id,
                                                delete_project=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     # workbooks and views
@@ -768,7 +782,8 @@ class TableauServerConnection:
         self.active_request = AddTagsRequest(ts_connection=self, tags=tags).get_request()
         self.active_endpoint = ViewEndpoint(ts_connection=self, view_id=view_id, add_tags=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -783,7 +798,8 @@ class TableauServerConnection:
         self.active_endpoint = WorkbookEndpoint(ts_connection=self, workbook_id=workbook_id,
                                                 add_tags=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -801,7 +817,7 @@ class TableauServerConnection:
                                                 workbook_id=workbook_id,
                                                 parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.8')
@@ -820,7 +836,7 @@ class TableauServerConnection:
                                             query_view_data=True,
                                             parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.5')
@@ -839,7 +855,7 @@ class TableauServerConnection:
                                             query_view_image=True,
                                             parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.8')
@@ -858,7 +874,7 @@ class TableauServerConnection:
                                             query_view_pdf=True,
                                             parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -880,7 +896,7 @@ class TableauServerConnection:
                                                 query_workbook_view_preview_img=True,
                                                 parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.0')
@@ -894,7 +910,7 @@ class TableauServerConnection:
                                             view_id=view_id,
                                             query_view=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.6')
@@ -910,7 +926,7 @@ class TableauServerConnection:
                                                 'filter': f'filter=viewUrlName:eq:{view_name.replace(" ", "")}'
                                             }).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.7')
@@ -920,7 +936,7 @@ class TableauServerConnection:
                                             get_recommendations=True,
                                             parameter_dict={'type': 'type=view'}).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     def query_view(self, view_id):
@@ -934,7 +950,7 @@ class TableauServerConnection:
                                             view_id=view_id,
                                             query_view=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -952,7 +968,7 @@ class TableauServerConnection:
                                                 query_workbook=True,
                                                 parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -970,7 +986,7 @@ class TableauServerConnection:
                                                 query_connections=True,
                                                 parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -988,7 +1004,7 @@ class TableauServerConnection:
                                                 get_workbook_revisions=True,
                                                 parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     def get_workbook_downgrade_info(self,
@@ -1005,7 +1021,7 @@ class TableauServerConnection:
                                                 workbook_id=workbook_id,
                                                 downgrade_target_version=downgrade_target_version,
                                                 get_workbook_downgrade_info=True,).get_endpoint()
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1023,7 +1039,7 @@ class TableauServerConnection:
                                                 revision_number=revision_number,
                                                 remove_workbook_revision=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1043,7 +1059,7 @@ class TableauServerConnection:
                                                 query_workbook_preview_img=True,
                                                 parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1057,7 +1073,7 @@ class TableauServerConnection:
                                                 query_workbooks=True,
                                                 parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1075,7 +1091,7 @@ class TableauServerConnection:
                                             query_workbooks_for_user=True,
                                             parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1094,7 +1110,7 @@ class TableauServerConnection:
                                                 download_workbook=True,
                                                 parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.4')
@@ -1113,7 +1129,7 @@ class TableauServerConnection:
                                                 download_workbook_pdf=True,
                                                 parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1135,7 +1151,7 @@ class TableauServerConnection:
                                                 download_workbook_revision=True,
                                                 parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1154,12 +1170,13 @@ class TableauServerConnection:
         """
         self.active_request = UpdateWorkbookRequest(ts_connection=self,
                                                     show_tabs_flag=show_tabs_flag,
-                                                    project_id=project_id,
-                                                    owner_id=owner_id).get_request()
+                                                    project_id=new_project_id,
+                                                    owner_id=new_owner_id).get_request()
         self.active_endpoint = WorkbookEndpoint(ts_connection=self, workbook_id=workbook_id,
                                                 update_workbook=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1197,7 +1214,8 @@ class TableauServerConnection:
                                                 update_workbook_connection=True,
                                                 parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.8')
@@ -1212,7 +1230,8 @@ class TableauServerConnection:
                                                 workbook_id=workbook_id,
                                                 refresh_workbook=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                 verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1226,7 +1245,7 @@ class TableauServerConnection:
                                                 workbook_id=workbook_id,
                                                 delete_workbook=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.6')
@@ -1244,7 +1263,7 @@ class TableauServerConnection:
                                             tag_name=tag_name,
                                             delete_tag=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1260,7 +1279,7 @@ class TableauServerConnection:
                                                 tag_name=tag_name,
                                                 delete_tag=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     # data sources
@@ -1280,7 +1299,8 @@ class TableauServerConnection:
                                                   datasource_id=datasource_id,
                                                   add_tags=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.6')
@@ -1296,7 +1316,7 @@ class TableauServerConnection:
         self.active_endpoint = DatasourceEndpoint(ts_connection=self, datasource_id=datasource_id, tag_name=tag_name,
                                                   delete_tag=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1309,9 +1329,10 @@ class TableauServerConnection:
         self.active_endpoint = DatasourceEndpoint(ts_connection=self, datasource_id=datasource_id,
                                                   query_datasource=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
+    @verify_signed_in
     @verify_api_method_exists('2.3')
     def query_data_sources(self, parameter_dict=None):
         """
@@ -1322,7 +1343,7 @@ class TableauServerConnection:
         self.active_endpoint = DatasourceEndpoint(ts_connection=self, query_datasources=True,
                                                   parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1335,7 +1356,7 @@ class TableauServerConnection:
         self.active_endpoint = DatasourceEndpoint(ts_connection=self, datasource_id=datasource_id,
                                                   query_datasource_connections=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1353,7 +1374,7 @@ class TableauServerConnection:
                                                   get_datasource_revisions=True,
                                                   parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1371,7 +1392,7 @@ class TableauServerConnection:
                                                   download_datasource=True,
                                                   parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1392,7 +1413,7 @@ class TableauServerConnection:
                                                   download_datasource_revision=True,
                                                   parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1421,7 +1442,8 @@ class TableauServerConnection:
                                                   datasource_id=datasource_id,
                                                   update_datasource=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1456,7 +1478,8 @@ class TableauServerConnection:
                                                   connection_id=connection_id,
                                                   update_datasource_connection=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.8')
@@ -1471,7 +1494,8 @@ class TableauServerConnection:
                                                   datasource_id=datasource_id,
                                                   refresh_datasource=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                 verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1485,7 +1509,7 @@ class TableauServerConnection:
                                                   datasource_id=datasource_id,
                                                   delete_datasource=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1503,7 +1527,7 @@ class TableauServerConnection:
                                                   revision_number=revision_number,
                                                   remove_datasource_revision=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     # users and groups
@@ -1531,7 +1555,8 @@ class TableauServerConnection:
         self.active_endpoint = GroupEndpoint(ts_connection=self, create_group=True,
                                              parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                 verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1547,7 +1572,8 @@ class TableauServerConnection:
         self.active_request = AddUserToGroupRequest(ts_connection=self, user_id=user_id).get_request()
         self.active_endpoint = GroupEndpoint(ts_connection=self, group_id=group_id, add_user=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                 verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1568,7 +1594,8 @@ class TableauServerConnection:
                                                    auth_setting=auth_setting).get_request()
         self.active_endpoint = UserEndpoint(ts_connection=self, add_user=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                 verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.7')
@@ -1586,7 +1613,7 @@ class TableauServerConnection:
                                             query_groups_for_user=True,
                                             parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1604,7 +1631,7 @@ class TableauServerConnection:
                                              get_users=True,
                                              parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1618,7 +1645,7 @@ class TableauServerConnection:
                                             query_users=True,
                                             parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1632,7 +1659,7 @@ class TableauServerConnection:
                                              query_groups=True,
                                              parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1646,7 +1673,7 @@ class TableauServerConnection:
                                             user_id=user_id,
                                             query_user=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1677,7 +1704,8 @@ class TableauServerConnection:
                                              update_group=True,
                                              parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1706,7 +1734,8 @@ class TableauServerConnection:
                                                 new_auth_setting=new_auth_setting).get_request()
         self.active_endpoint = UserEndpoint(ts_connection=self, user_id=user_id, update_user=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.default_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.default_headers,
+                                verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1724,7 +1753,7 @@ class TableauServerConnection:
                                              user_id=user_id,
                                              remove_user=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1738,7 +1767,7 @@ class TableauServerConnection:
                                             user_id=user_id,
                                             remove_user=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1752,7 +1781,7 @@ class TableauServerConnection:
                                              group_id=group_id,
                                              delete_group=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     # permissions
@@ -1785,7 +1814,8 @@ class TableauServerConnection:
                                                    object_id=datasource_id,
                                                    add_object_permissions=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     def add_flow_permissions(self,
@@ -1814,7 +1844,8 @@ class TableauServerConnection:
                                                    object_id=flow_id,
                                                    add_object_permissions=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1844,7 +1875,8 @@ class TableauServerConnection:
                                                    object_id=project_id,
                                                    add_object_permissions=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1877,7 +1909,8 @@ class TableauServerConnection:
                                                    project_permissions_object=project_permissions_object,
                                                    add_default_project_permissions=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.2')
@@ -1906,7 +1939,8 @@ class TableauServerConnection:
         self.active_endpoint = PermissionsEndpoint(ts_connection=self, object_type='view', object_id=view_id,
                                                    add_object_permissions=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1935,7 +1969,8 @@ class TableauServerConnection:
         self.active_endpoint = PermissionsEndpoint(ts_connection=self, object_type='workbook', object_id=workbook_id,
                                                    add_object_permissions=True).get_endpoint()
         self.active_headers = self.default_headers.copy()
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1950,7 +1985,7 @@ class TableauServerConnection:
                                                    object_id=datasource_id,
                                                    query_object_permissions=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1965,7 +2000,7 @@ class TableauServerConnection:
                                                    object_id=flow_id,
                                                    query_object_permissions=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1980,7 +2015,7 @@ class TableauServerConnection:
                                                    object_id=project_id,
                                                    query_object_permissions=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -1998,7 +2033,7 @@ class TableauServerConnection:
                                                    project_permissions_object=project_permissions_object,
                                                    query_default_project_permissions=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.2')
@@ -2013,7 +2048,7 @@ class TableauServerConnection:
                                                    object_id=view_id,
                                                    query_object_permissions=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -2028,7 +2063,7 @@ class TableauServerConnection:
                                                    object_id=workbook_id,
                                                    query_object_permissions=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -2055,7 +2090,7 @@ class TableauServerConnection:
                                                    capability_name=capability_name,
                                                    capability_mode=capability_mode).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     def delete_flow_permission(self,
@@ -2082,7 +2117,7 @@ class TableauServerConnection:
                                                    capability_name=capability_name,
                                                    capability_mode=capability_mode).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -2109,7 +2144,7 @@ class TableauServerConnection:
                                                    capability_name=capability_name,
                                                    capability_mode=capability_mode).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -2139,10 +2174,7 @@ class TableauServerConnection:
                                                    capability_name=capability_name,
                                                    capability_mode=capability_mode).get_endpoint()
         self.active_headers = self.default_headers
-        print('endpoint: ', self.active_endpoint)
-        print('request: ', self.active_request)
-        print('headers: ', self.active_headers)
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.2')
@@ -2170,7 +2202,7 @@ class TableauServerConnection:
                                                    capability_name=capability_name,
                                                    capability_mode=capability_mode).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -2194,7 +2226,7 @@ class TableauServerConnection:
                                                    capability_name=capability_name,
                                                    capability_mode=capability_mode).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     # jobs, tasks, and schedules
@@ -2215,7 +2247,8 @@ class TableauServerConnection:
                                                  schedule_id=schedule_id,
                                                  add_datasource=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     def add_flow_task_to_schedule(self,
@@ -2233,7 +2266,8 @@ class TableauServerConnection:
                                                  schedule_id=schedule_id,
                                                  add_flow=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.8')
@@ -2251,7 +2285,8 @@ class TableauServerConnection:
                                                  schedule_id=schedule_id,
                                                  add_workbook=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.1')
@@ -2263,7 +2298,7 @@ class TableauServerConnection:
         """
         self.active_endpoint = JobsEndpoint(ts_connection=self, job_id=job_id, cancel_job=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -2275,7 +2310,7 @@ class TableauServerConnection:
         """
         self.active_endpoint = JobsEndpoint(ts_connection=self, job_id=job_id, query_job=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.1')
@@ -2288,7 +2323,7 @@ class TableauServerConnection:
         self.active_endpoint = JobsEndpoint(ts_connection=self, query_jobs=True,
                                             parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.6')
@@ -2300,7 +2335,7 @@ class TableauServerConnection:
         """
         self.active_endpoint = TasksEndpoint(ts_connection=self, task_id=task_id, get_refresh_task=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -2311,7 +2346,7 @@ class TableauServerConnection:
         """
         self.active_endpoint = TasksEndpoint(ts_connection=self, get_refresh_tasks=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     def get_extract_refresh_tasks_for_schedule(self, schedule_id):
@@ -2325,7 +2360,7 @@ class TableauServerConnection:
                                                  schedule_id=schedule_id,
                                                  query_extract_schedules=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     def get_flow_run_task(self, task_id):
@@ -2336,7 +2371,7 @@ class TableauServerConnection:
         """
         self.active_endpoint = TasksEndpoint(ts_connection=self, task_id=task_id, get_flow_run_task=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     def get_flow_run_tasks(self):
@@ -2346,7 +2381,7 @@ class TableauServerConnection:
         """
         self.active_endpoint = TasksEndpoint(ts_connection=self, get_flow_run_tasks=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -2381,7 +2416,8 @@ class TableauServerConnection:
                                                     interval_expression_list=interval_expression_list).get_request()
         self.active_endpoint = SchedulesEndpoint(ts_connection=self, create_schedule=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                 verify=self.ssl_verify)
         return response
 
     def query_extract_refresh_tasks_for_schedule(self,
@@ -2399,7 +2435,7 @@ class TableauServerConnection:
                                              schedule_id=schedule_id,
                                              parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -2413,7 +2449,7 @@ class TableauServerConnection:
                                                  query_schedules=True,
                                                  parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.6')
@@ -2427,7 +2463,8 @@ class TableauServerConnection:
         self.active_request = EmptyRequest(ts_connection=self).get_request()
         self.active_endpoint = TasksEndpoint(ts_connection=self, task_id=task_id, run_refresh_task=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                 verify=self.ssl_verify)
         return response
 
     def run_flow_task(self, task_id):
@@ -2440,7 +2477,8 @@ class TableauServerConnection:
         self.active_request = EmptyRequest(ts_connection=self).get_request()
         self.active_endpoint = TasksEndpoint(ts_connection=self, task_id=task_id, run_flow_task=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                 verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -2483,7 +2521,8 @@ class TableauServerConnection:
                                                  schedule_id=schedule_id,
                                                  update_schedule=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -2497,7 +2536,7 @@ class TableauServerConnection:
                                                  schedule_id=schedule_id,
                                                  delete_schedule=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     # subscriptions
@@ -2532,7 +2571,8 @@ class TableauServerConnection:
                                                         attach_pdf_flag=attach_pdf_flag).get_request()
         self.active_endpoint = SubscriptionsEndpoint(ts_connection=self, create_subscription=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                 verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -2546,7 +2586,7 @@ class TableauServerConnection:
                                                      subscription_id=subscription_id,
                                                      query_subscription=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -2560,7 +2600,7 @@ class TableauServerConnection:
                                                      query_subscriptions=True,
                                                      parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -2582,7 +2622,8 @@ class TableauServerConnection:
                                                      subscription_id=subscription_id,
                                                      update_subscription=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -2596,7 +2637,7 @@ class TableauServerConnection:
                                                      subscription_id=subscription_id,
                                                      delete_subscription=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     # favorites
@@ -2620,7 +2661,8 @@ class TableauServerConnection:
                                                  add_to_favorites=True,
                                                  user_id=user_id).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.1')
@@ -2641,7 +2683,8 @@ class TableauServerConnection:
                                                  add_to_favorites=True,
                                                  user_id=user_id).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -2663,7 +2706,8 @@ class TableauServerConnection:
                                                  add_to_favorites=True,
                                                  user_id=user_id).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -2685,7 +2729,8 @@ class TableauServerConnection:
                                                  add_to_favorites=True,
                                                  user_id=user_id).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -2704,7 +2749,7 @@ class TableauServerConnection:
                                                  user_id=user_id,
                                                  delete_from_favorites=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.1')
@@ -2723,7 +2768,7 @@ class TableauServerConnection:
                                                  user_id=user_id,
                                                  delete_from_favorites=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -2742,7 +2787,7 @@ class TableauServerConnection:
                                                  user_id=user_id,
                                                  delete_from_favorites=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -2761,7 +2806,7 @@ class TableauServerConnection:
                                                  user_id=user_id,
                                                  delete_from_favorites=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.5')
@@ -2775,7 +2820,7 @@ class TableauServerConnection:
                                                  get_user_favorites=True,
                                                  user_id=user_id).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     # publishing
@@ -2788,7 +2833,7 @@ class TableauServerConnection:
         """
         self.active_endpoint = FileUploadEndpoint(ts_connection=self, initiate_file_upload=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.post(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.post(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -2808,7 +2853,8 @@ class TableauServerConnection:
                                                   upload_session_id=upload_session_id).get_endpoint()
         self.active_headers = self.default_headers.copy()
         self.active_headers.update({'content-type': content_type})
-        response = requests.put(url=self.active_endpoint, data=payload, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, data=payload, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -2816,6 +2862,7 @@ class TableauServerConnection:
                             datasource_file_path,
                             datasource_name,
                             project_id,
+                            datasource_description=None,
                             connection_username=None,
                             connection_password=None,
                             embed_credentials_flag=False,
@@ -2826,6 +2873,7 @@ class TableauServerConnection:
         :param string datasource_file_path: the path to the datasource file
         :param string datasource_name: the desired name for the datasource
         :param string project_id: the project ID where the file will be published
+        :param string datasource_description: the description for the datasource
         :param string connection_username: the username for the datasource's connection
         :param string connection_password: the password for the datasource's connection
         :param boolean embed_credentials_flag: enables or disables embedding the connection's password
@@ -2837,6 +2885,7 @@ class TableauServerConnection:
                                                    datasource_name=datasource_name,
                                                    datasource_file_path=datasource_file_path,
                                                    project_id=project_id,
+                                                   datasource_description=datasource_description,
                                                    connection_username=connection_username,
                                                    connection_password=connection_password,
                                                    embed_credentials_flag=embed_credentials_flag,
@@ -2846,7 +2895,8 @@ class TableauServerConnection:
         self.active_endpoint = DatasourceEndpoint(ts_connection=self,
                                                   publish_datasource=True,
                                                   parameter_dict=parameter_dict).get_endpoint()
-        response = requests.post(url=self.active_endpoint, data=self.active_request, headers=self.active_headers)
+        response = requests.post(url=self.active_endpoint, data=self.active_request, headers=self.active_headers,
+                                 verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('2.3')
@@ -2902,7 +2952,8 @@ class TableauServerConnection:
         self.active_endpoint = WorkbookEndpoint(ts_connection=self,
                                                 publish_workbook=True,
                                                 parameter_dict=parameter_dict).get_endpoint()
-        response = requests.post(url=self.active_endpoint, data=self.active_request, headers=self.active_headers)
+        response = requests.post(url=self.active_endpoint, data=self.active_request, headers=self.active_headers,
+                                 verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.3')
@@ -2948,7 +2999,8 @@ class TableauServerConnection:
         self.active_headers, parameter_dict = publish_request.publish_prep(content_type, parameter_dict=parameter_dict)
         self.active_endpoint = FlowEndpoint(ts_connection=self, publish_flow=True,
                                             parameter_dict=parameter_dict).get_endpoint()
-        response = requests.post(url=self.active_endpoint, data=self.active_request, headers=self.active_headers)
+        response = requests.post(url=self.active_endpoint, data=self.active_request, headers=self.active_headers,
+                                 verify=self.ssl_verify)
         return response
 
     # metadata methods
@@ -2962,7 +3014,7 @@ class TableauServerConnection:
         """
         self.active_endpoint = DatabaseEndpoint(self, query_database=True, database_id=database_id).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.5')
@@ -2973,7 +3025,7 @@ class TableauServerConnection:
         """
         self.active_endpoint = DatabaseEndpoint(self, query_databases=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.5')
@@ -2999,7 +3051,8 @@ class TableauServerConnection:
                                                     new_contact_id=new_contact_id).get_request()
         self.active_endpoint = DatabaseEndpoint(self, database_id=database_id, update_database=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.5')
@@ -3011,7 +3064,7 @@ class TableauServerConnection:
         """
         self.active_endpoint = DatabaseEndpoint(self, database_id=database_id, remove_database=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.5')
@@ -3023,7 +3076,7 @@ class TableauServerConnection:
         """
         self.active_endpoint = TableEndpoint(self, table_id=table_id, query_table=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.5')
@@ -3034,7 +3087,7 @@ class TableauServerConnection:
         """
         self.active_endpoint = TableEndpoint(self, query_tables=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.5')
@@ -3060,7 +3113,8 @@ class TableauServerConnection:
                                                  new_contact_id=new_contact_id).get_request()
         self.active_endpoint = TableEndpoint(self, table_id=table_id, update_table=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.5')
@@ -3072,7 +3126,7 @@ class TableauServerConnection:
         """
         self.active_endpoint = TableEndpoint(self, table_id=table_id, remove_table=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.5')
@@ -3088,7 +3142,7 @@ class TableauServerConnection:
                                               column_id=column_id,
                                               query_column=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.5')
@@ -3100,7 +3154,7 @@ class TableauServerConnection:
         """
         self.active_endpoint = ColumnEndpoint(self, table_id=table_id, query_columns=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.5')
@@ -3118,7 +3172,8 @@ class TableauServerConnection:
                                               column_id=column_id,
                                               update_column=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.5')
@@ -3134,7 +3189,7 @@ class TableauServerConnection:
                                               column_id=column_id,
                                               remove_column=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.5')
@@ -3164,7 +3219,8 @@ class TableauServerConnection:
                                                  content_id=content_id,
                                                  add_warning=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                 verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.5')
@@ -3176,7 +3232,7 @@ class TableauServerConnection:
         """
         self.active_endpoint = DQWarningEndpoint(self, warning_id=warning_id, query_by_id=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     def query_data_quality_warning_by_asset(self, content_type, content_id):
@@ -3192,7 +3248,7 @@ class TableauServerConnection:
                                                  content_id=content_id,
                                                  query_by_content=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.5')
@@ -3216,7 +3272,8 @@ class TableauServerConnection:
                                                      status=status).get_request()
         self.active_endpoint = DQWarningEndpoint(self, warning_id=warning_id, update_warning=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.put(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.5')
@@ -3230,7 +3287,7 @@ class TableauServerConnection:
                                                  warning_id=warning_id,
                                                  delete_by_id=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.5')
@@ -3247,7 +3304,7 @@ class TableauServerConnection:
                                                  content_id=content_id,
                                                  delete_by_content=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.5')
@@ -3260,7 +3317,8 @@ class TableauServerConnection:
         self.active_request = GraphqlRequest(self, query).get_request()
         self.active_endpoint = GraphqlEndpoint(self).get_endpoint()
         self.active_headers = self.graphql_headers
-        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                 verify=self.ssl_verify)
         return response
 
     # encryption methods
@@ -3273,7 +3331,7 @@ class TableauServerConnection:
         """
         self.active_endpoint = EncryptionEndpoint(self, encrypt_extracts=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.post(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.post(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.5')
@@ -3284,7 +3342,7 @@ class TableauServerConnection:
         """
         self.active_endpoint = EncryptionEndpoint(self, decrypt_extracts=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.post(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.post(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.5')
@@ -3295,7 +3353,7 @@ class TableauServerConnection:
         """
         self.active_endpoint = EncryptionEndpoint(self, reencrypt_extracts=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.post(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.post(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     # extract methods
@@ -3313,7 +3371,7 @@ class TableauServerConnection:
                                                   encryption_flag=encryption_flag,
                                                   create_extract=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.post(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.post(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.5')
@@ -3327,7 +3385,7 @@ class TableauServerConnection:
                                                   datasource_id=datasource_id,
                                                   delete_extract=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.post(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.post(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.5')
@@ -3352,7 +3410,8 @@ class TableauServerConnection:
                                                 create_extracts=True,
                                                 encryption_flag=encryption_flag).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                 verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.5')
@@ -3367,7 +3426,8 @@ class TableauServerConnection:
                                                 workbook_id=workbook_id,
                                                 delete_extracts=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                 verify=self.ssl_verify)
         return response
 
     #  webhook methods
@@ -3391,7 +3451,8 @@ class TableauServerConnection:
                                                    url=url).get_request()
         self.active_endpoint = WebhookEndpoint(self, create_webhook=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers)
+        response = requests.post(url=self.active_endpoint, json=self.active_request, headers=self.active_headers,
+                                 verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.6')
@@ -3403,7 +3464,7 @@ class TableauServerConnection:
         """
         self.active_endpoint = WebhookEndpoint(self, webhook_id=webhook_id, query_webhook=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.6')
@@ -3414,7 +3475,7 @@ class TableauServerConnection:
         """
         self.active_endpoint = WebhookEndpoint(self, query_webhook=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.6')
@@ -3426,7 +3487,7 @@ class TableauServerConnection:
         """
         self.active_endpoint = WebhookEndpoint(self, webhook_id=webhook_id, test_webhook=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
     @verify_api_method_exists('3.6')
@@ -3438,5 +3499,5 @@ class TableauServerConnection:
         """
         self.active_endpoint = WebhookEndpoint(self, webhook_id=webhook_id, delete_webhook=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.delete(url=self.active_endpoint, headers=self.active_headers)
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response

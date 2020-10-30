@@ -49,27 +49,37 @@ tableau_server_config = {
         },
         'tableau_online': {
                 'server': 'https://10ax.online.tableau.com',
-                'api_version': '3.8',
-                'username': 'elliott.stam@interworks.com',
-                'password': 'Jarganuke1122!',
-                'site_name': 'estamiwdev422309',
-                'site_url': 'estamiwdev422309'
-            }
+                'api_version': '3.10',
+                'personal_access_token_name': 'dev-oct30',
+                'personal_access_token_secret': 'RARMkcBbSWqPwzyhjZnmLA==:pqflHd72xoMsbQfel1DXkNGxzEUAxlIL',
+                'site_name': 'estamdevdev348344',
+                'site_url': 'estamdevdev348344'
+        }
 }
 
 
-conn_a = TableauServerConnection(tableau_server_config, env='env_a')
-conn_b = TableauServerConnection(tableau_server_config, env='env_b')
-conn_c = TableauServerConnection(tableau_server_config, env='tableau_online')
+conn = TableauServerConnection(tableau_server_config, 'tableau_online')
 
 
-response_a = conn_a.sign_in()
-response_b = conn_b.sign_in()
-response_c = conn_c.sign_in()
+server_info = conn.server_info().json()
+print("server api version: ", server_info['serverInfo']['restApiVersion'])
+
+conn.sign_in()
+print(conn.query_site().json())
+
+#
+# conn_a = TableauServerConnection(tableau_server_config, env='env_a')
+# conn_b = TableauServerConnection(tableau_server_config, env='env_b')
+# conn_c = TableauServerConnection(tableau_server_config, env='tableau_online')
+
+
+# response_a = conn_a.sign_in()
+# response_b = conn_b.sign_in()
+# response_c = conn_c.sign_in()
 
 # clone_projects(conn_a, conn_c, overwrite_policy='overwrite')
 
-print(help(override_schedule_state))
+# print(help(override_schedule_state))
 
 # clone_datasources(conn_a, conn_c, credentials_file_path='test_connection_credentials_mapping_file.csv')
 #
@@ -78,7 +88,7 @@ print(help(override_schedule_state))
 # clone_workbooks(conn_a, conn_c, credentials_file_path='test_connection_credentials_mapping_file.csv', overwrite_policy='overwrite')
 #
 # conn_a.publish
-
-conn_a.sign_out()
-conn_b.sign_out()
-conn_c.sign_out()
+#
+# conn_a.sign_out()
+# conn_b.sign_out()
+# conn_c.sign_out()

@@ -28,6 +28,7 @@ class PublishDatasourceRequest(BaseRequest):
                  datasource_name,
                  datasource_file_path,
                  project_id,
+                 datasource_description=None,
                  connection_username=None,
                  connection_password=None,
                  embed_credentials_flag=False,
@@ -37,6 +38,7 @@ class PublishDatasourceRequest(BaseRequest):
         self._datasource_name = datasource_name
         self._datasource_file_path = datasource_file_path
         self._project_id = project_id
+        self._datasource_description = datasource_description
         self._connection_username = connection_username
         self._connection_password = connection_password
         self._embed_credentials_flag = embed_credentials_flag
@@ -51,6 +53,18 @@ class PublishDatasourceRequest(BaseRequest):
             'tds',
             'tdsx',
             'tde'
+        ]
+
+    @property
+    def optional_datasource_param_keys(self):
+        return [
+            'description'
+        ]
+
+    @property
+    def optional_datasource_param_values(self):
+        return [
+            self._datasource_description
         ]
 
     @property
@@ -87,6 +101,11 @@ class PublishDatasourceRequest(BaseRequest):
         return self._request_body
 
     def modified_publish_datasource_request(self):
+        if any(self.optional_datasource_param_values):
+            self._request_body['datasource'].update(
+                self._get_parameters_dict(self.optional_datasource_param_keys,
+                                          self.optional_datasource_param_values)
+            )
         if any(self.optional_credentials_param_values):
             self._request_body['datasource'].update({'connectionCredentials': {}})
             self._request_body['datasource']['connectionCredentials'].update(
