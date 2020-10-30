@@ -274,7 +274,7 @@ class TableauServerConnection:
         return response
 
     @verify_api_method_exists('2.3')
-    def query_site(self, include_usage_flag=False, parameter_dict=None):
+    def query_site(self, include_usage_flag=None, parameter_dict=None):
         """
         Queries details for the active site.
         :param bool include_usage_flag: True if including usage metrics, False otherwise
