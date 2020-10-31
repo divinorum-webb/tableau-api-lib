@@ -1,5 +1,8 @@
 *.idea
 *.ipynb
 config.py
+*.egg-info
+**/build
+**/dist
 **/test_env
 *__pycache__*
