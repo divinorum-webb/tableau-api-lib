@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: tableau-api-lib
-Version: 0.0.93
+Version: 0.0.102
 Summary: This library enables developers to call any method seen in Tableau Server's REST API documentation.
 Home-page: https://github.com/divinorum-webb/tableau-api-lib
 Author: Elliott Stam
