@@ -1,6 +1,7 @@
 import requests
 import warnings
 from functools import wraps
+from packaging import version
 
 from tableau_api_lib.exceptions import InvalidRestApiVersion
 
@@ -20,7 +21,7 @@ def verify_response(success_code):
         def wrapper(self, *args, **kwargs):
             response = requests.get(self.request_url)
             if response.status_code != success_code:
-                raise Exception(
+                raise ValueError(
                     "The request to Tableau Server returned code \n"
                     " {} instead of {} in function {}".format(
                         response.status_code, success_code, func.__name__
@@ -48,7 +49,7 @@ def verify_signed_in(func):
         if self.auth_token:
             return func(self, *args, **kwargs)
         else:
-            raise Exception("The Tableau Server connection is not logged in.")
+            raise ConnectionError("The Tableau Server connection is not logged in.")
 
     return wrapper
 
@@ -70,7 +71,7 @@ def verify_connection(func):
             print(self.auth_token)
             return func(self, *args, **kwargs)
         else:
-            raise Exception("The Tableau Server connection is not logged in.")
+            raise ConnectionError("The Tableau Server connection is not logged in.")
 
     return wrapper
 
@@ -106,7 +107,7 @@ def verify_config_variables(func):
                         missing_required_variables
                     )
                 )
-        raise Exception(
+        raise ConnectionError(
             "Please provide a configuration dict to establish a connection."
         )
 
@@ -128,12 +129,18 @@ def verify_rest_api_version(func):
         if (self._config and self._env) and type(self._config) == dict:
             try:
                 server_info = self.server_info().json()
-                server_api_version = server_info["serverInfo"]["restApiVersion"]
-                if float(
-                    self._config[self._env]["api_version"].replace(".", "")
-                ) > float(server_api_version.replace(".", "")):
-                    raise Exception("""Your API version is too damn high!""")
-                if self._config[self._env]["api_version"] < server_api_version:
+                server_api_version = version.parse(
+                    server_info["serverInfo"]["restApiVersion"]
+                )
+                declared_api_version = version.parse(self._config[self._env]["api_version"])
+                if declared_api_version > server_api_version:
+                    raise ValueError(
+                        f"""
+                    Your API version of '{declared_api_version}' is too damn high!
+                    The server you are establishing a connection with is using REST API version '{server_api_version}'.
+                    """
+                    )
+                if declared_api_version < server_api_version:
                     warnings.warn(
                         """
                     WARNING:
@@ -156,7 +163,7 @@ def verify_rest_api_version(func):
                 )
             return func(self, *args, **kwargs)
         else:
-            raise Exception("The Tableau Server connection is not logged in.")
+            raise ConnectionError("The Tableau Server connection is not logged in.")
 
     return wrapper
 
