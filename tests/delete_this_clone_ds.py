@@ -49,7 +49,7 @@ tableau_server_config = {
         },
         'tableau_online': {
                 'server': 'https://10ax.online.tableau.com',
-                'api_version': '3.10',
+                'api_version': '3.9',
                 'personal_access_token_name': 'dev-oct30',
                 'personal_access_token_secret': 'RARMkcBbSWqPwzyhjZnmLA==:pqflHd72xoMsbQfel1DXkNGxzEUAxlIL',
                 'site_name': 'estamdevdev348344',
@@ -60,9 +60,7 @@ tableau_server_config = {
 
 conn = TableauServerConnection(tableau_server_config, 'tableau_online')
 
-
-server_info = conn.server_info().json()
-print("server api version: ", server_info['serverInfo']['restApiVersion'])
+print(conn.server_info().json())
 
 conn.sign_in()
 print(conn.query_site().json())
