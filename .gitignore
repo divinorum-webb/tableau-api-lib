@@ -1,8 +1,16 @@
 *.idea
 *.ipynb
+*.csv
+*.twbx
+*.twb
+*.tdsx
+*.tds
+*.xlsx
+*.json
 config.py
 *.egg-info
 **/build
 **/dist
 **/test_env
+**/tests/twbx_files
 *__pycache__*
