@@ -7,6 +7,7 @@
 *.tds
 *.xlsx
 *.json
+*.DS_Store
 config.py
 *.egg-info
 **/build
