@@ -274,7 +274,7 @@ class TableauServerConnection:
         return response
 
     @verify_api_method_exists('2.3')
-    def query_site(self, include_usage_flag=False, parameter_dict=None):
+    def query_site(self, include_usage_flag=None, parameter_dict=None):
         """
         Queries details for the active site.
         :param bool include_usage_flag: True if including usage metrics, False otherwise
@@ -1332,6 +1332,7 @@ class TableauServerConnection:
         response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         return response
 
+    @verify_signed_in
     @verify_api_method_exists('2.3')
     def query_data_sources(self, parameter_dict=None):
         """
@@ -2905,7 +2906,7 @@ class TableauServerConnection:
                          project_id,
                          show_tabs_flag=False,
                          user_id=None,
-                             server_address=None,
+                         server_address=None,
                          port_number=None,
                          connection_username=None,
                          connection_password=None,

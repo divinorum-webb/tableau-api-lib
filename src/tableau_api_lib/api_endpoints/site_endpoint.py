@@ -23,7 +23,7 @@ class SiteEndpoint(BaseEndpoint):
                  remove_group=False,
                  user_id=None,
                  group_id=None,
-                 include_usage_flag=False,
+                 include_usage_flag=None,
                  parameter_dict=None):
         """
         Builds API endpoints for REST API site methods.

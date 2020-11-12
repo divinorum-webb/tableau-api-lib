@@ -291,6 +291,7 @@ def clone_workbooks_by_project(conn_source,
     # update_datasources_by_project(conn_target, project_datasources)
 
 
+# TODO hide sheets not visible on the source server when publishing to the target; copy tags and owner (make optional)
 def clone_workbooks(conn_source,
                     conn_target,
                     workbook_names=None,
