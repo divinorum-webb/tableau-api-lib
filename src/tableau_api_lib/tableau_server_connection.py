@@ -1763,6 +1763,7 @@ class TableauServerConnection:
         :param string user_id: the user ID
         :return: HTTP response
         """
+        # TODO(elliott): add support for the mapAssetsTo optional parameter
         self.active_endpoint = UserEndpoint(ts_connection=self,
                                             user_id=user_id,
                                             remove_user=True).get_endpoint()
