@@ -113,7 +113,8 @@ class CreateGroupRequest(BaseRequest):
 
     def modified_create_local_group_request(self) -> dict:
         if any(self.optional_local_group_param_values):
-            self._request_body["group"].update(
+            self._request_body["group"].update({"import": {}})
+            self._request_body["group"]["import"].update(
                 self._get_parameters_dict(
                     self.optional_local_source_param_keys,
                     self.optional_local_group_param_values,
