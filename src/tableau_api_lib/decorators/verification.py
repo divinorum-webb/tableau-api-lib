@@ -179,11 +179,11 @@ def verify_api_method_exists(version_introduced):
     def decorator(func):
         @wraps(func)
         def wrapper(self, *args, **kwargs):
-            conn_api_version = self._config[self._env]["api_version"]
-            if conn_api_version < version_introduced:
+            conn_api_version = version.parse(self._config[self._env]["api_version"])
+            if conn_api_version < version.parse(version_introduced):
                 raise InvalidRestApiVersion(
                     func,
-                    api_version_used=conn_api_version,
+                    api_version_used=str(conn_api_version),
                     api_version_required=version_introduced,
                 )
             return func(self, *args, **kwargs)
