@@ -1,5 +1,5 @@
 from .users import get_users_dataframe
-from .groups import get_groups_dataframe, get_group_users_dataframe
+from .groups import get_groups_dataframe, get_group_users_dataframe, get_groups_for_a_user_dataframe
 from .datasources import get_datasources_dataframe, get_datasource_connections_dataframe
 from .workbooks import get_workbooks_dataframe, get_views_dataframe, get_workbook_connections_dataframe, \
     get_embedded_datasources_dataframe, get_view_data_dataframe

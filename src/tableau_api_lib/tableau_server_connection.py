@@ -1,4 +1,5 @@
 import requests
+from typing import Optional
 
 from tableau_api_lib.api_endpoints import AuthEndpoint, DataAlertEndpoint, DatabaseEndpoint, DatasourceEndpoint, \
     FavoritesEndpoint, FileUploadEndpoint, FlowEndpoint, GroupEndpoint, JobsEndpoint, PermissionsEndpoint, \
@@ -1534,16 +1535,19 @@ class TableauServerConnection:
 
     @verify_api_method_exists('2.3')
     def create_group(self,
-                     new_group_name,
-                     active_directory_group_name=None,
-                     active_directory_domain_name=None,
-                     default_site_role=None, parameter_dict=None):
+                     new_group_name: str,
+                     active_directory_group_name: Optional[str] = None,
+                     active_directory_domain_name: Optional[str] = None,
+                     minimum_site_role: Optional[str] = None,
+                     license_mode: Optional[str] = None,
+                     parameter_dict=None):
         """
         Creates a group on the active site.
         :param string new_group_name: the group name
         :param string active_directory_group_name: (optional) the name of the active directory group to import
         :param string active_directory_domain_name: (optional) the domain of the active directory group to import
-        :param string default_site_role: the default site role for users imported into the group via active directory
+        :param string minimum_site_role: the default site role for users imported into the group via active directory
+        :param string license_mode: the licensing mode to use (see REST API reference)
         :param dict parameter_dict: dict defining url parameters for API endpoint
         :return: HTTP response
         """
@@ -1551,7 +1555,8 @@ class TableauServerConnection:
                                                  new_group_name=new_group_name,
                                                  active_directory_group_name=active_directory_group_name,
                                                  active_directory_domain_name=active_directory_domain_name,
-                                                 default_site_role=default_site_role).get_request()
+                                                 minimum_site_role=minimum_site_role,
+                                                 license_mode=license_mode).get_request()
         self.active_endpoint = GroupEndpoint(ts_connection=self, create_group=True,
                                              parameter_dict=parameter_dict).get_endpoint()
         self.active_headers = self.default_headers
@@ -1763,6 +1768,7 @@ class TableauServerConnection:
         :param string user_id: the user ID
         :return: HTTP response
         """
+        # TODO(elliott): add support for the mapAssetsTo optional parameter
         self.active_endpoint = UserEndpoint(ts_connection=self,
                                             user_id=user_id,
                                             remove_user=True).get_endpoint()
