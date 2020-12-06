@@ -1,3 +1,5 @@
+from typing import Any, Dict, List
+
 from tableau_api_lib.exceptions import ContentNotFound, PaginationError
 
 
@@ -24,7 +26,7 @@ def extract_pages(query_func,
                   starting_page=1,
                   page_size=100,
                   limit=None,
-                  parameter_dict=None):
+                  parameter_dict=None) -> List[Dict[str, Any]]:
     """
     Extracts pages from paginated Tableau Server API responses.
     :param function query_func: a callable function that will issue a GET request to Tableau Server
@@ -33,7 +35,7 @@ def extract_pages(query_func,
     :param int page_size: the number of objects per page. If querying users, this is the number of users per page
     :param int limit: the maximum number of objects to return. Default is no limit
     :param dict parameter_dict: a dict whose values are appended to the REST API URL endpoint as URL parameters
-    :return: JSON or dict
+    :return: lsit of JSON or dict
     """
     parameter_dict = parameter_dict or {}
     extracted_pages = []

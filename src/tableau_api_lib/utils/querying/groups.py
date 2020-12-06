@@ -4,6 +4,7 @@ Helper functions for querying REST API data for groups
 
 
 import pandas as pd
+from tableau_api_lib import TableauServerConnection
 from tableau_api_lib.utils import extract_pages
 from tableau_api_lib.utils.querying import get_users_dataframe
 
@@ -59,3 +60,9 @@ def get_group_users_dataframe(conn, group_id) -> pd.DataFrame:
                                            right_on='id',
                                            suffixes=('delete', None))
     return all_group_users[users_columns]
+
+
+def get_groups_for_a_user_dataframe(conn: TableauServerConnection, user_id: str) -> pd.DataFrame:
+    """Returns a Pandas DataFrame containing all groups a user belongs to."""
+    groups_for_user_df = pd.DataFrame(extract_pages(conn.get_groups_for_a_user, content_id=user_id))
+    return groups_for_user_df
