@@ -311,8 +311,13 @@ class TableauServerConnection:
         content_url,
         admin_mode="ContentAndUsers",
         user_quota=None,
+        tier_creator_capacity=None,
+        tier_explorer_capacity=None,
+        tier_viewer_capacity=None,
         storage_quota=None,
         disable_subscriptions_flag=None,
+        editing_flows_enabled_flag=None,
+        scheduling_flows_enabled_flag=None,
         flows_enabled_flag=None,
         guest_access_enabled_flag=None,
         allow_subscription_attachments_flag=None,
@@ -322,6 +327,31 @@ class TableauServerConnection:
         revision_limit=None,
         subscribe_others_enabled_flag=None,
         extract_encryption_mode=None,
+        request_access_enabled_flag=None,
+        run_now_enabled_flag=None,
+        data_alerts_enabled_flag=None,
+        commenting_mentions_enabled_flag=None,
+        catalog_obfuscation_enabled_flag=None,
+        flow_auto_save_enabled_flag=None,
+        web_extraction_enabled_flag=None,
+        metrics_content_type_enabled_flag=None,
+        notify_site_admins_on_throttle_flag=None,
+        authoring_enabled_flag=None,
+        custom_subscription_email_enabled_flag=None,
+        custom_subscription_email=None,
+        custom_subscription_footer_enabled_flag=None,
+        custom_subscription_footer=None,
+        ask_data_mode='EnabledByDefault',
+        named_sharing_enabled_flag=None,
+        mobile_biometrics_enabled_flag=None,
+        sheet_image_enabled_flag=None,
+        cataloging_enabled_flag=None,
+        derived_permissions_enabled_flag=None,
+        user_visibility_mode='FULL',
+        use_default_time_zone_flag=None,
+        time_zone=None,
+        auto_suspend_refresh_enabled_flag=None,
+        auto_suspend_refresh_inactivity_window=None,
     ):
         """
         Creates a new site via the active Tableau Server connection.
@@ -331,6 +361,8 @@ class TableauServerConnection:
         :param str user_quota: The user quota for the site.
         :param str storage_quota: The storage size quota for the site, in megabytes.
         :param bool disable_subscriptions_flag: True if disabling subscriptions, defaults to False.
+        :param bool editing_flows_enabled_flag: True if editing flows is allowed, defaults to True.
+        :param bool scheduling_flows_enabled_flag: True if scheduling flows is enabled, defaults to True.
         :param bool flows_enabled_flag: True if flows are enabled, defaults to True.
         :param bool guest_access_enabled_flag: True if guest access is enabled, defaults to False.
         :param bool allow_subscription_attachments_flag: True if subscription attachments are enabled, defaults to False
@@ -342,6 +374,8 @@ class TableauServerConnection:
         :param bool subscribe_others_enabled_flag: True if owners can subscribe other users, False otherwise.
         :param str extract_encryption_mode: enables, disables, or enforces extract encryption
         [enforced, enabled, or disabled]
+        :param bool request_access_enabled_flag: True if users can request permissions to content, defaults to False.
+        :param bool run_now_enabled_flag: True if content can be refreshed on demand, defaults to True.
         :return: HTTP response
         """
         # This method can only be called by server administrators.
@@ -352,7 +386,12 @@ class TableauServerConnection:
             admin_mode=admin_mode,
             user_quota=user_quota,
             storage_quota=storage_quota,
+            tier_creator_capacity=tier_creator_capacity,
+            tier_explorer_capacity=tier_explorer_capacity,
+            tier_viewer_capacity=tier_viewer_capacity,
             disable_subscriptions_flag=disable_subscriptions_flag,
+            editing_flows_enabled_flag=editing_flows_enabled_flag,
+            scheduling_flows_enabled_flag=scheduling_flows_enabled_flag,
             flows_enabled_flag=flows_enabled_flag,
             guest_access_enabled_flag=guest_access_enabled_flag,
             allow_subscription_attachments_flag=allow_subscription_attachments_flag,
@@ -362,6 +401,31 @@ class TableauServerConnection:
             revision_limit=revision_limit,
             subscribe_others_enabled_flag=subscribe_others_enabled_flag,
             extract_encryption_mode=extract_encryption_mode,
+            request_access_enabled_flag=request_access_enabled_flag,
+            run_now_enabled_flag=run_now_enabled_flag,
+            data_alerts_enabled_flag=data_alerts_enabled_flag,
+            commenting_mentions_enabled_flag=commenting_mentions_enabled_flag,
+            catalog_obfuscation_enabled_flag=catalog_obfuscation_enabled_flag,
+            flow_auto_save_enabled_flag=flow_auto_save_enabled_flag,
+            web_extraction_enabled_flag=web_extraction_enabled_flag,
+            metrics_content_type_enabled_flag=metrics_content_type_enabled_flag,
+            notify_site_admins_on_throttle_flag=notify_site_admins_on_throttle_flag,
+            authoring_enabled_flag=authoring_enabled_flag,
+            custom_subscription_email_enabled_flag=custom_subscription_email_enabled_flag,
+            custom_subscription_email=custom_subscription_email,
+            custom_subscription_footer_enabled_flag=custom_subscription_footer_enabled_flag,
+            custom_subscription_footer=custom_subscription_footer,
+            ask_data_mode=ask_data_mode,
+            named_sharing_enabled_flag=named_sharing_enabled_flag,
+            mobile_biometrics_enabled_flag=mobile_biometrics_enabled_flag,
+            sheet_image_enabled_flag=sheet_image_enabled_flag,
+            cataloging_enabled_flag=cataloging_enabled_flag,
+            derived_permissions_enabled_flag=derived_permissions_enabled_flag,
+            user_visibility_mode=user_visibility_mode,
+            use_default_time_zone_flag=use_default_time_zone_flag,
+            time_zone=time_zone,
+            auto_suspend_refresh_enabled_flag=auto_suspend_refresh_enabled_flag,
+            auto_suspend_refresh_inactivity_window=auto_suspend_refresh_inactivity_window,
         ).get_request()
         self.active_endpoint = SiteEndpoint(
             ts_connection=self, create_site=True
