@@ -1,5 +1,6 @@
+from typing import Dict, Optional
+
 import requests
-from typing import Optional
 
 from tableau_api_lib.api_endpoints import (
     AuthEndpoint,
@@ -87,16 +88,24 @@ from tableau_api_lib.decorators import (
 
 
 class TableauServerConnection:
-    def __init__(self, config_json, env="tableau_prod", ssl_verify=True):
+    def __init__(
+        self,
+        config_json: Dict[str, dict],
+        env: Optional[str] = "tableau_prod",
+        ssl_verify: Optional[bool] = True,
+        use_apparent_encoding: Optional[bool] = False,
+    ):
         """
         A connection to Tableau Server built upon the configuration details provided.
         :param dict config_json: a dict or JSON object containing configuration details
-        :param str env: the configuration environment to reference from the configuration dict
-        :param bool ssl_verify: verifies SSL certs for HTTP requests if True, skips verification if False.
+        :param str env: (optional) the configuration environment to reference from the configuration dict
+        :param bool ssl_verify: (optional) verifies SSL certs for HTTP requests if True, skips verification if False.
+        :param str use_apparent_encoding: (optional) server responses are encoded dynamically when set to True.
         """
         self._env = env
         self._config = config_json
         self._auth_token = None
+        self._use_apparent_encoding = use_apparent_encoding
         self.ssl_verify = ssl_verify
         self.site_url = self._config[self._env]["site_url"]
         self.site_name = self._config[self._env]["site_name"]
@@ -189,7 +198,7 @@ class TableauServerConnection:
         if token_value != self._auth_token or token_value is None:
             self._auth_token = token_value
         else:
-            raise Exception("You are already signed in with a valid auth token.")
+            raise ConnectionError("You are already signed in with a valid auth token.")
 
     def _get_auth_method(self):
         if self.username and self.password:
@@ -200,7 +209,7 @@ class TableauServerConnection:
         elif self.personal_access_token_name and self.personal_access_token_secret:
             if not (self.username or self.password):
                 return "personal_access_token"
-        raise Exception(
+        raise ValueError(
             """
         The Tableau Server configuration provided contains username, password, and personal access token credentials.
         Successful authentication requires either username & password OR personal access token.
@@ -208,11 +217,16 @@ class TableauServerConnection:
         """
         )
 
+    def _set_response_encoding(self, response):
+        if self._use_apparent_encoding:
+            response.encoding = response.apparent_encoding
+        return response
+
     # authentication
 
     @verify_rest_api_version
     @verify_config_variables
-    def sign_in(self, user_to_impersonate=None):
+    def sign_in(self, user_to_impersonate: Optional[str] = None):
         """
         Signs in to Tableau Server.
         :param str user_to_impersonate: (optional) the user ID for the user being impersonated
@@ -235,9 +249,11 @@ class TableauServerConnection:
             verify=self.ssl_verify,
         )
         if response.status_code == 200:
+            response = self._set_response_encoding(response=response)
             self.auth_token = response.json()["credentials"]["token"]
             self.site_id = response.json()["credentials"]["site"]["id"]
             self.user_id = response.json()["credentials"]["user"]["id"]
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_signed_in
@@ -251,9 +267,11 @@ class TableauServerConnection:
             url=endpoint, headers=self.x_auth_header, verify=self.ssl_verify
         )
         if response.status_code == 204:
+            response = self._set_response_encoding(response=response)
             self.auth_token = None
             self.site_id = None
             self.user_id = None
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_signed_in
@@ -278,11 +296,13 @@ class TableauServerConnection:
             verify=self.ssl_verify,
         )
         if response.status_code == 200:
+            response = self._set_response_encoding(response=response)
             self.auth_token = response.json()["credentials"]["token"]
             self.site_id = response.json()["credentials"]["site"]["id"]
             self.site_name = self.query_site().json()["site"]["name"]
             self.site_url = response.json()["credentials"]["site"]["contentUrl"]
             self.user_id = response.json()["credentials"]["user"]["id"]
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.4")
@@ -300,6 +320,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     # sites
@@ -341,13 +363,13 @@ class TableauServerConnection:
         custom_subscription_email=None,
         custom_subscription_footer_enabled_flag=None,
         custom_subscription_footer=None,
-        ask_data_mode='EnabledByDefault',
+        ask_data_mode="EnabledByDefault",
         named_sharing_enabled_flag=None,
         mobile_biometrics_enabled_flag=None,
         sheet_image_enabled_flag=None,
         cataloging_enabled_flag=None,
         derived_permissions_enabled_flag=None,
-        user_visibility_mode='FULL',
+        user_visibility_mode="FULL",
         use_default_time_zone_flag=None,
         time_zone=None,
         auto_suspend_refresh_enabled_flag=None,
@@ -437,6 +459,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -460,6 +484,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -478,6 +504,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.5")
@@ -496,6 +524,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -518,6 +548,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -559,13 +591,13 @@ class TableauServerConnection:
         custom_subscription_email=None,
         custom_subscription_footer_enabled_flag=None,
         custom_subscription_footer=None,
-        ask_data_mode='EnabledByDefault',
+        ask_data_mode="EnabledByDefault",
         named_sharing_enabled_flag=None,
         mobile_biometrics_enabled_flag=None,
         sheet_image_enabled_flag=None,
         cataloging_enabled_flag=None,
         derived_permissions_enabled_flag=None,
-        user_visibility_mode='FULL',
+        user_visibility_mode="FULL",
         use_default_time_zone_flag=None,
         time_zone=None,
         auto_suspend_refresh_enabled_flag=None,
@@ -653,6 +685,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -678,6 +712,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     # data driven alerts
@@ -698,6 +734,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.2")
@@ -716,6 +754,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.2")
@@ -734,6 +774,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.2")
@@ -761,6 +803,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.2")
@@ -783,6 +827,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.2")
@@ -820,6 +866,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     # flows
@@ -840,6 +888,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.3")
@@ -858,6 +908,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.3")
@@ -876,6 +928,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.3")
@@ -894,6 +948,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.3")
@@ -911,6 +967,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.3")
@@ -933,6 +991,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.3")
@@ -941,7 +1001,7 @@ class TableauServerConnection:
         Updates details for the specified flow.
         :param string flow_id: the flow ID
         :param string new_project_id: (optional) the new project ID the flow will belong to
-        :param string new_owner_id: (optional) the new onwer ID the flow will belong to
+        :param string new_owner_id: (optional) the new owner ID the flow will belong to
         :return: HTTP response
         """
         self.active_request = UpdateFlowRequest(
@@ -957,6 +1017,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.3")
@@ -1003,6 +1065,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     # projects
@@ -1042,6 +1106,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -1060,6 +1126,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -1097,6 +1165,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -1115,6 +1185,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     # workbooks and views
@@ -1140,6 +1212,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -1163,6 +1237,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -1185,6 +1261,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.8")
@@ -1208,6 +1286,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.5")
@@ -1231,6 +1311,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.8")
@@ -1254,6 +1336,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -1279,6 +1363,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.0")
@@ -1297,6 +1383,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.6")
@@ -1319,6 +1407,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.7")
@@ -1335,6 +1425,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     def query_view(self, view_id):
@@ -1353,6 +1445,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -1375,6 +1469,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -1397,6 +1493,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -1419,6 +1517,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     def get_workbook_downgrade_info(self, workbook_id, downgrade_target_version):
@@ -1440,6 +1540,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -1462,6 +1564,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -1486,6 +1590,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -1504,6 +1610,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -1526,6 +1634,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -1549,6 +1659,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.4")
@@ -1572,6 +1684,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -1599,6 +1713,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -1629,6 +1745,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -1678,6 +1796,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.8")
@@ -1701,6 +1821,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -1719,6 +1841,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.6")
@@ -1738,6 +1862,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -1760,6 +1886,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     # data sources
@@ -1785,6 +1913,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.6")
@@ -1807,6 +1937,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -1825,6 +1957,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_signed_in
@@ -1844,6 +1978,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -1864,6 +2000,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -1886,6 +2024,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -1908,6 +2048,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -1934,6 +2076,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -1973,6 +2117,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -2019,6 +2165,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.8")
@@ -2039,6 +2187,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -2057,6 +2207,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -2079,6 +2231,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     # users and groups
@@ -2121,6 +2275,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -2144,6 +2300,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -2171,6 +2329,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.7")
@@ -2193,6 +2353,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -2215,6 +2377,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -2233,6 +2397,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -2251,6 +2417,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -2269,6 +2437,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -2311,6 +2481,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -2351,6 +2523,8 @@ class TableauServerConnection:
             headers=self.default_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -2370,6 +2544,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -2389,6 +2565,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -2407,6 +2585,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     # permissions
@@ -2451,6 +2631,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     def add_flow_permissions(
@@ -2491,6 +2673,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -2532,6 +2716,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -2576,6 +2762,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.2")
@@ -2618,6 +2806,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -2660,6 +2850,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -2681,6 +2873,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -2702,6 +2896,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -2723,6 +2919,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -2745,6 +2943,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.2")
@@ -2766,6 +2966,8 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -2787,6 +2989,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -2823,6 +3026,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     def delete_flow_permission(
@@ -2858,6 +3062,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -2894,6 +3099,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -2932,6 +3138,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.2")
@@ -2968,6 +3175,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -3004,6 +3212,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     # jobs, tasks, and schedules
@@ -3029,6 +3238,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     def add_flow_task_to_schedule(self, flow_id, schedule_id):
@@ -3051,6 +3261,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.8")
@@ -3074,6 +3285,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.1")
@@ -3092,6 +3304,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -3110,6 +3323,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.1")
@@ -3128,6 +3342,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.6")
@@ -3146,6 +3361,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -3163,6 +3379,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     def get_extract_refresh_tasks_for_schedule(self, schedule_id):
@@ -3181,6 +3398,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     def get_flow_run_task(self, task_id):
@@ -3198,6 +3416,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     def get_flow_run_tasks(self):
@@ -3214,6 +3433,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -3231,7 +3451,7 @@ class TableauServerConnection:
         """
         Creates a new schedule for the server.
         :param string schedule_name: the new schedule's name
-        :param string schedule_priority: the new shcedule's execution priority value [1-100]
+        :param string schedule_priority: the new schedule's execution priority value [1-100]
         :param string schedule_type: the new schedule type [Flow, Extract, or Subscription]
         :param string schedule_execution_order: the new schedule execution order [Parallel or Serial]
         :param string schedule_frequency: the new schedule's frequency [Hourly, Daily, Weekly, or Monthly]
@@ -3261,6 +3481,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     def query_extract_refresh_tasks_for_schedule(
@@ -3285,6 +3506,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -3303,6 +3525,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.6")
@@ -3324,6 +3547,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     def run_flow_task(self, task_id):
@@ -3344,6 +3568,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -3364,7 +3589,7 @@ class TableauServerConnection:
         Updates details for the specified schedule.
         :param string schedule_id: the schedule ID
         :param string schedule_name: the new schedule's name
-        :param string schedule_priority: the new shcedule's execution priority value [1-100]
+        :param string schedule_priority: the new schedule's execution priority value [1-100]
         :param string schedule_type: the new schedule type [Flow, Extract, or Subscription]
         :param string schedule_state: the new schedule state [Active,
         :param string schedule_execution_order: the new schedule execution order [Parallel or Serial]
@@ -3397,6 +3622,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -3415,6 +3641,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     # subscriptions
@@ -3461,7 +3688,7 @@ class TableauServerConnection:
             attach_pdf_flag=attach_pdf_flag,
             pdf_page_orientation=pdf_page_orientation,
             pdf_page_size=pdf_page_size,
-            send_view_if_empty_flag=send_view_if_empty_flag
+            send_view_if_empty_flag=send_view_if_empty_flag,
         ).get_request()
         self.active_endpoint = SubscriptionsEndpoint(
             ts_connection=self, create_subscription=True
@@ -3473,6 +3700,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -3491,6 +3719,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -3509,6 +3738,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -3539,6 +3769,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -3559,6 +3790,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     # favorites
@@ -3587,6 +3819,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.1")
@@ -3611,6 +3844,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -3635,6 +3869,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -3659,6 +3894,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -3682,6 +3918,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.1")
@@ -3705,6 +3942,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -3728,6 +3966,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -3751,6 +3990,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.5")
@@ -3769,6 +4009,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     # publishing
@@ -3788,6 +4029,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -3812,6 +4054,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -3864,6 +4107,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("2.3")
@@ -3931,6 +4175,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.3")
@@ -3989,6 +4234,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     # metadata methods
@@ -4009,6 +4255,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.5")
@@ -4026,6 +4273,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.5")
@@ -4063,6 +4311,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.5")
@@ -4081,6 +4330,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.5")
@@ -4099,6 +4349,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.5")
@@ -4114,6 +4365,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.5")
@@ -4151,6 +4403,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.5")
@@ -4169,6 +4422,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.5")
@@ -4188,6 +4442,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.5")
@@ -4206,6 +4461,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.5")
@@ -4230,6 +4486,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.5")
@@ -4249,6 +4506,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.5")
@@ -4279,6 +4537,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.5")
@@ -4297,6 +4556,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     def query_data_quality_warning_by_asset(self, content_type, content_id):
@@ -4319,6 +4579,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.5")
@@ -4347,6 +4608,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.5")
@@ -4365,6 +4627,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.5")
@@ -4388,6 +4651,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.5")
@@ -4406,6 +4670,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     # encryption methods
@@ -4425,6 +4690,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.5")
@@ -4442,12 +4708,13 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.5")
     def reencrypt_extracts(self):
         """
-        Reencrypts all .hyper extracts on the active site with new encryption keys.
+        Re-encrypts all .hyper extracts on the active site with new encryption keys.
         :return: HTTP response
         """
         self.active_endpoint = EncryptionEndpoint(
@@ -4459,6 +4726,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     # extract methods
@@ -4483,6 +4751,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.5")
@@ -4501,6 +4770,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.5")
@@ -4537,6 +4807,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.5")
@@ -4557,6 +4828,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     #  webhook methods
@@ -4587,6 +4859,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.6")
@@ -4605,6 +4878,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.6")
@@ -4620,6 +4894,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.6")
@@ -4638,6 +4913,7 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
 
     @verify_api_method_exists("3.6")
@@ -4656,4 +4932,5 @@ class TableauServerConnection:
             headers=self.active_headers,
             verify=self.ssl_verify,
         )
+        response = self._set_response_encoding(response=response)
         return response
