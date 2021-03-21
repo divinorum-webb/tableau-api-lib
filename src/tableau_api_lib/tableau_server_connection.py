@@ -145,13 +145,8 @@ class TableauServerConnection:
     @property
     def personal_access_token_name(self):
         config_keys = self._config[self._env].keys()
-        if (
-            "personal_access_token_name" in config_keys
-            and "personal_access_token_secret" in config_keys
-        ):
-            personal_access_token_name = self._config[self._env][
-                "personal_access_token_name"
-            ]
+        if "personal_access_token_name" in config_keys and "personal_access_token_secret" in config_keys:
+            personal_access_token_name = self._config[self._env]["personal_access_token_name"]
         else:
             personal_access_token_name = None
         return personal_access_token_name
@@ -159,13 +154,8 @@ class TableauServerConnection:
     @property
     def personal_access_token_secret(self):
         config_keys = self._config[self._env].keys()
-        if (
-            "personal_access_token_name" in config_keys
-            and "personal_access_token_secret" in config_keys
-        ):
-            personal_access_token_secret = self._config[self._env][
-                "personal_access_token_secret"
-            ]
+        if "personal_access_token_name" in config_keys and "personal_access_token_secret" in config_keys:
+            personal_access_token_secret = self._config[self._env]["personal_access_token_secret"]
         else:
             personal_access_token_secret = None
         return personal_access_token_secret
@@ -202,9 +192,7 @@ class TableauServerConnection:
 
     def _get_auth_method(self):
         if self.username and self.password:
-            if not (
-                self.personal_access_token_name or self.personal_access_token_secret
-            ):
+            if not (self.personal_access_token_name or self.personal_access_token_secret):
                 return "user_and_password"
         elif self.personal_access_token_name and self.personal_access_token_secret:
             if not (self.username or self.password):
@@ -263,9 +251,7 @@ class TableauServerConnection:
         :return: HTTP response
         """
         endpoint = AuthEndpoint(ts_connection=self, sign_out=True).get_endpoint()
-        response = requests.post(
-            url=endpoint, headers=self.x_auth_header, verify=self.ssl_verify
-        )
+        response = requests.post(url=endpoint, headers=self.x_auth_header, verify=self.ssl_verify)
         if response.status_code == 204:
             response = self._set_response_encoding(response=response)
             self.auth_token = None
@@ -282,12 +268,8 @@ class TableauServerConnection:
         :param string content_url: The 'content_url' is the site name as displayed in the url
         :return: HTTP response
         """
-        self.active_request = SwitchSiteRequest(
-            ts_connection=self, site_name=content_url
-        ).get_request()
-        self.active_endpoint = AuthEndpoint(
-            ts_connection=self, switch_site=True
-        ).get_endpoint()
+        self.active_request = SwitchSiteRequest(ts_connection=self, site_name=content_url).get_request()
+        self.active_endpoint = AuthEndpoint(ts_connection=self, switch_site=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.post(
             url=self.active_endpoint,
@@ -311,9 +293,7 @@ class TableauServerConnection:
         Provides information about the active Tableau Server connection.
         :return: HTTP response
         """
-        self.active_endpoint = AuthEndpoint(
-            ts_connection=self, get_server_info=True
-        ).get_endpoint()
+        self.active_endpoint = AuthEndpoint(ts_connection=self, get_server_info=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(
             url=self.active_endpoint,
@@ -448,9 +428,7 @@ class TableauServerConnection:
             auto_suspend_refresh_enabled_flag=auto_suspend_refresh_enabled_flag,
             auto_suspend_refresh_inactivity_window=auto_suspend_refresh_inactivity_window,
         ).get_request()
-        self.active_endpoint = SiteEndpoint(
-            ts_connection=self, create_site=True
-        ).get_endpoint()
+        self.active_endpoint = SiteEndpoint(ts_connection=self, create_site=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.post(
             url=self.active_endpoint,
@@ -669,9 +647,7 @@ class TableauServerConnection:
             auto_suspend_refresh_enabled_flag=auto_suspend_refresh_enabled_flag,
             auto_suspend_refresh_inactivity_window=auto_suspend_refresh_inactivity_window,
         ).get_request()
-        self.active_endpoint = SiteEndpoint(
-            ts_connection=self, site_id=site_id, update_site=True
-        ).get_endpoint()
+        self.active_endpoint = SiteEndpoint(ts_connection=self, site_id=site_id, update_site=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.put(
             url=self.active_endpoint,
@@ -717,9 +693,7 @@ class TableauServerConnection:
         :param string data_alert_id: the data driven alert ID
         :return: HTTP response
         """
-        self.active_endpoint = DataAlertEndpoint(
-            ts_connection=self, data_alert_id=data_alert_id
-        ).get_endpoint()
+        self.active_endpoint = DataAlertEndpoint(ts_connection=self, data_alert_id=data_alert_id).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(
             url=self.active_endpoint,
@@ -776,9 +750,7 @@ class TableauServerConnection:
         :return: HTTP response
         """
         # this appears to be broken on Tableau's side, always returning an internal server error
-        self.active_request = AddUserToAlertRequest(
-            ts_connection=self, user_id=user_id
-        ).get_request()
+        self.active_request = AddUserToAlertRequest(ts_connection=self, user_id=user_id).get_request()
         self.active_endpoint = DataAlertEndpoint(
             ts_connection=self,
             add_user=True,
@@ -843,9 +815,7 @@ class TableauServerConnection:
             data_alert_owner_id=data_alert_owner_id,
             is_public_flag=is_public_flag,
         ).get_request()
-        self.active_endpoint = DataAlertEndpoint(
-            ts_connection=self, data_alert_id=data_alert_id
-        ).get_endpoint()
+        self.active_endpoint = DataAlertEndpoint(ts_connection=self, data_alert_id=data_alert_id).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.put(
             url=self.active_endpoint,
@@ -865,9 +835,7 @@ class TableauServerConnection:
         :param string flow_id: the flow ID
         :return: HTTP response
         """
-        self.active_endpoint = FlowEndpoint(
-            ts_connection=self, flow_id=flow_id, query_flow=True
-        ).get_endpoint()
+        self.active_endpoint = FlowEndpoint(ts_connection=self, flow_id=flow_id, query_flow=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(
             url=self.active_endpoint,
@@ -884,9 +852,7 @@ class TableauServerConnection:
         :param string flow_id: the flow ID
         :return: HTTP response
         """
-        self.active_endpoint = FlowEndpoint(
-            ts_connection=self, flow_id=flow_id, delete_flow=True
-        ).get_endpoint()
+        self.active_endpoint = FlowEndpoint(ts_connection=self, flow_id=flow_id, delete_flow=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(
             url=self.active_endpoint,
@@ -903,9 +869,7 @@ class TableauServerConnection:
         :param string flow_id: the flow ID
         :return: HTTP response
         """
-        self.active_endpoint = FlowEndpoint(
-            ts_connection=self, flow_id=flow_id, download_flow=True
-        ).get_endpoint()
+        self.active_endpoint = FlowEndpoint(ts_connection=self, flow_id=flow_id, download_flow=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(
             url=self.active_endpoint,
@@ -987,9 +951,7 @@ class TableauServerConnection:
         self.active_request = UpdateFlowRequest(
             ts_connection=self, new_project_id=new_project_id, new_owner_id=new_owner_id
         ).get_request()
-        self.active_endpoint = FlowEndpoint(
-            ts_connection=self, flow_id=flow_id, update_flow=True
-        ).get_endpoint()
+        self.active_endpoint = FlowEndpoint(ts_connection=self, flow_id=flow_id, update_flow=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.put(
             url=self.active_endpoint,
@@ -1173,12 +1135,8 @@ class TableauServerConnection:
         :param list tags: a list of tags to add to the view
         :return: HTTP response
         """
-        self.active_request = AddTagsRequest(
-            ts_connection=self, tags=tags
-        ).get_request()
-        self.active_endpoint = ViewEndpoint(
-            ts_connection=self, view_id=view_id, add_tags=True
-        ).get_endpoint()
+        self.active_request = AddTagsRequest(ts_connection=self, tags=tags).get_request()
+        self.active_endpoint = ViewEndpoint(ts_connection=self, view_id=view_id, add_tags=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.put(
             url=self.active_endpoint,
@@ -1197,9 +1155,7 @@ class TableauServerConnection:
         :param list tags: a list of tags to add to the workbook
         :return: HTTP response
         """
-        self.active_request = AddTagsRequest(
-            ts_connection=self, tags=tags
-        ).get_request()
+        self.active_request = AddTagsRequest(ts_connection=self, tags=tags).get_request()
         self.active_endpoint = WorkbookEndpoint(
             ts_connection=self, workbook_id=workbook_id, add_tags=True
         ).get_endpoint()
@@ -1341,9 +1297,7 @@ class TableauServerConnection:
         :param string view_id: the view ID
         :return: HTTP response
         """
-        self.active_endpoint = ViewEndpoint(
-            ts_connection=self, view_id=view_id, query_view=True
-        ).get_endpoint()
+        self.active_endpoint = ViewEndpoint(ts_connection=self, view_id=view_id, query_view=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(
             url=self.active_endpoint,
@@ -1363,9 +1317,7 @@ class TableauServerConnection:
         self.active_endpoint = ViewEndpoint(
             ts_connection=self,
             query_views=True,
-            parameter_dict={
-                "filter": f'filter=viewUrlName:eq:{view_name.replace(" ", "")}'
-            },
+            parameter_dict={"filter": f'filter=viewUrlName:eq:{view_name.replace(" ", "")}'},
         ).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(
@@ -1400,9 +1352,7 @@ class TableauServerConnection:
         :param string view_id: the view ID
         :return: HTTP response
         """
-        self.active_endpoint = ViewEndpoint(
-            ts_connection=self, view_id=view_id, query_view=True
-        ).get_endpoint()
+        self.active_endpoint = ViewEndpoint(ts_connection=self, view_id=view_id, query_view=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(
             url=self.active_endpoint,
@@ -1642,9 +1592,7 @@ class TableauServerConnection:
         return response
 
     @verify_api_method_exists("2.3")
-    def download_workbook_revision(
-        self, workbook_id, revision_number, parameter_dict=None
-    ):
+    def download_workbook_revision(self, workbook_id, revision_number, parameter_dict=None):
         """
         Downloads an older version of the specified workbook.
         Note that the current version of the workbook is not a revision, so cannot be downloaded via this method.
@@ -1670,9 +1618,7 @@ class TableauServerConnection:
         return response
 
     @verify_api_method_exists("2.3")
-    def update_workbook(
-        self, workbook_id, show_tabs_flag=None, new_project_id=None, new_owner_id=None
-    ):
+    def update_workbook(self, workbook_id, show_tabs_flag=None, new_project_id=None, new_owner_id=None):
         """
         Updates the details of the specified workbook.
         :param string workbook_id: the workbook ID
@@ -1846,9 +1792,7 @@ class TableauServerConnection:
         :param list tags: a list of tags to add to the datasource
         :return: HTTP response
         """
-        self.active_request = AddTagsRequest(
-            ts_connection=self, tags=tags
-        ).get_request()
+        self.active_request = AddTagsRequest(ts_connection=self, tags=tags).get_request()
         self.active_endpoint = DatasourceEndpoint(
             ts_connection=self, datasource_id=datasource_id, add_tags=True
         ).get_endpoint()
@@ -1992,9 +1936,7 @@ class TableauServerConnection:
         return response
 
     @verify_api_method_exists("2.3")
-    def download_data_source_revision(
-        self, datasource_id, revision_number, parameter_dict=None
-    ):
+    def download_data_source_revision(self, datasource_id, revision_number, parameter_dict=None):
         """
         Downloads the specified revision number for the specified datasource.
         :param string datasource_id: the datasource ID
@@ -2219,12 +2161,8 @@ class TableauServerConnection:
         :param string user_id: the user ID
         :return: HTTP response
         """
-        self.active_request = AddUserToGroupRequest(
-            ts_connection=self, user_id=user_id
-        ).get_request()
-        self.active_endpoint = GroupEndpoint(
-            ts_connection=self, group_id=group_id, add_user=True
-        ).get_endpoint()
+        self.active_request = AddUserToGroupRequest(ts_connection=self, user_id=user_id).get_request()
+        self.active_endpoint = GroupEndpoint(ts_connection=self, group_id=group_id, add_user=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.post(
             url=self.active_endpoint,
@@ -2250,9 +2188,7 @@ class TableauServerConnection:
             site_role=site_role,
             auth_setting=auth_setting,
         ).get_request()
-        self.active_endpoint = UserEndpoint(
-            ts_connection=self, add_user=True
-        ).get_endpoint()
+        self.active_endpoint = UserEndpoint(ts_connection=self, add_user=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.post(
             url=self.active_endpoint,
@@ -2354,9 +2290,7 @@ class TableauServerConnection:
         :param string user_id: the user ID
         :return: HTTP response
         """
-        self.active_endpoint = UserEndpoint(
-            ts_connection=self, user_id=user_id, query_user=True
-        ).get_endpoint()
+        self.active_endpoint = UserEndpoint(ts_connection=self, user_id=user_id, query_user=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(
             url=self.active_endpoint,
@@ -2437,9 +2371,7 @@ class TableauServerConnection:
             new_site_role=new_site_role,
             new_auth_setting=new_auth_setting,
         ).get_request()
-        self.active_endpoint = UserEndpoint(
-            ts_connection=self, user_id=user_id, update_user=True
-        ).get_endpoint()
+        self.active_endpoint = UserEndpoint(ts_connection=self, user_id=user_id, update_user=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.put(
             url=self.active_endpoint,
@@ -2478,9 +2410,7 @@ class TableauServerConnection:
         :return: HTTP response
         """
         # TODO(elliott): add support for the mapAssetsTo optional parameter
-        self.active_endpoint = UserEndpoint(
-            ts_connection=self, user_id=user_id, remove_user=True
-        ).get_endpoint()
+        self.active_endpoint = UserEndpoint(ts_connection=self, user_id=user_id, remove_user=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(
             url=self.active_endpoint,
@@ -2497,9 +2427,7 @@ class TableauServerConnection:
         :param string group_id: the group ID
         :return: HTTP response
         """
-        self.active_endpoint = GroupEndpoint(
-            ts_connection=self, group_id=group_id, delete_group=True
-        ).get_endpoint()
+        self.active_endpoint = GroupEndpoint(ts_connection=self, group_id=group_id, delete_group=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(
             url=self.active_endpoint,
@@ -3157,9 +3085,7 @@ class TableauServerConnection:
         :param string schedule_id: the schedule ID
         :return: HTTP response
         """
-        self.active_request = AddFlowToScheduleRequest(
-            ts_connection=self, flow_id=flow_id
-        ).get_request()
+        self.active_request = AddFlowToScheduleRequest(ts_connection=self, flow_id=flow_id).get_request()
         self.active_endpoint = SchedulesEndpoint(
             ts_connection=self, schedule_id=schedule_id, add_flow=True
         ).get_endpoint()
@@ -3181,9 +3107,7 @@ class TableauServerConnection:
         :param string schedule_id: the schedule ID
         :return: HTTP response
         """
-        self.active_request = AddWorkbookToScheduleRequest(
-            ts_connection=self, workbook_id=workbook_id
-        ).get_request()
+        self.active_request = AddWorkbookToScheduleRequest(ts_connection=self, workbook_id=workbook_id).get_request()
         self.active_endpoint = SchedulesEndpoint(
             ts_connection=self, schedule_id=schedule_id, add_workbook=True
         ).get_endpoint()
@@ -3204,9 +3128,7 @@ class TableauServerConnection:
         :param string job_id: the job ID
         :return: HTTP response
         """
-        self.active_endpoint = JobsEndpoint(
-            ts_connection=self, job_id=job_id, cancel_job=True
-        ).get_endpoint()
+        self.active_endpoint = JobsEndpoint(ts_connection=self, job_id=job_id, cancel_job=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.put(
             url=self.active_endpoint,
@@ -3223,9 +3145,7 @@ class TableauServerConnection:
         :param string job_id: the job ID
         :return: HTTP response
         """
-        self.active_endpoint = JobsEndpoint(
-            ts_connection=self, job_id=job_id, query_job=True
-        ).get_endpoint()
+        self.active_endpoint = JobsEndpoint(ts_connection=self, job_id=job_id, query_job=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(
             url=self.active_endpoint,
@@ -3261,9 +3181,7 @@ class TableauServerConnection:
         :param string task_id: the extract refresh task ID
         :return: HTTP response
         """
-        self.active_endpoint = TasksEndpoint(
-            ts_connection=self, task_id=task_id, get_refresh_task=True
-        ).get_endpoint()
+        self.active_endpoint = TasksEndpoint(ts_connection=self, task_id=task_id, get_refresh_task=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(
             url=self.active_endpoint,
@@ -3279,9 +3197,7 @@ class TableauServerConnection:
         Query details for all extract refresh tasks on the active site.
         :return: HTTP response
         """
-        self.active_endpoint = TasksEndpoint(
-            ts_connection=self, get_refresh_tasks=True
-        ).get_endpoint()
+        self.active_endpoint = TasksEndpoint(ts_connection=self, get_refresh_tasks=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(
             url=self.active_endpoint,
@@ -3316,9 +3232,7 @@ class TableauServerConnection:
         :param string task_id: the flow run task ID
         :return: HTTP response
         """
-        self.active_endpoint = TasksEndpoint(
-            ts_connection=self, task_id=task_id, get_flow_run_task=True
-        ).get_endpoint()
+        self.active_endpoint = TasksEndpoint(ts_connection=self, task_id=task_id, get_flow_run_task=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(
             url=self.active_endpoint,
@@ -3333,9 +3247,7 @@ class TableauServerConnection:
         Queries details for all flow run tasks on the active site.
         :return: HTTP response
         """
-        self.active_endpoint = TasksEndpoint(
-            ts_connection=self, get_flow_run_tasks=True
-        ).get_endpoint()
+        self.active_endpoint = TasksEndpoint(ts_connection=self, get_flow_run_tasks=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(
             url=self.active_endpoint,
@@ -3380,9 +3292,7 @@ class TableauServerConnection:
             end_time=end_time,
             interval_expression_list=interval_expression_list,
         ).get_request()
-        self.active_endpoint = SchedulesEndpoint(
-            ts_connection=self, create_schedule=True
-        ).get_endpoint()
+        self.active_endpoint = SchedulesEndpoint(ts_connection=self, create_schedule=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.post(
             url=self.active_endpoint,
@@ -3393,9 +3303,7 @@ class TableauServerConnection:
         response = self._set_response_encoding(response=response)
         return response
 
-    def query_extract_refresh_tasks_for_schedule(
-        self, schedule_id, parameter_dict=None
-    ):
+    def query_extract_refresh_tasks_for_schedule(self, schedule_id, parameter_dict=None):
         """
         Queries details for all extract refresh tasks belonging to the specified schedule.
         Requires API version 3.6 or higher.
@@ -3446,9 +3354,7 @@ class TableauServerConnection:
         :return: HTTP response
         """
         self.active_request = EmptyRequest(ts_connection=self).get_request()
-        self.active_endpoint = TasksEndpoint(
-            ts_connection=self, task_id=task_id, run_refresh_task=True
-        ).get_endpoint()
+        self.active_endpoint = TasksEndpoint(ts_connection=self, task_id=task_id, run_refresh_task=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.post(
             url=self.active_endpoint,
@@ -3467,9 +3373,7 @@ class TableauServerConnection:
         :return: HTTP response
         """
         self.active_request = EmptyRequest(ts_connection=self).get_request()
-        self.active_endpoint = TasksEndpoint(
-            ts_connection=self, task_id=task_id, run_flow_task=True
-        ).get_endpoint()
+        self.active_endpoint = TasksEndpoint(ts_connection=self, task_id=task_id, run_flow_task=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.post(
             url=self.active_endpoint,
@@ -3599,9 +3503,7 @@ class TableauServerConnection:
             pdf_page_size=pdf_page_size,
             send_view_if_empty_flag=send_view_if_empty_flag,
         ).get_request()
-        self.active_endpoint = SubscriptionsEndpoint(
-            ts_connection=self, create_subscription=True
-        ).get_endpoint()
+        self.active_endpoint = SubscriptionsEndpoint(ts_connection=self, create_subscription=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.post(
             url=self.active_endpoint,
@@ -3651,9 +3553,7 @@ class TableauServerConnection:
         return response
 
     @verify_api_method_exists("2.3")
-    def update_subscription(
-        self, subscription_id, new_subscription_subject=None, new_schedule_id=None
-    ):
+    def update_subscription(self, subscription_id, new_subscription_subject=None, new_schedule_id=None):
         """
         Updates details for the specified subscription.
         :param string subscription_id: the subscription ID
@@ -3929,9 +3829,7 @@ class TableauServerConnection:
         Initiates a file upload session with Tableau Server.
         :return: HTTP response
         """
-        self.active_endpoint = FileUploadEndpoint(
-            ts_connection=self, initiate_file_upload=True
-        ).get_endpoint()
+        self.active_endpoint = FileUploadEndpoint(ts_connection=self, initiate_file_upload=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.post(
             url=self.active_endpoint,
@@ -4004,9 +3902,7 @@ class TableauServerConnection:
             oauth_flag=oauth_flag,
         )
         self.active_request, content_type = publish_request.get_request()
-        self.active_headers, parameter_dict = publish_request.publish_prep(
-            content_type, parameter_dict=parameter_dict
-        )
+        self.active_headers, parameter_dict = publish_request.publish_prep(content_type, parameter_dict=parameter_dict)
         self.active_endpoint = DatasourceEndpoint(
             ts_connection=self, publish_datasource=True, parameter_dict=parameter_dict
         ).get_endpoint()
@@ -4072,9 +3968,7 @@ class TableauServerConnection:
             hide_view_flag=hide_view_flag,
         )
         self.active_request, content_type = publish_request.get_request()
-        self.active_headers, parameter_dict = publish_request.publish_prep(
-            content_type, parameter_dict=parameter_dict
-        )
+        self.active_headers, parameter_dict = publish_request.publish_prep(content_type, parameter_dict=parameter_dict)
         self.active_endpoint = WorkbookEndpoint(
             ts_connection=self, publish_workbook=True, parameter_dict=parameter_dict
         ).get_endpoint()
@@ -4131,9 +4025,7 @@ class TableauServerConnection:
             oauth_flag=oauth_flag,
         )
         self.active_request, content_type = publish_request.get_request()
-        self.active_headers, parameter_dict = publish_request.publish_prep(
-            content_type, parameter_dict=parameter_dict
-        )
+        self.active_headers, parameter_dict = publish_request.publish_prep(content_type, parameter_dict=parameter_dict)
         self.active_endpoint = FlowEndpoint(
             ts_connection=self, publish_flow=True, parameter_dict=parameter_dict
         ).get_endpoint()
@@ -4155,9 +4047,7 @@ class TableauServerConnection:
         :param str database_id: the database ID
         :return: HTTP response
         """
-        self.active_endpoint = DatabaseEndpoint(
-            self, query_database=True, database_id=database_id
-        ).get_endpoint()
+        self.active_endpoint = DatabaseEndpoint(self, query_database=True, database_id=database_id).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(
             url=self.active_endpoint,
@@ -4173,9 +4063,7 @@ class TableauServerConnection:
         Queries details for databases stored on Tableau Server.
         :return: HTTP response
         """
-        self.active_endpoint = DatabaseEndpoint(
-            self, query_databases=True
-        ).get_endpoint()
+        self.active_endpoint = DatabaseEndpoint(self, query_databases=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(
             url=self.active_endpoint,
@@ -4210,9 +4098,7 @@ class TableauServerConnection:
             new_description_value=new_description_value,
             new_contact_id=new_contact_id,
         ).get_request()
-        self.active_endpoint = DatabaseEndpoint(
-            self, database_id=database_id, update_database=True
-        ).get_endpoint()
+        self.active_endpoint = DatabaseEndpoint(self, database_id=database_id, update_database=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.put(
             url=self.active_endpoint,
@@ -4230,9 +4116,7 @@ class TableauServerConnection:
         :param str database_id: the database ID
         :return: HTTP response
         """
-        self.active_endpoint = DatabaseEndpoint(
-            self, database_id=database_id, remove_database=True
-        ).get_endpoint()
+        self.active_endpoint = DatabaseEndpoint(self, database_id=database_id, remove_database=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(
             url=self.active_endpoint,
@@ -4249,9 +4133,7 @@ class TableauServerConnection:
         :param str table_id: the table ID
         :return: HTTP response
         """
-        self.active_endpoint = TableEndpoint(
-            self, table_id=table_id, query_table=True
-        ).get_endpoint()
+        self.active_endpoint = TableEndpoint(self, table_id=table_id, query_table=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(
             url=self.active_endpoint,
@@ -4302,9 +4184,7 @@ class TableauServerConnection:
             new_description_value=new_description_value,
             new_contact_id=new_contact_id,
         ).get_request()
-        self.active_endpoint = TableEndpoint(
-            self, table_id=table_id, update_table=True
-        ).get_endpoint()
+        self.active_endpoint = TableEndpoint(self, table_id=table_id, update_table=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.put(
             url=self.active_endpoint,
@@ -4322,9 +4202,7 @@ class TableauServerConnection:
         :param str table_id:
         :return: HTTP response
         """
-        self.active_endpoint = TableEndpoint(
-            self, table_id=table_id, remove_table=True
-        ).get_endpoint()
+        self.active_endpoint = TableEndpoint(self, table_id=table_id, remove_table=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(
             url=self.active_endpoint,
@@ -4361,9 +4239,7 @@ class TableauServerConnection:
         :param str table_id: the database table ID
         :return: HTTP response
         """
-        self.active_endpoint = ColumnEndpoint(
-            self, table_id=table_id, query_columns=True
-        ).get_endpoint()
+        self.active_endpoint = ColumnEndpoint(self, table_id=table_id, query_columns=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(
             url=self.active_endpoint,
@@ -4382,9 +4258,7 @@ class TableauServerConnection:
         :param str new_description_value: custom text describing the column
         :return: HTTP response
         """
-        self.active_request = UpdateColumnRequest(
-            self, new_description_value=new_description_value
-        ).get_request()
+        self.active_request = UpdateColumnRequest(self, new_description_value=new_description_value).get_request()
         self.active_endpoint = ColumnEndpoint(
             self, table_id=table_id, column_id=column_id, update_column=True
         ).get_endpoint()
@@ -4419,9 +4293,7 @@ class TableauServerConnection:
         return response
 
     @verify_api_method_exists("3.5")
-    def add_data_quality_warning(
-        self, content_type, content_id, warning_type, message, status=None
-    ):
+    def add_data_quality_warning(self, content_type, content_id, warning_type, message, status=None):
         """
         Adds a data quality warning to the specified content on Tableau Server.
         :param str content_type: the content type receiving the data quality warning
@@ -4456,9 +4328,7 @@ class TableauServerConnection:
         :param str warning_id: the data quality warning ID
         :return: HTTP response
         """
-        self.active_endpoint = DQWarningEndpoint(
-            self, warning_id=warning_id, query_by_id=True
-        ).get_endpoint()
+        self.active_endpoint = DQWarningEndpoint(self, warning_id=warning_id, query_by_id=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(
             url=self.active_endpoint,
@@ -4492,9 +4362,7 @@ class TableauServerConnection:
         return response
 
     @verify_api_method_exists("3.5")
-    def update_data_quality_warning(
-        self, warning_id, warning_type=None, message=None, status=None
-    ):
+    def update_data_quality_warning(self, warning_id, warning_type=None, message=None, status=None):
         """
         Updates details for the specified data quality warning.
         :param str warning_id: the data quality warning ID
@@ -4507,9 +4375,7 @@ class TableauServerConnection:
         self.active_request = UpdateDQWarningRequest(
             self, warning_type=warning_type, message=message, status=status
         ).get_request()
-        self.active_endpoint = DQWarningEndpoint(
-            self, warning_id=warning_id, update_warning=True
-        ).get_endpoint()
+        self.active_endpoint = DQWarningEndpoint(self, warning_id=warning_id, update_warning=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.put(
             url=self.active_endpoint,
@@ -4527,9 +4393,7 @@ class TableauServerConnection:
         :param str warning_id: the data quality warning ID
         :return: HTTP response
         """
-        self.active_endpoint = DQWarningEndpoint(
-            self, warning_id=warning_id, delete_by_id=True
-        ).get_endpoint()
+        self.active_endpoint = DQWarningEndpoint(self, warning_id=warning_id, delete_by_id=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(
             url=self.active_endpoint,
@@ -4590,9 +4454,7 @@ class TableauServerConnection:
         Encrypts all extracts on the active site (encrypts .hyper extracts at rest).
         :return: HTTP response
         """
-        self.active_endpoint = EncryptionEndpoint(
-            self, encrypt_extracts=True
-        ).get_endpoint()
+        self.active_endpoint = EncryptionEndpoint(self, encrypt_extracts=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.post(
             url=self.active_endpoint,
@@ -4608,9 +4470,7 @@ class TableauServerConnection:
         Decrypts all extracts on the active site (decrypts .hyper extracts).
         :return: HTTP response
         """
-        self.active_endpoint = EncryptionEndpoint(
-            self, decrypt_extracts=True
-        ).get_endpoint()
+        self.active_endpoint = EncryptionEndpoint(self, decrypt_extracts=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.post(
             url=self.active_endpoint,
@@ -4626,9 +4486,7 @@ class TableauServerConnection:
         Re-encrypts all .hyper extracts on the active site with new encryption keys.
         :return: HTTP response
         """
-        self.active_endpoint = EncryptionEndpoint(
-            self, reencrypt_extracts=True
-        ).get_endpoint()
+        self.active_endpoint = EncryptionEndpoint(self, reencrypt_extracts=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.post(
             url=self.active_endpoint,
@@ -4743,9 +4601,7 @@ class TableauServerConnection:
     #  webhook methods
 
     @verify_api_method_exists("3.6")
-    def create_webhook(
-        self, webhook_name=None, webhook_source_api_event_name=None, url=None
-    ):
+    def create_webhook(self, webhook_name=None, webhook_source_api_event_name=None, url=None):
         """
         Creates a new webhook for a site.
         :param str webhook_name: the name of the new webhook
@@ -4778,9 +4634,7 @@ class TableauServerConnection:
         :param str webhook_id: the ID of the webhook being queried
         :return: HTTP response
         """
-        self.active_endpoint = WebhookEndpoint(
-            self, webhook_id=webhook_id, query_webhook=True
-        ).get_endpoint()
+        self.active_endpoint = WebhookEndpoint(self, webhook_id=webhook_id, query_webhook=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(
             url=self.active_endpoint,
@@ -4813,9 +4667,7 @@ class TableauServerConnection:
         :param str webhook_id: the ID of the webhook being tested
         :return: HTTP response
         """
-        self.active_endpoint = WebhookEndpoint(
-            self, webhook_id=webhook_id, test_webhook=True
-        ).get_endpoint()
+        self.active_endpoint = WebhookEndpoint(self, webhook_id=webhook_id, test_webhook=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(
             url=self.active_endpoint,
@@ -4832,9 +4684,7 @@ class TableauServerConnection:
         :param str webhook_id: the ID of the webhook being deleted
         :return: HTTP response
         """
-        self.active_endpoint = WebhookEndpoint(
-            self, webhook_id=webhook_id, delete_webhook=True
-        ).get_endpoint()
+        self.active_endpoint = WebhookEndpoint(self, webhook_id=webhook_id, delete_webhook=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(
             url=self.active_endpoint,
