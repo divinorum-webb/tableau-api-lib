@@ -93,7 +93,7 @@ class SchedulesEndpoint(BaseEndpoint):
 
     @property
     def base_schedule_extracts_url(self):
-        return "{0}/extracts".format(self.base_schedule_id_url)
+        return "{0}/extracts".format(self.base_site_schedule_id_url)
 
     def get_endpoint(self):
         url = None
