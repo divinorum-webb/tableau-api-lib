@@ -29,6 +29,11 @@ def query_site(conn):
     return conn, response
 
 
+def query_site_include_usage(conn):
+    response = conn.query_site(include_usage_flag=True)
+    return conn, response
+
+
 def query_sites(conn):
     response = conn.query_sites()
     return conn, response
@@ -135,6 +140,13 @@ def test_create_site():
 def test_query_site():
     conn = sign_in()
     conn, query_site_response = query_site(conn)
+    assert query_site_response.status_code == 200
+    conn.sign_out()
+
+
+def test_query_site_include_usage():
+    conn = sign_in()
+    conn, query_site_response = query_site_include_usage(conn)
     assert query_site_response.status_code == 200
     conn.sign_out()
 

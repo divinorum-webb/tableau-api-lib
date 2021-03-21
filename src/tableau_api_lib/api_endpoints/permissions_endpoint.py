@@ -105,8 +105,6 @@ class PermissionsEndpoint(BaseEndpoint):
         ]
 
     def _enforce_plurals(self, permissions_object, valid_permissions_objects):
-        print('permissions_object: ', permissions_object)
-        print('valid_permissions_objects: ', valid_permissions_objects)
         if permissions_object:
             if permissions_object in valid_permissions_objects:
                 if permissions_object[-1] == 's':
