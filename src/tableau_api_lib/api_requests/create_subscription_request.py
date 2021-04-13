@@ -90,11 +90,11 @@ class CreateSubscriptionRequest(BaseRequest):
             self._invalid_parameter_exception()
 
     def _validate_pdf_page_orientation(self):
-        if self._pdf_page_orientation not in self.valid_pdf_page_orientations:
+        if self._pdf_page_orientation.lower().capitalize() not in self.valid_pdf_page_orientations:
             self._invalid_parameter_exception()
 
     def _validate_pdf_page_size(self):
-        if self._pdf_page_size not in self.valid_pdf_page_sizes:
+        if self._pdf_page_size.lower().capitalize() not in self.valid_pdf_page_sizes:
             self._invalid_parameter_exception()
 
     @property
