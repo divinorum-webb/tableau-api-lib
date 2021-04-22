@@ -4,6 +4,7 @@ from tableau_api_lib.api_endpoints import BaseEndpoint
 class TasksEndpoint(BaseEndpoint):
     def __init__(self,
                  ts_connection,
+                 delete_refresh_task=False,
                  get_refresh_tasks=False,
                  get_flow_run_tasks=False,
                  get_refresh_task=False,
@@ -18,6 +19,7 @@ class TasksEndpoint(BaseEndpoint):
         """
         Builds API endpoints for REST API task methods.
         :param class ts_connection: the Tableau Server connection object
+        :param bool delete_refresh_task: True if deleting a refresh task, False otherwise.
         :param bool get_refresh_tasks: True if getting all refresh tasks, False otherwise.
         :param bool get_refresh_task: True if getting a specific refresh task, False otherwise.
         :param bool run_refresh_task: True if running a specific refresh task, False otherwise.
@@ -31,6 +33,7 @@ class TasksEndpoint(BaseEndpoint):
         """
 
         super().__init__(ts_connection)
+        self._delete_refresh_task = delete_refresh_task
         self._get_refresh_tasks = get_refresh_tasks
         self._get_flow_run_tasks = get_flow_run_tasks
         self._get_refresh_task = get_refresh_task
@@ -47,6 +50,7 @@ class TasksEndpoint(BaseEndpoint):
     @property
     def mutually_exclusive_params(self):
         return [
+            self._delete_refresh_task,
             self._get_refresh_tasks,
             self._get_flow_run_tasks,
             self._get_refresh_task,
@@ -110,7 +114,7 @@ class TasksEndpoint(BaseEndpoint):
         url = None
         if self._get_refresh_tasks:
             url = self.base_extract_refresh_url
-        elif self._get_refresh_task or self._run_refresh_task:
+        elif self._get_refresh_task or self._run_refresh_task or self._delete_refresh_task:
             url = self.base_extract_refresh_id_url
         elif self._query_schedule_refresh_tasks:
             url = self.base_query_extract_refresh_url
