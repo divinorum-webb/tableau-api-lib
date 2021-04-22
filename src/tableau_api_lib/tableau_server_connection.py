@@ -3326,6 +3326,19 @@ class TableauServerConnection:
         response = self._set_response_encoding(response=response)
         return response
 
+    @verify_api_method_exists("3.6")
+    def delete_extract_refresh_task(self, task_id: str):
+        """Deletes the extract refresh task associated with the specified `task_id`."""
+        self.active_endpoint = TasksEndpoint(
+            ts_connection=self,
+            delete_refresh_task=True,
+            task_id=task_id
+        ).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.delete(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
+        response = self._set_response_encoding(response=response)
+        return response
+
     @verify_api_method_exists("2.3")
     def query_schedules(self, parameter_dict=None):
         """
