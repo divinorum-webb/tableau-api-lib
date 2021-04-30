@@ -1,5 +1,8 @@
 # Changelog for tableau-api-lib
 
+# V0.1.05
+- (divinorum-webb) fixed a bug related to typechecking paginated results
+
 # V0.1.04
 - (divinorum-webb) added typeguard as an install requirement
 

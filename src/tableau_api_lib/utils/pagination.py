@@ -1,4 +1,4 @@
-from types import FunctionType
+from types import MethodType
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from typeguard import typechecked
@@ -6,12 +6,12 @@ from typeguard import typechecked
 from tableau_api_lib.exceptions import ContentNotFound, PaginationError
 
 
-def get_page_attributes(query: dict, query_func: FunctionType) -> Tuple:
+def get_page_attributes(query: dict, query_func: MethodType) -> Tuple:
     """Returns page attributes (pageNumber, pageSize, totalAvailable) from a REST API paginated response.
 
     Args:
         query: The results of the GET request query, containing paginated data.
-        query_func: A callable function that will issue a GET request to Tableau Server.
+        query_func: A TableauServerConnection method that will issue a GET request to Tableau Server.
 
     Returns:
         A tuple describing the active page number, the page size, and the total items available.
@@ -20,6 +20,7 @@ def get_page_attributes(query: dict, query_func: FunctionType) -> Tuple:
         PaginationError: An error triggered when pagination is attempted on a non-paginated object.
     """
     try:
+        print("query: ", query)
         pagination = query["pagination"]
         page_number = int(pagination["pageNumber"])
         page_size = int(pagination["pageSize"])
@@ -30,7 +31,7 @@ def get_page_attributes(query: dict, query_func: FunctionType) -> Tuple:
 
 
 def extract_pages(
-    query_func: FunctionType,
+    query_func: MethodType,
     content_id: Optional[str] = None,
     *,
     starting_page: Optional[int] = 1,
@@ -69,7 +70,7 @@ def extract_pages(
 
 
 @typechecked
-def process_query(query_func: FunctionType, content_id: str, parameter_dict: Dict[str, Any]) -> Dict[Any, Any]:
+def process_query(query_func: MethodType, content_id: Optional[str], parameter_dict: Dict[str, Any]) -> Dict[Any, Any]:
     """Processes a dynamic GET request via the Tableau REST API.
 
     Some of the tableau-api-lib methods require a content ID while others will throw an error if an unexpected
