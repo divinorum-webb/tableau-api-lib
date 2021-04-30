@@ -13,7 +13,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="tableau_api_lib",
-    version="0.1.02",
+    version="0.1.05",
     author="Elliott Stam",
     author_email="elliott.stam@gmail.com",
     description="This library enables developers to call any method seen in Tableau Server's REST API documentation.",
@@ -29,7 +29,8 @@ setuptools.setup(
         'urllib3',
         'pandas',
         'requests-toolbelt>=0.9.0',
-        'bleach>=3.0'
+        'bleach>=3.0',
+        'typeguard'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",

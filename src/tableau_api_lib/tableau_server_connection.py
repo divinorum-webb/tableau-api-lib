@@ -220,7 +220,7 @@ class TableauServerConnection:
         :param str user_to_impersonate: (optional) the user ID for the user being impersonated
         :return: HTTP response
         """
-        request = SignInRequest(
+        self.active_request = SignInRequest(
             ts_connection=self,
             auth_method=self.auth_method,
             username=self.username,
@@ -229,10 +229,10 @@ class TableauServerConnection:
             personal_access_token_secret=self.personal_access_token_secret,
             user_to_impersonate=user_to_impersonate,
         ).get_request()
-        endpoint = AuthEndpoint(ts_connection=self, sign_in=True).get_endpoint()
+        self.active_endpoint = AuthEndpoint(ts_connection=self, sign_in=True).get_endpoint()
         response = requests.post(
-            url=endpoint,
-            json=request,
+            url=self.active_endpoint,
+            json=self.active_request,
             headers=self.sign_in_headers,
             verify=self.ssl_verify,
         )
