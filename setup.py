@@ -29,7 +29,8 @@ setuptools.setup(
         'urllib3',
         'pandas',
         'requests-toolbelt>=0.9.0',
-        'bleach>=3.0'
+        'bleach>=3.0',
+        'typeguard'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
