@@ -9,7 +9,7 @@ from tableau_api_lib import api_endpoints, api_requests, decorators
 class TableauServerConnection:
     def __init__(
         self,
-        config_json: Dict[str, dict],
+        config_json: Dict[str, Dict[str, Any]],
         env: Optional[str] = "tableau_prod",
         ssl_verify: Optional[bool] = True,
         use_apparent_encoding: Optional[bool] = False,
