@@ -1,4 +1,5 @@
-from typing import Dict, Optional, List, Union, Any
+from typing import Any, Dict, List, Optional, Union
+from urllib import parse
 
 import requests
 
@@ -38,7 +39,16 @@ class TableauServerConnection:
     @property
     def server(self) -> Union[str, None]:
         """Returns the server address for the TableauServerConnection credentials configuration."""
-        return self._config.get(self._env, dict()).get("server")
+        server = self._config.get(self._env, dict()).get("server")
+        server_has_scheme = parse.urlsplit(server).scheme
+        if not server_has_scheme:
+            raise ValueError(f"""
+            The Tableau Server address provided is not valid.
+            Server addresses must contain a scheme (ie: http, https). Try something like this instead:
+            https://{server}
+            http://{server}
+            """)
+        return server
 
     @property
     def api_version(self) -> Union[str, None]:

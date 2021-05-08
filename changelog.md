@@ -2,6 +2,7 @@
 
 # V0.1.06
 - (divinorum-webb) Refactored docstrings and TableauServerConnection method parameter documentation.
+- (divinorum-webb) Improved error message when an invalid server address (no scheme) is provided.
 
 # V0.1.05
 - (divinorum-webb) Fixed a bug related to typechecking paginated results.
