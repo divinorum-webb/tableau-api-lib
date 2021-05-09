@@ -20,7 +20,6 @@ def get_page_attributes(query: dict, query_func: MethodType) -> Tuple:
         PaginationError: An error triggered when pagination is attempted on a non-paginated object.
     """
     try:
-        print("query: ", query)
         pagination = query["pagination"]
         page_number = int(pagination["pageNumber"])
         page_size = int(pagination["pageSize"])
