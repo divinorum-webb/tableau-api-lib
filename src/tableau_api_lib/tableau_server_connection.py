@@ -3024,12 +3024,15 @@ class TableauServerConnection:
     # jobs, tasks, and schedules
 
     @decorators.verify_api_method_exists("2.8")
-    def add_data_source_to_schedule(self, datasource_id, schedule_id):
-        """
-        Adds the specified datasource to the specified schedule.
-        :param string datasource_id: the datasource ID
-        :param string schedule_id: the schedule ID
-        :return: HTTP response
+    def add_data_source_to_schedule(self, datasource_id: str, schedule_id: str) -> requests.Response:
+        """Adds the specified datasource to the specified schedule.
+
+        The official Tableau REST API documentation:
+        https://help.tableau.com/current/api/rest_api/en-us/REST/rest_api_ref_jobs_tasks_and_schedules.htm#add_data_source_to_schedule
+
+        Args:
+            datasource_id: The ID (luid) of the datasource being added to the extract refresh schedule.
+            schedule_id: The ID (luid) of the extract refresh schedule the datasource is being added to.
         """
         self.active_request = api_requests.AddDatasourceToScheduleRequest(
             ts_connection=self, datasource_id=datasource_id
@@ -3069,12 +3072,15 @@ class TableauServerConnection:
         return response
 
     @decorators.verify_api_method_exists("2.8")
-    def add_workbook_to_schedule(self, workbook_id, schedule_id):
-        """
-        Adds the specified workbook to the specified schedule.
-        :param string workbook_id: the workbook ID
-        :param string schedule_id: the schedule ID
-        :return: HTTP response
+    def add_workbook_to_schedule(self, workbook_id: str, schedule_id: str) -> requests.Response:
+        """Adds the specified workbook to the specified schedule.
+
+        The official Tableau REST API documentation:
+        https://help.tableau.com/current/api/rest_api/en-us/REST/rest_api_ref_jobs_tasks_and_schedules.htm#add_workbook_to_schedule
+
+        Args:
+            workbook_id: The ID (luid) of the workbook being added to the extract refresh schedule.
+            schedule_id: The ID (luid) of the extract refresh schedule the workbook is being added to.
         """
         self.active_request = api_requests.AddWorkbookToScheduleRequest(
             ts_connection=self, workbook_id=workbook_id
@@ -3150,11 +3156,11 @@ class TableauServerConnection:
         return response
 
     @decorators.verify_api_method_exists("2.6")
-    def get_extract_refresh_task(self, task_id):
-        """
-        Query details for the specified extract refresh task.
-        :param string task_id: the extract refresh task ID
-        :return: HTTP response
+    def get_extract_refresh_task(self, task_id: str) -> requests.Response:
+        """Queries details for the specified extract refresh task.
+
+        Args:
+            task_id: The ID (luid) for the extract refresh task being queried.
         """
         self.active_endpoint = api_endpoints.TasksEndpoint(
             ts_connection=self, task_id=task_id, get_refresh_task=True
@@ -3169,11 +3175,8 @@ class TableauServerConnection:
         return response
 
     @decorators.verify_api_method_exists("2.3")
-    def get_extract_refresh_tasks_for_site(self):
-        """
-        Query details for all extract refresh tasks on the active site.
-        :return: HTTP response
-        """
+    def get_extract_refresh_tasks_for_site(self) -> requests.Response:
+        """Queries details for all extract refresh tasks on the active site."""
         self.active_endpoint = api_endpoints.TasksEndpoint(ts_connection=self, get_refresh_tasks=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.get(
@@ -3184,12 +3187,11 @@ class TableauServerConnection:
         response = self._set_response_encoding(response=response)
         return response
 
-    def get_extract_refresh_tasks_for_schedule(self, schedule_id):
-        """
-        Queries details for all extract refresh tasks belonging to the specified schedule.
-        R
-        :param string schedule_id: the schedule ID
-        :return: HTTP response
+    def get_extract_refresh_tasks_for_schedule(self, schedule_id: str) -> requests.Response:
+        """Queries details for all extract refresh tasks belonging to the specified schedule.
+
+        Args:
+            schedule_id: The ID (luid) for the extract refresh schedule being queried.
         """
         self.active_endpoint = api_endpoints.SchedulesEndpoint(
             ts_connection=self, schedule_id=schedule_id, query_extract_schedules=True
@@ -3203,11 +3205,11 @@ class TableauServerConnection:
         response = self._set_response_encoding(response=response)
         return response
 
-    def get_flow_run_task(self, task_id):
-        """
-        Queries details for the specified flow run task.
-        :param string task_id: the flow run task ID
-        :return: HTTP response
+    def get_flow_run_task(self, task_id: str) -> requests.Response:
+        """Queries details for the specified flow run task.
+
+        Args:
+            task_id: The ID (luid) for the flow run task being queried.
         """
         self.active_endpoint = api_endpoints.TasksEndpoint(
             ts_connection=self, task_id=task_id, get_flow_run_task=True
