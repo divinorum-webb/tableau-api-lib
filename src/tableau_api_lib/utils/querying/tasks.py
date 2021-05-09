@@ -7,7 +7,6 @@ import pandas as pd
 
 from tableau_api_lib import TableauServerConnection
 from tableau_api_lib.exceptions.tableau_server_exceptions import ContentNotFound
-from tableau_api_lib.utils import extract_pages
 
 
 def get_extract_refresh_tasks_for_site(conn: TableauServerConnection) -> List[Dict[str, Any]]:
@@ -23,7 +22,6 @@ def get_extract_refresh_tasks_dataframe(conn: TableauServerConnection) -> pd.Dat
     try:
         extract_refresh_tasks = [task["extractRefresh"] for task in get_extract_refresh_tasks_for_site(conn)]
         extract_refresh_tasks_df = pd.DataFrame(extract_refresh_tasks)
-        print("columns: ", extract_refresh_tasks_df.columns)
     except ContentNotFound:
         extract_refresh_tasks_df = pd.DataFrame()
     return extract_refresh_tasks_df
