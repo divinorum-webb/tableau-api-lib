@@ -1,5 +1,8 @@
 # Changelog for tableau-api-lib
 
+# V0.1.09
+- (divinorum-webb) Removed unnecessary print statements from `utils.pagination` functions.
+
 # V0.1.08
 - (divinorum-webb) Removed unnecessary print statements from `utils.querying.tasks` functions.
 
