@@ -1,5 +1,8 @@
 # Changelog for tableau-api-lib
 
+# V0.1.07
+- (divinorum-webb) Added support for a querying function returning a Pandas DataFrame for all extract refresh tasks on a site.
+
 # V0.1.06
 - (divinorum-webb) Refactored docstrings and TableauServerConnection method parameter documentation.
 - (divinorum-webb) Improved error message when an invalid server address (no scheme) is provided.
