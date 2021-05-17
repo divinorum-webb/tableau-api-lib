@@ -1,5 +1,8 @@
 # Changelog for tableau-api-lib
 
+# V0.1.10
+- (divinorum-webb) Added the download_workbook_powerpoint() method.
+
 # V0.1.09
 - (divinorum-webb) Removed unnecessary print statements from `utils.pagination` functions.
 
