@@ -26,6 +26,7 @@ def flatten_dict_column(
         df.drop(columns=[col_name], inplace=True)
         return df
     except KeyError:
+        # TODO(elliott): change the `col_name` reference below be the key name when the key is what's missing
         raise KeyError(f"No column named '{col_name}' was found in the DataFrame provided.")
 
 

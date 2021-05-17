@@ -42,12 +42,14 @@ class TableauServerConnection:
         server = self._config.get(self._env, dict()).get("server")
         server_has_scheme = parse.urlsplit(server).scheme
         if not server_has_scheme:
-            raise ValueError(f"""
+            raise ValueError(
+                f"""
             The Tableau Server address provided is not valid.
             Server addresses must contain a scheme (ie: http, https). Try something like this instead:
             https://{server}
             http://{server}
-            """)
+            """
+            )
         return server
 
     @property
@@ -1527,13 +1529,39 @@ class TableauServerConnection:
         return response
 
     @decorators.verify_api_method_exists("3.4")
-    def download_workbook_pdf(self, workbook_id, parameter_dict=None):
+    def download_workbook_pdf(
+        self, workbook_id: str, parameter_dict: Optional[Dict[str, Any]] = None
+    ) -> requests.Response:
+        """Downloads a PDF version of the specified workbook.
+
+        Args:
+            workbook_id: The ID (luid) for the workbook being downloaded.
+            parameter_dict: (optional) A Python dict whose values define additional URL parameters.
         """
-        Downloads a PDF of the specified workbook.
-        Note that the PDF content is accessible via the 'content' attribute, for example response.content
-        :param string workbook_id: the workbook ID
-        :param dict parameter_dict: dict defining url parameters for API endpoint
-        :return: HTTP Response
+        self.active_endpoint = api_endpoints.WorkbookEndpoint(
+            ts_connection=self,
+            workbook_id=workbook_id,
+            download_workbook_pdf=True,
+            parameter_dict=parameter_dict,
+        ).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.get(
+            url=self.active_endpoint,
+            headers=self.active_headers,
+            verify=self.ssl_verify,
+        )
+        response = self._set_response_encoding(response=response)
+        return response
+
+    @decorators.verify_api_method_exists("3.8")
+    def download_workbook_powerpoint(
+        self, workbook_id: str, parameter_dict: Optional[Dict[str, Any]] = None
+    ) -> requests.Response:
+        """Downloads a Powerpoint (.pptx) version of the specified workbook.
+
+        Args:
+            workbook_id: The ID (luid) for the workbook being downloaded.
+            parameter_dict: (optional) A Python dict whose values define additional URL parameters.
         """
         self.active_endpoint = api_endpoints.WorkbookEndpoint(
             ts_connection=self,
