@@ -1,5 +1,12 @@
 # Changelog for tableau-api-lib
 
+# V0.1.12
+- (divinorum-webb) Removed various config details from authentication validation exceptions.
+
+# V0.1.11
+- (divinorum-webb) Improved error handling when 'env' does not exist in the given config.
+- (divinorum-webb) Added `packaging` as a requirement for the `tableau-api-lib` library during install.
+
 # V0.1.10
 - (divinorum-webb) Added the download_workbook_powerpoint() method.
 

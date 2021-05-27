@@ -34,7 +34,15 @@ class TableauServerConnection:
         self.active_endpoint = None
         self.active_request = None
         self.active_headers = None
+        self._validate_env()
         self.auth_method = self._get_auth_method()
+
+    def _validate_env(self) -> None:
+        """Raises an exception if the specified environment, "env", is not described in the configuration provided."""
+        try:
+            self._config[self._env]
+        except KeyError:
+            raise KeyError(f"The environment `{self._env}` is not an environment defined in the config provided.")
 
     @property
     def server(self) -> Union[str, None]:
