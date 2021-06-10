@@ -225,6 +225,10 @@ class WorkbookEndpoint(BaseEndpoint):
         return "{0}/pdf".format(self.base_workbook_id_url)
 
     @property
+    def base_workbook_download_pptx_url(self) -> str:
+        return "{0}/powerpoint".format(self.base_workbook_id_url)
+
+    @property
     def base_workbook_refresh_url(self) -> str:
         return "{0}/refresh".format(self.base_workbook_id_url)
 
@@ -301,6 +305,8 @@ class WorkbookEndpoint(BaseEndpoint):
                 url = self.base_workbook_content_url
             elif self._download_workbook_pdf:
                 url = self.base_workbook_download_pdf_url
+            elif self._download_workbook_pptx:
+                url = self.base_workbook_download_pptx_url
             elif self._download_workbook_revision and self._revision_number:
                 url = self.base_workbook_revision_download_url
             elif self._refresh_workbook:
