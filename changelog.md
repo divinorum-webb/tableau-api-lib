@@ -1,5 +1,8 @@
 # Changelog for tableau-api-lib
 
+# V0.1.13
+- (divinorum-webb) Fixed a bug where downloading a workbook as .pptx was downloading PDF files.
+
 # V0.1.12
 - (divinorum-webb) Removed various config details from authentication validation exceptions.
 

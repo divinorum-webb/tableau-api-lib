@@ -1574,7 +1574,7 @@ class TableauServerConnection:
         self.active_endpoint = api_endpoints.WorkbookEndpoint(
             ts_connection=self,
             workbook_id=workbook_id,
-            download_workbook_pdf=True,
+            download_workbook_pptx=True,
             parameter_dict=parameter_dict,
         ).get_endpoint()
         self.active_headers = self.default_headers
