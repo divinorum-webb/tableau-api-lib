@@ -1,5 +1,9 @@
 # Changelog for tableau-api-lib
 
+# V0.1.15
+- (divinorum-webb) Added type checking to all functions in `querying/groups.py`.
+- (divinorum-webb) Querying group users when there are no users in the group now returns an empty DataFrame.
+ 
 # V0.1.13-14
 - (divinorum-webb) Fixed a bug where downloading a workbook as .pptx was downloading PDF files.
 
