@@ -1,5 +1,9 @@
 # Changelog for tableau-api-lib
 
+# V0.1.16
+- (divinorum-webb) Corrected a type hints in `querying/groups.py`.
+- (divinorum-webb) `extract_pages()` now always returns a list; if no pages are found for the content than the list contains an empty dict.
+
 # V0.1.15
 - (divinorum-webb) Added type checking to all functions in `querying/groups.py`.
 - (divinorum-webb) Querying group users when there are no users in the group now returns an empty DataFrame.

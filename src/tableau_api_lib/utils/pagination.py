@@ -61,7 +61,7 @@ def extract_pages(
         query_results = process_query(query_func=query_func, content_id=content_id, parameter_dict=parameter_dict)
         page_number, page_size, total_available = get_page_attributes(query=query_results, query_func=query_func)
         if total_available == 0:
-            return {}
+            return [{}]
         extracted_pages, extracting, page_number = update_pagination_params(
             query_results, extracted_pages, page_number, page_size, total_available, limit, extracting
         )

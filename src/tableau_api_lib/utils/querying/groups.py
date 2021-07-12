@@ -1,6 +1,6 @@
 """This module defines helper functions for querying REST API data for groups."""
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Union
 
 import pandas as pd
 from typeguard import typechecked
@@ -14,15 +14,17 @@ from tableau_api_lib.utils.querying import get_users_dataframe
 def get_all_group_fields(conn: TableauServerConnection) -> List[Dict[str, Any]]:
     """Returns details for all groups in the Tableau Server environment, including all queryable fields."""
     all_groups = extract_pages(conn.query_groups, parameter_dict={"fields": "fields=_all_"})
+    print("type of all_groups: ", type(all_groups))
     return all_groups
 
 
 @typechecked
-def get_group_users(conn: TableauServerConnection, group_id: str) -> Dict[str, Any]:
+def get_group_users(conn: TableauServerConnection, group_id: str) -> List[Dict[str, Any]]:
     """Returns details of users belonging to the specified Tableau group."""
     all_group_users = extract_pages(
         conn.get_users_in_group, content_id=group_id, parameter_dict={"fields": "fields=_all_"}
     )
+    print("type of all_group_uers: ", type(all_group_users))
     return all_group_users
 
 
