@@ -1,5 +1,8 @@
 # Changelog for tableau-api-lib
 
+# V0.1.17
+- (divinorum-webb) FIX removed print statements used for testing / troubleshooting.
+
 # V0.1.16
 - (divinorum-webb) Corrected a type hints in `querying/groups.py`.
 - (divinorum-webb) `extract_pages()` now always returns a list; if no pages are found for the content than the list contains an empty dict.
