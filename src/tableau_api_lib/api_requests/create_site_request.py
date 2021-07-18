@@ -82,15 +82,9 @@ class CreateSiteRequest(BaseRequest):
         self._content_url = content_url
         self._admin_mode = admin_mode
         self._user_quota = user_quota
-        self._tier_creator_capacity = (
-            str(tier_creator_capacity) if tier_creator_capacity else None
-        )
-        self._tier_explorer_capacity = (
-            str(tier_explorer_capacity) if tier_explorer_capacity else None
-        )
-        self._tier_viewer_capacity = (
-            str(tier_viewer_capacity) if tier_viewer_capacity else None
-        )
+        self._tier_creator_capacity = str(tier_creator_capacity) if tier_creator_capacity else None
+        self._tier_explorer_capacity = str(tier_explorer_capacity) if tier_explorer_capacity else None
+        self._tier_viewer_capacity = str(tier_viewer_capacity) if tier_viewer_capacity else None
         self._storage_quota = str(storage_quota) if storage_quota else None
         self._disable_subscriptions_flag = disable_subscriptions_flag
         self._editing_flows_enabled_flag = editing_flows_enabled_flag
@@ -103,43 +97,33 @@ class CreateSiteRequest(BaseRequest):
         self._revision_history_enabled_flag = revision_history_enabled_flag
         self._revision_limit = str(revision_limit) if revision_limit else None
         self._subscribe_others_enabled_flag = subscribe_others_enabled_flag
-        self._extract_encryption_mode = (
-            str(extract_encryption_mode).lower() if extract_encryption_mode else None
-        )
+        self._extract_encryption_mode = str(extract_encryption_mode).lower() if extract_encryption_mode else None
         self._request_acces_enabled_flag = request_access_enabled_flag
         self._run_now_enabled_flag = run_now_enabled_flag
-        self._data_alerts_enabled_flag = (data_alerts_enabled_flag,)
-        self._commenting_mentions_enabled_flag = (commenting_mentions_enabled_flag,)
-        self._catalog_obfuscation_enabled_flag = (catalog_obfuscation_enabled_flag,)
-        self._flow_auto_save_enabled_flag = (flow_auto_save_enabled_flag,)
-        self._web_extraction_enabled_flag = (web_extraction_enabled_flag,)
-        self._metrics_content_type_enabled_flag = (metrics_content_type_enabled_flag,)
-        self._notify_site_admins_on_throttle_flag = (
-            notify_site_admins_on_throttle_flag,
-        )
-        self._authoring_enabled_flag = (authoring_enabled_flag,)
-        self._custom_subscription_email_enabled_flag = (
-            custom_subscription_email_enabled_flag,
-        )
-        self._custom_subscription_email = (custom_subscription_email,)
-        self._custom_subscription_footer_enabled_flag = (
-            custom_subscription_footer_enabled_flag,
-        )
-        self._custom_subscription_footer = (custom_subscription_footer,)
-        self._ask_data_mode = (ask_data_mode,)
-        self._named_sharing_enabled_flag = (named_sharing_enabled_flag,)
-        self._mobile_biometrics_enabled_flag = (mobile_biometrics_enabled_flag,)
-        self._sheet_image_enabled_flag = (sheet_image_enabled_flag,)
-        self._cataloging_enabled_flag = (cataloging_enabled_flag,)
-        self._derived_permissions_enabled_flag = (derived_permissions_enabled_flag,)
-        self._user_visibility_mode = (user_visibility_mode,)
-        self._use_default_time_zone_flag = (use_default_time_zone_flag,)
-        self._time_zone = (time_zone,)
-        self._auto_suspend_refresh_enabled_flag = (auto_suspend_refresh_enabled_flag,)
+        self._data_alerts_enabled_flag = data_alerts_enabled_flag
+        self._commenting_mentions_enabled_flag = commenting_mentions_enabled_flag
+        self._catalog_obfuscation_enabled_flag = catalog_obfuscation_enabled_flag
+        self._flow_auto_save_enabled_flag = flow_auto_save_enabled_flag
+        self._web_extraction_enabled_flag = web_extraction_enabled_flag
+        self._metrics_content_type_enabled_flag = metrics_content_type_enabled_flag
+        self._notify_site_admins_on_throttle_flag = notify_site_admins_on_throttle_flag
+        self._authoring_enabled_flag = authoring_enabled_flag
+        self._custom_subscription_email_enabled_flag = custom_subscription_email_enabled_flag
+        self._custom_subscription_email = custom_subscription_email
+        self._custom_subscription_footer_enabled_flag = custom_subscription_footer_enabled_flag
+        self._custom_subscription_footer = custom_subscription_footer
+        self._ask_data_mode = ask_data_mode
+        self._named_sharing_enabled_flag = named_sharing_enabled_flag
+        self._mobile_biometrics_enabled_flag = mobile_biometrics_enabled_flag
+        self._sheet_image_enabled_flag = sheet_image_enabled_flag
+        self._cataloging_enabled_flag = cataloging_enabled_flag
+        self._derived_permissions_enabled_flag = derived_permissions_enabled_flag
+        self._user_visibility_mode = user_visibility_mode
+        self._use_default_time_zone_flag = use_default_time_zone_flag
+        self._time_zone = time_zone
+        self._auto_suspend_refresh_enabled_flag = auto_suspend_refresh_enabled_flag
         self._auto_suspend_refresh_inactivity_window = (
-            str(auto_suspend_refresh_inactivity_window)
-            if auto_suspend_refresh_inactivity_window
-            else None,
+            str(auto_suspend_refresh_inactivity_window) if auto_suspend_refresh_inactivity_window else None
         )
         self._validate_inputs()
         self.base_create_site_request()
@@ -176,29 +160,29 @@ class CreateSiteRequest(BaseRequest):
             "extractEncryptionMode",
             "requestAccessEnabled",
             "runNowEnabled",
-            # "dataAlertsEnabled",
-            # "commentingMentionsEnabled",
-            # "catalogObfuscationEnabled",
-            # "flowAutoSaveEnabled",
-            # "webExtractionEnabled",
-            # "metricsContentTypeEnabled",
-            # "notifySiteAdminsOnThrottle",
-            # "authoringEnabled",
-            # "customSubscriptionEmailEnabled",
-            # "customSubscriptionEmail",
-            # "customSubscriptionFooterEnabled",
-            # "customSubscriptionFooter",
-            # "askDataMode",
-            # "namedSharingEnabled",
-            # "mobileBiometricsEnabled",
-            # "sheetImageEnabled",
-            # "catalogingEnabled",
-            # "derivedPermissionsEnabled",
-            # "userVisibilityMode",
-            # "useDefaultTimeZone",
-            # "timeZone",
-            # "autoSuspendRefreshEnabled",
-            # "autoSuspendRefreshInactivityWindow",
+            "dataAlertsEnabled",
+            "commentingMentionsEnabled",
+            "catalogObfuscationEnabled",
+            "flowAutoSaveEnabled",
+            "webExtractionEnabled",
+            "metricsContentTypeEnabled",
+            "notifySiteAdminsOnThrottle",
+            "authoringEnabled",
+            "customSubscriptionEmailEnabled",
+            "customSubscriptionEmail",
+            "customSubscriptionFooterEnabled",
+            "customSubscriptionFooter",
+            "askDataMode",
+            "namedSharingEnabled",
+            "mobileBiometricsEnabled",
+            "sheetImageEnabled",
+            "catalogingEnabled",
+            "derivedPermissionsEnabled",
+            "userVisibilityMode",
+            "useDefaultTimeZone",
+            "timeZone",
+            "autoSuspendRefreshEnabled",
+            "autoSuspendRefreshInactivityWindow",
         ]
 
     @property
@@ -222,29 +206,29 @@ class CreateSiteRequest(BaseRequest):
             self._extract_encryption_mode,
             self._request_acces_enabled_flag,
             self._run_now_enabled_flag,
-            # self._data_alerts_enabled_flag,
-            # self._commenting_mentions_enabled_flag,
-            # self._catalog_obfuscation_enabled_flag,
-            # self._flow_auto_save_enabled_flag,
-            # self._web_extraction_enabled_flag,
-            # self._metrics_content_type_enabled_flag,
-            # self._notify_site_admins_on_throttle_flag,
-            # self._authoring_enabled_flag,
-            # self._custom_subscription_email_enabled_flag,
-            # self._custom_subscription_email,
-            # self._custom_subscription_footer_enabled_flag,
-            # self._custom_subscription_footer,
-            # self._ask_data_mode,
-            # self._named_sharing_enabled_flag,
-            # self._mobile_biometrics_enabled_flag,
-            # self._sheet_image_enabled_flag,
-            # self._cataloging_enabled_flag,
-            # self._derived_permissions_enabled_flag,
-            # self._user_visibility_mode,
-            # self._use_default_time_zone_flag,
-            # self._time_zone,
-            # self._auto_suspend_refresh_enabled_flag,
-            # self._auto_suspend_refresh_inactivity_window,
+            self._data_alerts_enabled_flag,
+            self._commenting_mentions_enabled_flag,
+            self._catalog_obfuscation_enabled_flag,
+            self._flow_auto_save_enabled_flag,
+            self._web_extraction_enabled_flag,
+            self._metrics_content_type_enabled_flag,
+            self._notify_site_admins_on_throttle_flag,
+            self._authoring_enabled_flag,
+            self._custom_subscription_email_enabled_flag,
+            self._custom_subscription_email,
+            self._custom_subscription_footer_enabled_flag,
+            self._custom_subscription_footer,
+            self._ask_data_mode,
+            self._named_sharing_enabled_flag,
+            self._mobile_biometrics_enabled_flag,
+            self._sheet_image_enabled_flag,
+            self._cataloging_enabled_flag,
+            self._derived_permissions_enabled_flag,
+            self._user_visibility_mode,
+            self._use_default_time_zone_flag,
+            self._time_zone,
+            self._auto_suspend_refresh_enabled_flag,
+            self._auto_suspend_refresh_inactivity_window,
         ]
 
     def base_create_site_request(self):
@@ -266,9 +250,7 @@ class CreateSiteRequest(BaseRequest):
             self._invalid_parameter_exception()
 
         self._request_body["site"].update(
-            self._get_parameters_dict(
-                self.optional_param_keys, self.optional_param_values
-            )
+            self._get_parameters_dict(self.optional_param_keys, self.optional_param_values)
         )
         return self._request_body
 
