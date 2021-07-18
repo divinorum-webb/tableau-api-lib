@@ -1,5 +1,9 @@
 # Changelog for tableau-api-lib
 
+# V0.1.18
+- (divinorum-webb) FIX (temporary) disabled multiple optional parameters for the `create_site` method. 
+  These parameters are triggering Java exceptions on the Tableau Server side.
+
 # V0.1.17
 - (divinorum-webb) FIX removed print statements used for testing / troubleshooting.
 
