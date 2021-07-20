@@ -133,7 +133,7 @@ class TableauServerConnection:
         return self._auth_token
 
     @auth_token.setter
-    def auth_token(self, token_value: str):
+    def auth_token(self, token_value: str) -> None:
         """Sets the TableauServerConnection's Tableau auth token or raises an error if already signed in.
 
         Args:
@@ -168,6 +168,12 @@ class TableauServerConnection:
         if self._use_apparent_encoding:
             response.encoding = response.apparent_encoding
         return response
+
+    @staticmethod
+    def _set_local_vars(local_vars: Dict[str, Any]) -> Dict[str, Any]:
+        """Returns a dict containing all local vars except for the `self` representing the class instance."""
+        del local_vars["self"]
+        return local_vars
 
     # authentication
 
@@ -251,11 +257,7 @@ class TableauServerConnection:
         """Returns information about the active Tableau Server connection."""
         self.active_endpoint = api_endpoints.AuthEndpoint(ts_connection=self, get_server_info=True).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(
-            url=self.active_endpoint,
-            headers=self.active_headers,
-            verify=self.ssl_verify,
-        )
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         response = self._set_response_encoding(response=response)
         return response
 
@@ -310,65 +312,19 @@ class TableauServerConnection:
         auto_suspend_refresh_enabled_flag: Optional[bool] = None,
         auto_suspend_refresh_inactivity_window: Optional[str] = None,
     ) -> requests.Response:
-        """Creates a new site via the active Tableau Server connection.
+        """Creates a new site using the active Tableau Server connection.
 
         This method can only be called by Server Administrators.
 
         For descriptions of all input parameters, see Tableau's official REST API documentation:
         https://help.tableau.com/current/api/rest_api/en-us/REST/rest_api_ref_site.htm#create_site
 
-        Args:
+        RequiredArgs:
             site_name: (required) The name for the new site.
             content_url: (required) The content url for the new site (can be different than the site name).
         """
-        self.active_request = api_requests.CreateSiteRequest(
-            ts_connection=self,
-            site_name=site_name,
-            content_url=content_url,
-            admin_mode=admin_mode,
-            user_quota=user_quota,
-            storage_quota=storage_quota,
-            tier_creator_capacity=tier_creator_capacity,
-            tier_explorer_capacity=tier_explorer_capacity,
-            tier_viewer_capacity=tier_viewer_capacity,
-            disable_subscriptions_flag=disable_subscriptions_flag,
-            editing_flows_enabled_flag=editing_flows_enabled_flag,
-            scheduling_flows_enabled_flag=scheduling_flows_enabled_flag,
-            flows_enabled_flag=flows_enabled_flag,
-            guest_access_enabled_flag=guest_access_enabled_flag,
-            allow_subscription_attachments_flag=allow_subscription_attachments_flag,
-            cache_warmup_enabled_flag=cache_warmup_enabled_flag,
-            commenting_enabled_flag=commenting_enabled_flag,
-            revision_history_enabled_flag=revision_history_enabled_flag,
-            revision_limit=revision_limit,
-            subscribe_others_enabled_flag=subscribe_others_enabled_flag,
-            extract_encryption_mode=extract_encryption_mode,
-            request_access_enabled_flag=request_access_enabled_flag,
-            run_now_enabled_flag=run_now_enabled_flag,
-            data_alerts_enabled_flag=data_alerts_enabled_flag,
-            commenting_mentions_enabled_flag=commenting_mentions_enabled_flag,
-            catalog_obfuscation_enabled_flag=catalog_obfuscation_enabled_flag,
-            flow_auto_save_enabled_flag=flow_auto_save_enabled_flag,
-            web_extraction_enabled_flag=web_extraction_enabled_flag,
-            metrics_content_type_enabled_flag=metrics_content_type_enabled_flag,
-            notify_site_admins_on_throttle_flag=notify_site_admins_on_throttle_flag,
-            authoring_enabled_flag=authoring_enabled_flag,
-            custom_subscription_email_enabled_flag=custom_subscription_email_enabled_flag,
-            custom_subscription_email=custom_subscription_email,
-            custom_subscription_footer_enabled_flag=custom_subscription_footer_enabled_flag,
-            custom_subscription_footer=custom_subscription_footer,
-            ask_data_mode=ask_data_mode,
-            named_sharing_enabled_flag=named_sharing_enabled_flag,
-            mobile_biometrics_enabled_flag=mobile_biometrics_enabled_flag,
-            sheet_image_enabled_flag=sheet_image_enabled_flag,
-            cataloging_enabled_flag=cataloging_enabled_flag,
-            derived_permissions_enabled_flag=derived_permissions_enabled_flag,
-            user_visibility_mode=user_visibility_mode,
-            use_default_time_zone_flag=use_default_time_zone_flag,
-            time_zone=time_zone,
-            auto_suspend_refresh_enabled_flag=auto_suspend_refresh_enabled_flag,
-            auto_suspend_refresh_inactivity_window=auto_suspend_refresh_inactivity_window,
-        ).get_request()
+        local_vars = self._set_local_vars(local_vars=locals())
+        self.active_request = api_requests.CreateSiteRequest(ts_connection=self, **local_vars).get_request()
         self.active_endpoint = api_endpoints.SiteEndpoint(ts_connection=self, create_site=True).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.post(
@@ -401,11 +357,7 @@ class TableauServerConnection:
             parameter_dict=parameter_dict,
         ).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(
-            url=self.active_endpoint,
-            headers=self.active_headers,
-            verify=self.ssl_verify,
-        )
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         response = self._set_response_encoding(response=response)
         return response
 
@@ -423,11 +375,7 @@ class TableauServerConnection:
             ts_connection=self, query_sites=True, parameter_dict=parameter_dict
         ).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(
-            url=self.active_endpoint,
-            headers=self.active_headers,
-            verify=self.ssl_verify,
-        )
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         response = self._set_response_encoding(response=response)
         return response
 
@@ -438,11 +386,7 @@ class TableauServerConnection:
             ts_connection=self, site_id=self.site_id, get_recently_viewed=True
         ).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(
-            url=self.active_endpoint,
-            headers=self.active_headers,
-            verify=self.ssl_verify,
-        )
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         response = self._set_response_encoding(response=response)
         return response
 
@@ -464,11 +408,7 @@ class TableauServerConnection:
             parameter_dict=parameter_dict,
         ).get_endpoint()
         self.active_headers = self.default_headers
-        response = requests.get(
-            url=self.active_endpoint,
-            headers=self.active_headers,
-            verify=self.ssl_verify,
-        )
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
         response = self._set_response_encoding(response=response)
         return response
 
@@ -528,59 +468,12 @@ class TableauServerConnection:
         For descriptions of all input parameters, see Tableau's official REST API documentation:
         https://help.tableau.com/current/api/rest_api/en-us/REST/rest_api_ref_site.htm#update_site
 
-        Args:
+        RequiredArgs:
             site_id: (required) The site ID (luid) for the site being updated.
         """
         # This method can only be called by server administrators.
-        self.active_request = api_requests.UpdateSiteRequest(
-            ts_connection=self,
-            site_name=site_name,
-            content_url=content_url,
-            admin_mode=admin_mode,
-            user_quota=user_quota,
-            state=state,
-            storage_quota=storage_quota,
-            tier_creator_capacity=tier_creator_capacity,
-            tier_explorer_capacity=tier_explorer_capacity,
-            tier_viewer_capacity=tier_viewer_capacity,
-            disable_subscriptions_flag=disable_subscriptions_flag,
-            editing_flows_enabled_flag=editing_flows_enabled_flag,
-            scheduling_flows_enabled_flag=scheduling_flows_enabled_flag,
-            flows_enabled_flag=flows_enabled_flag,
-            guest_access_enabled_flag=guest_access_enabled_flag,
-            allow_subscription_attachments_flag=allow_subscription_attachments_flag,
-            cache_warmup_enabled_flag=cache_warmup_enabled_flag,
-            commenting_enabled_flag=commenting_enabled_flag,
-            revision_history_enabled_flag=revision_history_enabled_flag,
-            revision_limit=revision_limit,
-            subscribe_others_enabled_flag=subscribe_others_enabled_flag,
-            extract_encryption_mode=extract_encryption_mode,
-            request_access_enabled_flag=request_access_enabled_flag,
-            run_now_enabled_flag=run_now_enabled_flag,
-            data_alerts_enabled_flag=data_alerts_enabled_flag,
-            commenting_mentions_enabled_flag=commenting_mentions_enabled_flag,
-            catalog_obfuscation_enabled_flag=catalog_obfuscation_enabled_flag,
-            flow_auto_save_enabled_flag=flow_auto_save_enabled_flag,
-            web_extraction_enabled_flag=web_extraction_enabled_flag,
-            metrics_content_type_enabled_flag=metrics_content_type_enabled_flag,
-            notify_site_admins_on_throttle_flag=notify_site_admins_on_throttle_flag,
-            authoring_enabled_flag=authoring_enabled_flag,
-            custom_subscription_email_enabled_flag=custom_subscription_email_enabled_flag,
-            custom_subscription_email=custom_subscription_email,
-            custom_subscription_footer_enabled_flag=custom_subscription_footer_enabled_flag,
-            custom_subscription_footer=custom_subscription_footer,
-            ask_data_mode=ask_data_mode,
-            named_sharing_enabled_flag=named_sharing_enabled_flag,
-            mobile_biometrics_enabled_flag=mobile_biometrics_enabled_flag,
-            sheet_image_enabled_flag=sheet_image_enabled_flag,
-            cataloging_enabled_flag=cataloging_enabled_flag,
-            derived_permissions_enabled_flag=derived_permissions_enabled_flag,
-            user_visibility_mode=user_visibility_mode,
-            use_default_time_zone_flag=use_default_time_zone_flag,
-            time_zone=time_zone,
-            auto_suspend_refresh_enabled_flag=auto_suspend_refresh_enabled_flag,
-            auto_suspend_refresh_inactivity_window=auto_suspend_refresh_inactivity_window,
-        ).get_request()
+        local_vars = self._set_local_vars(local_vars=locals())
+        self.active_request = api_requests.UpdateSiteRequest(ts_connection=self, **local_vars).get_request()
         self.active_endpoint = api_endpoints.SiteEndpoint(
             ts_connection=self, site_id=site_id, update_site=True
         ).get_endpoint()
