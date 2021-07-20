@@ -473,56 +473,7 @@ class TableauServerConnection:
         """
         # This method can only be called by server administrators.
         local_vars = self._set_local_vars(local_vars=locals())
-        self.active_request = api_requests.UpdateSiteRequest(
-            ts_connection=self,
-            **local_vars
-            # site_name=site_name,
-            # content_url=content_url,
-            # admin_mode=admin_mode,
-            # user_quota=user_quota,
-            # state=state,
-            # storage_quota=storage_quota,
-            # tier_creator_capacity=tier_creator_capacity,
-            # tier_explorer_capacity=tier_explorer_capacity,
-            # tier_viewer_capacity=tier_viewer_capacity,
-            # disable_subscriptions_flag=disable_subscriptions_flag,
-            # editing_flows_enabled_flag=editing_flows_enabled_flag,
-            # scheduling_flows_enabled_flag=scheduling_flows_enabled_flag,
-            # flows_enabled_flag=flows_enabled_flag,
-            # guest_access_enabled_flag=guest_access_enabled_flag,
-            # allow_subscription_attachments_flag=allow_subscription_attachments_flag,
-            # cache_warmup_enabled_flag=cache_warmup_enabled_flag,
-            # commenting_enabled_flag=commenting_enabled_flag,
-            # revision_history_enabled_flag=revision_history_enabled_flag,
-            # revision_limit=revision_limit,
-            # subscribe_others_enabled_flag=subscribe_others_enabled_flag,
-            # extract_encryption_mode=extract_encryption_mode,
-            # request_access_enabled_flag=request_access_enabled_flag,
-            # run_now_enabled_flag=run_now_enabled_flag,
-            # data_alerts_enabled_flag=data_alerts_enabled_flag,
-            # commenting_mentions_enabled_flag=commenting_mentions_enabled_flag,
-            # catalog_obfuscation_enabled_flag=catalog_obfuscation_enabled_flag,
-            # flow_auto_save_enabled_flag=flow_auto_save_enabled_flag,
-            # web_extraction_enabled_flag=web_extraction_enabled_flag,
-            # metrics_content_type_enabled_flag=metrics_content_type_enabled_flag,
-            # notify_site_admins_on_throttle_flag=notify_site_admins_on_throttle_flag,
-            # authoring_enabled_flag=authoring_enabled_flag,
-            # custom_subscription_email_enabled_flag=custom_subscription_email_enabled_flag,
-            # custom_subscription_email=custom_subscription_email,
-            # custom_subscription_footer_enabled_flag=custom_subscription_footer_enabled_flag,
-            # custom_subscription_footer=custom_subscription_footer,
-            # ask_data_mode=ask_data_mode,
-            # named_sharing_enabled_flag=named_sharing_enabled_flag,
-            # mobile_biometrics_enabled_flag=mobile_biometrics_enabled_flag,
-            # sheet_image_enabled_flag=sheet_image_enabled_flag,
-            # cataloging_enabled_flag=cataloging_enabled_flag,
-            # derived_permissions_enabled_flag=derived_permissions_enabled_flag,
-            # user_visibility_mode=user_visibility_mode,
-            # use_default_time_zone_flag=use_default_time_zone_flag,
-            # time_zone=time_zone,
-            # auto_suspend_refresh_enabled_flag=auto_suspend_refresh_enabled_flag,
-            # auto_suspend_refresh_inactivity_window=auto_suspend_refresh_inactivity_window,
-        ).get_request()
+        self.active_request = api_requests.UpdateSiteRequest(ts_connection=self, **local_vars).get_request()
         self.active_endpoint = api_endpoints.SiteEndpoint(
             ts_connection=self, site_id=site_id, update_site=True
         ).get_endpoint()
