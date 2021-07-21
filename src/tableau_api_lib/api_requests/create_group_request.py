@@ -4,14 +4,7 @@ from tableau_api_lib.api_requests import BaseRequest
 
 
 class CreateGroupRequest(BaseRequest):
-    """
-    Builds the request body for Tableau Server REST API requests creating groups.
-    :param class ts_connection: the Tableau Server connection object
-    :param str new_group_name: the name of the group being created
-    :param str active_directory_group_name: the active directory group name
-    :param str active_directory_domain_name: the active directory domain name
-    :param str minimum_site_role: the default site role for the created group
-    """
+    """Builds the request body for creating groups using Tableau's REST API."""
 
     def __init__(
         self,
@@ -30,20 +23,22 @@ class CreateGroupRequest(BaseRequest):
         self._minimum_site_role = minimum_site_role
         self._license_mode = license_mode
         self._active_directory_source = "ActiveDirectory"
+        self._validate_inputs()
 
-    def _validate_inputs(self) -> bool:
+    def _validate_inputs(self) -> None:
         valid = True
         if self._license_mode and not self._minimum_site_role:
             valid = False
         if self._active_directory_group_name and not self._active_directory_domain_name:
             valid = False
-        return valid
+        if self._active_directory_group_name and not (self._minimum_site_role and self._license_mode):
+            raise ValueError("Active Directory groups require setting `minimum_site_role` role and `license_mode`.")
+        if valid is False:
+            self._invalid_parameter_exception()
 
     @property
     def is_active_directory_request(self) -> bool:
-        return all(
-            [self._active_directory_domain_name, self._active_directory_group_name]
-        )
+        return all([self._active_directory_domain_name, self._active_directory_group_name])
 
     @property
     def valid_site_roles(self) -> List[str]:
@@ -125,14 +120,16 @@ class CreateGroupRequest(BaseRequest):
         if all(self.required_active_directory_group_param_values):
             self._request_body.update({"group": {}})
             self._request_body["group"].update(
-                self.required_active_directory_group_param_keys[0],
-                self.required_active_directory_group_param_values[0],
+                self._get_parameters_dict(
+                    self.required_active_directory_group_param_keys[:1],
+                    self.required_active_directory_group_param_values[:1],
+                )
             )
             self._request_body["group"].update({"import": {}})
             self._request_body["group"]["import"].update(
                 self._get_parameters_dict(
-                    self.required_active_directory_group_param_keys[1::],
-                    self.required_active_directory_group_param_values[1::],
+                    self.required_active_directory_group_param_keys[1:],
+                    self.required_active_directory_group_param_values[1:],
                 )
             )
         else:
