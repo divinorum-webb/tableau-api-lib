@@ -172,7 +172,9 @@ class TableauServerConnection:
     @staticmethod
     def _set_local_vars(local_vars: Dict[str, Any]) -> Dict[str, Any]:
         """Returns a dict containing all local vars except for the `self` representing the class instance."""
-        del local_vars["self"]
+        vars_to_remove = [var for var in ["self", "parameter_dict"] if var in local_vars.keys()]
+        for var in vars_to_remove:
+            del local_vars[var]
         return local_vars
 
     # authentication
@@ -2008,26 +2010,15 @@ class TableauServerConnection:
         active_directory_domain_name: Optional[str] = None,
         minimum_site_role: Optional[str] = None,
         license_mode: Optional[str] = None,
-        parameter_dict=None,
-    ):
+        parameter_dict: Optional[Dict[str, Any]] = None,
+    ) -> requests.Response:
+        """Creates a group on the active site.
+
+        For descriptions of all input parameters, see Tableau's official REST API documentation:
+        https://help.tableau.com/current/api/rest_api/en-us/REST/rest_api_ref_users_and_groups.htm#create_group
         """
-        Creates a group on the active site.
-        :param string new_group_name: the group name
-        :param string active_directory_group_name: (optional) the name of the active directory group to import
-        :param string active_directory_domain_name: (optional) the domain of the active directory group to import
-        :param string minimum_site_role: the default site role for users imported into the group via active directory
-        :param string license_mode: the licensing mode to use (see REST API reference)
-        :param dict parameter_dict: dict defining url parameters for API endpoint
-        :return: HTTP response
-        """
-        self.active_request = api_requests.CreateGroupRequest(
-            ts_connection=self,
-            new_group_name=new_group_name,
-            active_directory_group_name=active_directory_group_name,
-            active_directory_domain_name=active_directory_domain_name,
-            minimum_site_role=minimum_site_role,
-            license_mode=license_mode,
-        ).get_request()
+        local_vars = self._set_local_vars(local_vars=locals())
+        self.active_request = api_requests.CreateGroupRequest(ts_connection=self, **local_vars).get_request()
         self.active_endpoint = api_endpoints.GroupEndpoint(
             ts_connection=self, create_group=True, parameter_dict=parameter_dict
         ).get_endpoint()
