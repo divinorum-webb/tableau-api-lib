@@ -1,8 +1,8 @@
 from typing import Any, Dict, List, Union
 
-from src.tableau_api_lib.api_requests import BaseRequest
-from src.tableau_api_lib.config.api_requests import SiteConfig
-from src.tableau_api_lib.tableau_server_connection import TableauServerConnection
+from tableau_api_lib.api_requests import BaseRequest
+from tableau_api_lib.config.api_requests import SiteConfig
+from tableau_api_lib.tableau_server_connection import TableauServerConnection
 
 
 class CreateSiteRequest(BaseRequest):

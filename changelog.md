@@ -1,5 +1,12 @@
 # Changelog for tableau-api-lib
 
+# V0.1.21
+- (divinorum-webb) FIX modified import statements to remove import errors.
+
+# V0.1.20
+- (divinorum-webb) FIX refactored `create_group` logic and fixed a bug that caused errors
+when creating groups with active directory.
+
 # V0.1.19
 - (divinorum-webb) FIX resolved the issue raised in V0.1.18 with the `create_site` method.
 The issue was that some optional parameters were incorrectly being passed as tuples.
