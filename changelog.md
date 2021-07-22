@@ -1,6 +1,6 @@
 # Changelog for tableau-api-lib
 
-# V0.1.20
+# V0.1.21
 - (divinorum-webb) FIX modified import statements to remove import errors.
 
 # V0.1.20
