@@ -1,6 +1,9 @@
 # Changelog for tableau-api-lib
 
 # V0.1.20
+- (divinorum-webb) FIX modified import statements to remove import errors.
+
+# V0.1.20
 - (divinorum-webb) FIX refactored `create_group` logic and fixed a bug that caused errors
 when creating groups with active directory.
 
