@@ -1,6 +1,4 @@
-"""
-Helper functions for querying REST API data for workbooks and views
-"""
+"""Defines helper functions for querying details about REST API workbooks and views."""
 
 
 from io import StringIO
@@ -13,32 +11,40 @@ from tableau_api_lib.exceptions.tableau_server_exceptions import ContentNotFound
 from tableau_api_lib.utils import extract_pages, flatten_dict_column
 
 
-def get_all_workbook_fields(conn: TableauServerConnection) -> List[Dict[str, Any]]:
+def get_all_workbook_fields(conn: TableauServerConnection, all_fields: Optional[bool] = True) -> List[Dict[str, Any]]:
     """Returns a list of JSON / dicts describing all available workbooks."""
-    all_workbooks = extract_pages(conn.query_workbooks_for_site, parameter_dict={"fields": "fields=_all_"})
+    fields_param = "_all_" if all_fields is True else "_default_"
+    all_workbooks = extract_pages(conn.query_workbooks_for_site, parameter_dict={"fields": f"fields={fields_param}"})
     return all_workbooks
 
 
-def get_workbooks_dataframe(conn: TableauServerConnection) -> pd.DataFrame:
-    """Returns a DataFrame describing all available workbooks. If none are available, an empty DataFrame is returned"""
+def get_workbooks_dataframe(conn: TableauServerConnection, all_fields: Optional[bool] = False) -> pd.DataFrame:
+    """Returns a DataFrame describing all available workbooks. If none are available, an empty DataFrame is returned."""
     try:
-        workbooks_df = pd.DataFrame(get_all_workbook_fields(conn))
+        workbooks_df = pd.DataFrame(get_all_workbook_fields(conn=conn, all_fields=all_fields))
     except ContentNotFound:
         workbooks_df = pd.DataFrame()
     return workbooks_df
 
 
-def get_all_view_fields(conn: TableauServerConnection, site_id: str) -> List[Dict[str, Any]]:
+def get_all_view_fields(
+    conn: TableauServerConnection, site_id: str, all_fields: Optional[bool] = True
+) -> List[Dict[str, Any]]:
     """Returns a list of JSON / dicts describing all available views."""
-    all_views = extract_pages(conn.query_views_for_site, content_id=site_id, parameter_dict={"fields": "fields=_all_"})
+    fields_param = "_all_" if all_fields is True else "_default_"
+    all_views = extract_pages(
+        conn.query_views_for_site, content_id=site_id, parameter_dict={"fields": f"fields={fields_param}"}
+    )
     return all_views
 
 
-def get_views_dataframe(conn: TableauServerConnection, site_id: Optional[str] = None) -> pd.DataFrame:
+def get_views_dataframe(
+    conn: TableauServerConnection, site_id: Optional[str] = None, all_fields: Optional[bool] = True
+) -> pd.DataFrame:
     """Returns a DataFrame describing all available views. If none are available, an empty DataFrame is returned."""
     if not site_id:
         site_id = conn.site_id
-    views_df = pd.DataFrame(get_all_view_fields(conn, site_id))
+    views_df = pd.DataFrame(get_all_view_fields(conn=conn, site_id=site_id, all_fields=all_fields))
     if not views_df.empty:
         views_df = flatten_dict_column(views_df, keys=["totalViewCount"], col_name="usage")
     return views_df

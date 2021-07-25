@@ -1,5 +1,13 @@
 # Changelog for tableau-api-lib
 
+# V0.1.22
+- (divinorum-webb) Added temporary workaround for Tableau Server no longer supporting the `_all_` fields 
+  parameter when hitting the `Query Workbooks for Site` endpoint: by default the `querying.get_workbooks_dataframe()`
+  function now returns only the `_default_` fields instead of the `_all_` fields.
+- (divinorum-webb) Removed the requirement for the `publish_workbook()` method to have a password set
+when publishing a workbook with embedded credentials.
+
+
 # V0.1.21
 - (divinorum-webb) FIX modified import statements to remove import errors.
 

@@ -97,7 +97,7 @@ class PublishWorkbookRequest(BaseRequest):
 
     def _verify_embed_requirements(self):
         if self._embed_credentials_flag:
-            if self._server_address and self._connection_username and self._connection_password:
+            if self._server_address and self._connection_username:
                 pass
             else:
                 self._invalid_parameter_exception()
