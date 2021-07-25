@@ -3,6 +3,7 @@ import json
 from urllib3.fields import RequestField
 from urllib3.filepost import encode_multipart_formdata
 
+from tableau_api_lib.tableau_server_connection import TableauServerConnection
 from tableau_api_lib.api_requests import BaseRequest
 from tableau_api_lib.exceptions import InvalidFileTypeException
 
@@ -12,38 +13,11 @@ FILE_SIZE_LIMIT = 1024 * 1024 * 60  # 60MB
 
 
 class PublishWorkbookRequest(BaseRequest):
-    """
-    Builds the request body for Tableau Server REST API requests publishing workbooks.
-    :param class ts_connection: the Tableau Server connection object
-    :param string workbook_name: the name the published workbook will have on Tableau Server
-    :param string workbook_file_path: the file path for the workbook being published
-    :param string project_id: the project ID of the project the workbook is being published to
-    :param boolean show_tabs_flag: (Optional) true if the workbook will show views as tabs, false otherwise
-    :param string user_id: If generating thumbnails as a specific user, specify the user ID here
-    :param list server_address: (Optional) specify the server addresses for data source connections if the data sources
-    do not use OAuth
-    :param list port_number: (Optional) specify the port numbers for a data source connections if that data sources do
-    not use OAuth
-    :param list connection_username: (Optional) if the workbook's data source connections require credentials, the
-    <connectionCredentials> elements are included and this attribute specifies the connection username. If the element
-    is included but is not required (for example, if the data source uses OAuth), the server ignores the element and its
-    attributes
-    :param list connection_password: (Optional) if the workbook's data source connections require credentials, the
-    <connectionCredentials> elements are included and this attribute specifies the connection password. If the element
-    is included but is not required (for example, if the data source uses OAuth), the server ignores the element and its
-    attributes
-    :param list embed_credentials_flag: (Optional) true if embedding credentials in the published workbook, false
-    otherwise
-    :param list oauth_flag: list of boolean flags; True if OAuth is used for the credentials, false otherwise.
-    :param list workbook_views_to_hide: a list of the views to hide for the workbook being published. The list should
-    contain the view names, not view IDs
-    :param boolean hide_view_flag: (Optional) true if the published workbook will hide any of its views,  false
-    otherwise
-    """
+    """Builds the body for Tableau Server REST API requests publishing workbooks."""
     def __init__(self,
-                 ts_connection,
-                 workbook_name,
-                 workbook_file_path,
+                 ts_connection: TableauServerConnection,
+                 workbook_name: str,
+                 workbook_file_path: str,
                  project_id,
                  show_tabs_flag=False,
                  user_id=None,

@@ -3503,55 +3503,24 @@ class TableauServerConnection:
     @decorators.verify_api_method_exists("2.3")
     def publish_workbook(
         self,
-        workbook_file_path,
-        workbook_name,
-        project_id,
-        show_tabs_flag=False,
-        user_id=None,
-        server_address=None,
-        port_number=None,
-        connection_username=None,
-        connection_password=None,
-        embed_credentials_flag=False,
-        oauth_flag=False,
-        workbook_views_to_hide=None,
-        hide_view_flag=False,
+        workbook_file_path: str,
+        workbook_name: str,
+        project_id: str,
+        show_tabs_flag: Optional[bool] = False,
+        user_id: Optional[str] = None,
+        server_address: Optional[str] = None,
+        port_number: Optional[str] = None,
+        connection_username: Optional[str] = None,
+        connection_password: Optional[str] = None,
+        embed_credentials_flag: Optional[bool] = False,
+        oauth_flag: Optional[bool] = False,
+        workbook_views_to_hide: Optional[List[str]] = None,
+        hide_view_flag: Optional[bool] = None,
         parameter_dict: Optional[Dict[str, Any]] = None,
-    ):
-        """
-        Publishes a workbook file to Tableau Server.
-        :param string workbook_file_path: the path to the workbook file
-        :param string workbook_name: the desired name for the published workbook
-        :param string project_id: the project ID where the workbook will be published
-        :param boolean show_tabs_flag: enables or disables showing tabs
-        :param string user_id: the user ID for the user who owns the workbook
-        :param list or str server_address: the connection's server address
-        :param list or str port_number: the connection's port number
-        :param list or str connection_username: the connection's username
-        :param list or str connection_password: the connection's password
-        :param list or bool embed_credentials_flag: enables or disables embedding the connection's password
-        :param list or bool oauth_flag: enables or disables OAuth authentication
-        :param list workbook_views_to_hide: a list of workbook views to be hidden when published
-        :param boolean hide_view_flag: enables or disables hiding workbook views
-        :param dict parameter_dict: dict defining url parameters for API endpoint
-        :return: HTTP response
-        """
-        publish_request = api_requests.PublishWorkbookRequest(
-            ts_connection=self,
-            workbook_name=workbook_name,
-            workbook_file_path=workbook_file_path,
-            project_id=project_id,
-            show_tabs_flag=show_tabs_flag,
-            user_id=user_id,
-            server_address=server_address,
-            port_number=port_number,
-            connection_username=connection_username,
-            connection_password=connection_password,
-            embed_credentials_flag=embed_credentials_flag,
-            oauth_flag=oauth_flag,
-            workbook_views_to_hide=workbook_views_to_hide,
-            hide_view_flag=hide_view_flag,
-        )
+    ) -> requests.Response:
+        """Publishes a workbook file to Tableau Server."""
+        local_vars = self._set_local_vars(local_vars=locals())
+        publish_request = api_requests.PublishWorkbookRequest(ts_connection=self, **local_vars)
         self.active_request, content_type = publish_request.get_request()
         self.active_headers, parameter_dict = publish_request.publish_prep(content_type, parameter_dict=parameter_dict)
         self.active_endpoint = api_endpoints.WorkbookEndpoint(
