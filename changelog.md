@@ -2,6 +2,7 @@
 
 # V0.1.23
 - (divinorum-webb) Added support for the `Get Schedule` endpoint.
+- (divinorum-webb) Added support for the `Revoke Administrator Personal Access Tokens` endpoint.
 
 # V0.1.22
 - (divinorum-webb) Added temporary workaround for Tableau Server no longer supporting the `_all_` fields 

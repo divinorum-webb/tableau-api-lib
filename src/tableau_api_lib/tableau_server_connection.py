@@ -179,6 +179,14 @@ class TableauServerConnection:
 
     # authentication
 
+    @decorators.verify_api_method_exists("3.11")
+    def revoke_administrator_personal_access_tokens(self):
+        """Revokes all personal access tokens belonging to administrators on the Tableau Server."""
+        self.active_endpoint = api_endpoints.AuthEndpoint(ts_connection=self, revoke_admin_pat=True).get_endpoint()
+        response = requests.delete(url=self.active_endpoint, headers=self.default_headers, verify=self.ssl_verify)
+        response = self._set_response_encoding(response=response)
+        return response
+
     @decorators.verify_rest_api_version
     @decorators.verify_config_variables
     def sign_in(self, user_to_impersonate: Optional[str] = None) -> requests.Response:
