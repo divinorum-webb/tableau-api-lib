@@ -1,5 +1,8 @@
 # Changelog for tableau-api-lib
 
+# V0.1.23
+- (divinorum-webb) Added support for the `Get Schedule` endpoint.
+
 # V0.1.22
 - (divinorum-webb) Added temporary workaround for Tableau Server no longer supporting the `_all_` fields 
   parameter when hitting the `Query Workbooks for Site` endpoint: by default the `querying.get_workbooks_dataframe()`

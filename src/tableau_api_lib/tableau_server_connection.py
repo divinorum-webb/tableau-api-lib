@@ -2771,6 +2771,17 @@ class TableauServerConnection:
         response = self._set_response_encoding(response=response)
         return response
 
+    @decorators.verify_api_method_exists("3.8")
+    def get_schedule(self, schedule_id: str) -> requests.Response:
+        """Queries details for the specified schedule on the active server environment."""
+        self.active_endpoint = api_endpoints.SchedulesEndpoint(
+            ts_connection=self, query_schedule=True, schedule_id=schedule_id
+        ).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.get(url=self.active_endpoint, headers=self.active_headers, verify=self.ssl_verify)
+        response = self._set_response_encoding(response=response)
+        return response
+
     def get_extract_refresh_tasks_for_schedule(self, schedule_id: str) -> requests.Response:
         """Queries details for all extract refresh tasks belonging to the specified schedule.
 
