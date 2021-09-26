@@ -30,7 +30,7 @@ def get_page_attributes(query: dict, query_func: MethodType) -> Tuple:
 
 
 def extract_pages(
-    query_func: MethodType,
+    query_func: object,
     content_id: Optional[str] = None,
     *,
     starting_page: Optional[int] = 1,

@@ -1,5 +1,8 @@
 # Changelog for tableau-api-lib
 
+# V0.1.24
+- (divinorum-webb) Added utils function `get_views_for_workbook_dataframe`.
+
 # V0.1.23
 - (divinorum-webb) Added support for the `Get Schedule` endpoint.
 - (divinorum-webb) Added support for the `Revoke Administrator Personal Access Tokens` endpoint.

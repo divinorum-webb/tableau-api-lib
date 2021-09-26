@@ -59,6 +59,12 @@ def get_view_data_dataframe(
     return view_df
 
 
+def get_views_for_workbook_dataframe(conn: TableauServerConnection, workbook_id: str) -> pd.DataFrame:
+    """Returns a DataFrame containing details for the views contained within the specified workbook."""
+    views_for_workbook = conn.query_views_for_workbook(workbook_id=workbook_id)
+    return pd.DataFrame(views_for_workbook.json()["views"]["view"])
+
+
 def extract_datasource_details(df: pd.DataFrame, keys: List[str]) -> pd.DataFrame:
     """Returns a DataFrame with datasource details unpacked from their original nested column."""
     for key in keys:
