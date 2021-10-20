@@ -2,24 +2,27 @@ from tableau_api_lib.api_endpoints import BaseEndpoint
 
 
 class FlowEndpoint(BaseEndpoint):
-    def __init__(self,
-                 ts_connection,
-                 flow_id=None,
-                 user_id=None,
-                 connection_id=None,
-                 schedule_id=None,
-                 query_flows_for_site=False,
-                 query_flows_for_user=False,
-                 query_flow=False,
-                 download_flow=False,
-                 publish_flow=False,
-                 query_flow_connections=False,
-                 query_flow_permissions=False,
-                 update_flow=False,
-                 update_flow_connection=False,
-                 add_flow_task_to_schedule=False,
-                 delete_flow=False,
-                 parameter_dict=None):
+    def __init__(
+        self,
+        ts_connection,
+        flow_id=None,
+        user_id=None,
+        connection_id=None,
+        schedule_id=None,
+        query_flows_for_site=False,
+        query_flows_for_user=False,
+        query_flow=False,
+        download_flow=False,
+        publish_flow=False,
+        query_flow_connections=False,
+        query_flow_permissions=False,
+        update_flow=False,
+        update_flow_connection=False,
+        add_flow_task_to_schedule=False,
+        delete_flow=False,
+        run_flow_now=False,
+        parameter_dict=None,
+    ):
         """
         Builds API endpoints for REST API flow methods.
         :param class ts_connection: the Tableau Server connection object
@@ -39,6 +42,7 @@ class FlowEndpoint(BaseEndpoint):
         :param bool update_flow_connection: True if updating a flow's connection, False otherwise
         :param bool add_flow_task_to_schedule: True if adding a flow task to an existing schedule, False otherwise
         :param bool delete_flow: True if deleting a specific flow, False otherwise
+        :param bool run_flow_now: True if running the flow now, False otherwise
         :param dict parameter_dict: dictionary of URL parameters to append. The value in each key-value pair is the literal
         text that will be appended to the URL endpoint
         """
@@ -59,6 +63,7 @@ class FlowEndpoint(BaseEndpoint):
         self._update_flow_connection = update_flow_connection
         self._add_flow_task_to_schedule = add_flow_task_to_schedule
         self._delete_flow = delete_flow
+        self._run_flow_now = run_flow_now
         self._parameter_dict = parameter_dict
         self._validate_inputs()
 
@@ -75,10 +80,11 @@ class FlowEndpoint(BaseEndpoint):
             self._update_flow,
             self._update_flow_connection,
             self._add_flow_task_to_schedule,
-            self._delete_flow
+            self._delete_flow,
+            self._run_flow_now,
         ]
 
-    def _validate_inputs(self):
+    def _validate_inputs(self) -> None:
         valid = True
         if sum(self.mutually_exclusive_params) != 1:
             valid = False
@@ -87,14 +93,13 @@ class FlowEndpoint(BaseEndpoint):
 
     @property
     def base_flow_url(self):
-        return "{0}/api/{1}/sites/{2}/flows".format(self._connection.server,
-                                                    self._connection.api_version,
-                                                    self._connection.site_id)
+        return "{0}/api/{1}/sites/{2}/flows".format(
+            self._connection.server, self._connection.api_version, self._connection.site_id
+        )
 
     @property
     def base_flow_id_url(self):
-        return "{0}/{1}".format(self.base_flow_url,
-                                self._flow_id)
+        return "{0}/{1}".format(self.base_flow_url, self._flow_id)
 
     @property
     def base_flow_content_url(self):
@@ -106,8 +111,7 @@ class FlowEndpoint(BaseEndpoint):
 
     @property
     def base_flow_connection_id_url(self):
-        return "{0}/{1}".format(self.base_flow_connections_url,
-                                self._connection_id)
+        return "{0}/{1}".format(self.base_flow_connections_url, self._connection_id)
 
     @property
     def base_flow_permissions_url(self):
@@ -115,10 +119,13 @@ class FlowEndpoint(BaseEndpoint):
 
     @property
     def base_flow_user_url(self):
-        return "{0}/api/{1}/sites/{2}/users/{3}/flows".format(self._connection.server,
-                                                              self._connection.api_version,
-                                                              self._connection.site_id,
-                                                              self._user_id)
+        return "{0}/api/{1}/sites/{2}/users/{3}/flows".format(
+            self._connection.server, self._connection.api_version, self._connection.site_id, self._user_id
+        )
+
+    @property
+    def base_run_flow_now_url(self):
+        return "{0}/run".format(self.base_flow_id_url)
 
     def get_endpoint(self):
         url = None
@@ -137,6 +144,8 @@ class FlowEndpoint(BaseEndpoint):
                 url = self.base_flow_id_url
             elif self._update_flow_connection:
                 url = self.base_flow_connection_id_url
+            elif self._run_flow_now:
+                url = self.base_run_flow_now_url
             else:
                 self._invalid_parameter_exception()
         elif self._user_id:
