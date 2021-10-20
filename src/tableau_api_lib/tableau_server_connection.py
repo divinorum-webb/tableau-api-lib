@@ -2963,6 +2963,22 @@ class TableauServerConnection:
         response = self._set_response_encoding(response=response)
         return response
 
+    @decorators.verify_api_method_exists("3.3")
+    def run_flow_now(self, flow_id: str, parameter_dict: Optional[Dict[str, Any]] = None) -> requests.Response:
+        """Runs the specified flow, to be executed immediately."""
+        self.active_request = api_requests.EmptyRequest(ts_connection=self).get_request()
+        self.active_endpoint = api_endpoints.FlowEndpoint(
+            ts_connection=self, flow_id=flow_id, run_flow_now=True, parameter_dict=parameter_dict
+        ).get_endpoint()
+        response = requests.post(
+            url=self.active_endpoint,
+            json=self.active_request,
+            headers=self.active_headers,
+            verify=self.ssl_verify,
+        )
+        response = self._set_response_encoding(response=response)
+        return response
+
     def run_flow_task(self, task_id):
         """
         Runs the specified flow run task.

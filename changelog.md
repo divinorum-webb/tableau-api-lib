@@ -1,5 +1,8 @@
 # Changelog for tableau-api-lib
 
+# V0.1.25
+- (divinorum-webb) Added method `run_flow_now` to support the Run Flow Now endpoint.
+
 # V0.1.24
 - (divinorum-webb) Added utils function `get_views_for_workbook_dataframe`.
 
