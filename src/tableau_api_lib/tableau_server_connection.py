@@ -541,7 +541,7 @@ class TableauServerConnection:
             data_alert_id: The data driven alert ID for the alert being deleted.
         """
         self.active_endpoint = api_endpoints.DataAlertEndpoint(
-            ts_connection=self, data_alert_id=data_alert_id
+            ts_connection=self, data_alert_id=data_alert_id, delete_data_alert=True
         ).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.delete(

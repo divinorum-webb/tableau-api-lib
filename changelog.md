@@ -1,5 +1,8 @@
 # Changelog for tableau-api-lib
 
+# V0.1.26
+- (divinorum-webb) Fixed bug in `delete_data_driven_alert` method.
+
 # V0.1.25
 - (divinorum-webb) Added method `run_flow_now` to support the Run Flow Now endpoint.
 

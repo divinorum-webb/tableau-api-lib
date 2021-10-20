@@ -10,6 +10,7 @@ class DataAlertEndpoint(BaseEndpoint):
                  user_id=None, 
                  add_user=False, 
                  remove_user=False,
+                 delete_data_alert=False,
                  parameter_dict=None):
         """
         Data Alert endpoint for Tableau Server API api_requests.
@@ -20,6 +21,7 @@ class DataAlertEndpoint(BaseEndpoint):
         :param str user_id: the user ID
         :param bool add_user: True if adding a user to the alert, False otherwise
         :param bool remove_user: True if removing a user from the alert; False otherwise
+        :param bool delete_data_alert: True if deleting a data-driven alert; False otherwise
         :param dict parameter_dict: dictionary of URL parameters to append; the value in each key-value pair is the
         literal text that will be appended to the URL endpoint
         """
@@ -31,6 +33,7 @@ class DataAlertEndpoint(BaseEndpoint):
         self._user_id = user_id
         self._add_user = add_user
         self._remove_user = remove_user
+        self._delete_data_alert = delete_data_alert
         self._parameter_dict = parameter_dict
         self._validate_inputs()
 
@@ -40,7 +43,8 @@ class DataAlertEndpoint(BaseEndpoint):
             self._query_data_alerts,
             self._query_data_alert,
             self._add_user,
-            self._remove_user
+            self._remove_user,
+            self._delete_data_alert,
         ]
 
     def _validate_inputs(self):
