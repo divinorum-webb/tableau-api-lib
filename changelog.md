@@ -1,5 +1,8 @@
 # Changelog for tableau-api-lib
 
+# V0.1.27
+- (divinorum-webb) Fixed a bug where default headers were not reset for the `run_flow_now` method.
+
 # V0.1.26
 - (divinorum-webb) Fixed bug in `delete_data_driven_alert` method.
 
