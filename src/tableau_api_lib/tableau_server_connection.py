@@ -2970,6 +2970,7 @@ class TableauServerConnection:
         self.active_endpoint = api_endpoints.FlowEndpoint(
             ts_connection=self, flow_id=flow_id, run_flow_now=True, parameter_dict=parameter_dict
         ).get_endpoint()
+        self.active_headers = self.default_headers
         response = requests.post(
             url=self.active_endpoint,
             json=self.active_request,
