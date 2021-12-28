@@ -144,7 +144,7 @@ class TableauServerConnection:
         if token_value != self._auth_token or token_value is None:
             self._auth_token = token_value
         else:
-            raise ConnectionError("You are already signed in with a valid auth token.")
+            raise ConnectionError("You are already signed in with a valid auth token or have insufficient permissions.")
 
     def _get_auth_method(self) -> str:
         """Returns the relevant key associated with the appropriate value for configuring authentication details."""
