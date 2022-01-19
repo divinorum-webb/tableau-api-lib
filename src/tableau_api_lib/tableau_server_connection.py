@@ -10,9 +10,9 @@ class TableauServerConnection:
     def __init__(
         self,
         config_json: Dict[str, Dict[str, Any]],
-        env: Optional[str] = "tableau_prod",
-        ssl_verify: Optional[bool] = True,
-        use_apparent_encoding: Optional[bool] = False,
+        env: str = "tableau_prod",
+        ssl_verify: bool = True,
+        use_apparent_encoding: bool = False,
     ):
         """Initializes a connection to Tableau Server using the environment configuration details provided.
 
@@ -144,7 +144,7 @@ class TableauServerConnection:
         if token_value != self._auth_token or token_value is None:
             self._auth_token = token_value
         else:
-            raise ConnectionError("You are already signed in with a valid auth token.")
+            raise ConnectionError("You are already signed in with a valid auth token or have insufficient permissions.")
 
     def _get_auth_method(self) -> str:
         """Returns the relevant key associated with the appropriate value for configuring authentication details."""
@@ -278,7 +278,7 @@ class TableauServerConnection:
         self,
         site_name: str,
         content_url: str,
-        admin_mode: Optional[str] = "ContentAndUsers",
+        admin_mode: str = "ContentAndUsers",
         user_quota: Optional[str] = None,
         tier_creator_capacity: Optional[str] = None,
         tier_explorer_capacity: Optional[str] = None,
@@ -316,7 +316,7 @@ class TableauServerConnection:
         sheet_image_enabled_flag: Optional[bool] = None,
         cataloging_enabled_flag: Optional[bool] = None,
         derived_permissions_enabled_flag: Optional[bool] = None,
-        user_visibility_mode: Optional[str] = "FULL",
+        user_visibility_mode: str = "FULL",
         use_default_time_zone_flag: Optional[bool] = None,
         time_zone: Optional[str] = None,
         auto_suspend_refresh_enabled_flag: Optional[bool] = None,
@@ -372,7 +372,7 @@ class TableauServerConnection:
         return response
 
     @decorators.verify_api_method_exists("2.3")
-    def query_sites(self, parameter_dict: Optional[Dict[str, Any]] = None) -> requests.Response:
+    def query_sites(self, parameter_dict: Dict[str, Any] = None) -> requests.Response:
         """Queries details for all sites on the server.
 
         For descriptions of all input parameters, see Tableau's official REST API documentation:
@@ -401,7 +401,7 @@ class TableauServerConnection:
         return response
 
     @decorators.verify_api_method_exists("2.3")
-    def query_views_for_site(self, site_id: str, parameter_dict: Optional[Dict[str, Any]] = None) -> requests.Response:
+    def query_views_for_site(self, site_id: str, parameter_dict: Dict[str, Any] = None) -> requests.Response:
         """Queries details for all views on the active site.
 
         For descriptions of all input parameters, see Tableau's official REST API documentation:
@@ -461,13 +461,13 @@ class TableauServerConnection:
         custom_subscription_email: Optional[str] = None,
         custom_subscription_footer_enabled_flag: Optional[bool] = None,
         custom_subscription_footer: Optional[str] = None,
-        ask_data_mode: Optional[str] = "EnabledByDefault",
+        ask_data_mode: str = "EnabledByDefault",
         named_sharing_enabled_flag: Optional[bool] = None,
         mobile_biometrics_enabled_flag: Optional[bool] = None,
         sheet_image_enabled_flag: Optional[bool] = None,
         cataloging_enabled_flag: Optional[bool] = None,
         derived_permissions_enabled_flag: Optional[bool] = None,
-        user_visibility_mode: Optional[str] = "FULL",
+        user_visibility_mode: str = "FULL",
         use_default_time_zone_flag: Optional[bool] = None,
         time_zone: Optional[str] = None,
         auto_suspend_refresh_enabled_flag: Optional[bool] = None,
@@ -2324,12 +2324,12 @@ class TableauServerConnection:
         return response
 
     @decorators.verify_api_method_exists("2.3")
-    def query_default_permissions(self, project_id, project_permissions_object):
-        """
-        Queries permissions details for the specified object variety within the specified project.
-        :param string project_id: the project ID
-        :param string project_permissions_object: the object variety [workbook, datasource, flow]
-        :return: HTTP response
+    def query_default_permissions(self, project_id: str, project_permissions_object: str) -> requests.Response:
+        """Queries permissions details for the specified object variety within the specified project.
+
+        Args:
+            project_id: The Tableau project ID.
+            project_permissions_object: The permissions object variety [workbook, datasource, flow, etc].
         """
         self.active_endpoint = api_endpoints.PermissionsEndpoint(
             ts_connection=self,
