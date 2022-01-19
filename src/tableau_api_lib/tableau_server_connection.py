@@ -2324,12 +2324,12 @@ class TableauServerConnection:
         return response
 
     @decorators.verify_api_method_exists("2.3")
-    def query_default_permissions(self, project_id, project_permissions_object):
-        """
-        Queries permissions details for the specified object variety within the specified project.
-        :param string project_id: the project ID
-        :param string project_permissions_object: the object variety [workbook, datasource, flow]
-        :return: HTTP response
+    def query_default_permissions(self, project_id: str, project_permissions_object: str) -> requests.Response:
+        """Queries permissions details for the specified object variety within the specified project.
+
+        Args:
+            project_id: The Tableau project ID.
+            project_permissions_object: The permissions object variety [workbook, datasource, flow, etc].
         """
         self.active_endpoint = api_endpoints.PermissionsEndpoint(
             ts_connection=self,

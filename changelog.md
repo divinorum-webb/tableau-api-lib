@@ -1,5 +1,8 @@
 # Changelog for tableau-api-lib
 
+# V0.1.29
+- (divinorum-webb) Added support for metrics, dataroles, and lenses when querying default permissions.
+
 # V0.1.28
 - (divinorum-webb) Modified `ConnectionError` to properly describe that some connection errors may occur due to having insufficient user permissions.
 
