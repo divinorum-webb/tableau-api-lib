@@ -114,5 +114,5 @@ def get_embedded_datasources_dataframe(
         workbook_connections_df[new_col_prefix + "workbook_name"] = workbook[name_col]
         workbook_connections_df[new_col_prefix + "workbook_id"] = workbook[id_col]
         workbook_connections_df[new_col_prefix + "site_name"] = conn.site_name
-        embedded_datasources_df = embedded_datasources_df.append(workbook_connections_df, ignore_index=True, sort=True)
+        embedded_datasources_df = pd.concat([embedded_datasources_df, workbook_connections_df], ignore_index=True, sort=True)
     return embedded_datasources_df
