@@ -1,5 +1,8 @@
 # Changelog for tableau-api-lib
 
+# V0.1.30
+- (divinorum-webb) Fixed a bug that was passing `siteRole` instead of `minimumSiteRole` when creating local groups.
+
 # V0.1.29
 - (divinorum-webb) Added support for metrics, dataroles, and lenses when querying default permissions.
 
