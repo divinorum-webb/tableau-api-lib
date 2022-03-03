@@ -62,7 +62,7 @@ class CreateGroupRequest(BaseRequest):
 
     @property
     def optional_local_source_param_keys(self) -> List[str]:
-        return ["grantLicenseMode", "siteRole"]
+        return ["grantLicenseMode", "minimumSiteRole"]
 
     @property
     def required_local_group_param_values(self) -> List[str]:
