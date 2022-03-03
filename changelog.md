@@ -1,5 +1,8 @@
 # Changelog for tableau-api-lib
 
+# V0.1.31
+- (divinorum-webb) Merged changes from remote branch replacing a deprecated Pandas method.
+
 # V0.1.30
 - (divinorum-webb) Fixed a bug that was passing `siteRole` instead of `minimumSiteRole` when creating local groups.
 
