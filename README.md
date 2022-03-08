@@ -20,7 +20,8 @@ In the scenario above, we could accomplish the task by identifying the following
 3. API Reference: Query Views for Workbook | tableau-api-lib: query_views_for_workbook()
 4. API Refrerence: Query View PDF | tableau-api-lib: query_view_pdf()
 5. API Reference: Query View Image | tableau-api-lib: query_view_image()
-6. API Reference: Switch Site | tableau-api-lib: switch_site()
+6. API Reference: Query View Excel | tableau-api-lib: query_view_excel()
+7. API Reference: Switch Site | tableau-api-lib: switch_site()
 
 ## Why use tableau-api-lib
 
