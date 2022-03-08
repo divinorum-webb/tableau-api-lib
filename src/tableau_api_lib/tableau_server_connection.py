@@ -1059,6 +1059,24 @@ class TableauServerConnection:
         response = self._set_response_encoding(response=response)
         return response
 
+    @decorators.verify_api_method_exists("3.14")
+    def query_view_excel(self, view_id: str, parameter_dict: Optional[Dict[str, Any]] = None) -> requests.Response:
+        """Downloads a cross excel of the specified view."""
+        self.active_endpoint = api_endpoints.ViewEndpoint(
+            ts_connection=self,
+            view_id=view_id,
+            query_view_excel=True,
+            parameter_dict=parameter_dict,
+        ).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.get(
+            url=self.active_endpoint,
+            headers=self.active_headers,
+            verify=self.ssl_verify,
+        )
+        response = self._set_response_encoding(response=response)
+        return response
+
     @decorators.verify_api_method_exists("2.0")
     def get_view(self, view_id: str) -> requests.Response:
         """Queries details for the specified view."""
