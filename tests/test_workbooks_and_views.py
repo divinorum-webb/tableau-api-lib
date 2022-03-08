@@ -150,6 +150,11 @@ def test_query_view_pdf():
     response = conn.query_view_image(test_view_id)
     assert response.status_code == 200
 
+def test_query_view_excel():
+    test_view_id = get_test_view_id(conn)
+    response = conn.query_view_excel(test_view_id)
+    assert response.status_code == 200
+
 
 def test_query_view_preview_image():
     test_view_id = get_test_view_id(conn)
