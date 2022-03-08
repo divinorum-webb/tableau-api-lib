@@ -13,6 +13,7 @@ class ViewEndpoint(BaseEndpoint):
                  query_view_pdf=False,
                  query_view_image=False,
                  query_view_data=False,
+                 query_view_excel=False,
                  parameter_dict=None):
         """
         Builds API endpoints for REST API view methods.
@@ -26,6 +27,7 @@ class ViewEndpoint(BaseEndpoint):
         :param bool query_view_pdf: True if querying a specific view's PDF, False otherwise
         :param bool query_view_image: True if querying a specific view's image, False otherwise
         :param bool query_view_data: True if querying a specific view's data, False otherwise
+        :params bool query_view_excel: True if querying a specific view's cross excel, False otherwise
         :param dict parameter_dict: dictionary of URL parameters to append. The value in each key-value pair is the
         literal text that will be appended to the URL endpoint
         """
@@ -40,6 +42,7 @@ class ViewEndpoint(BaseEndpoint):
         self._query_view_pdf = query_view_pdf
         self._query_view_image = query_view_image
         self._query_view_data = query_view_data
+        self._query_view_excel= query_view_excel 
         self._parameter_dict = parameter_dict
         self._validate_inputs()
 
@@ -52,6 +55,7 @@ class ViewEndpoint(BaseEndpoint):
             self._query_views,
             self._query_view_pdf,
             self._query_view_image,
+            self._query_view_excel,
             self._query_view_data
         ]
 
@@ -93,6 +97,11 @@ class ViewEndpoint(BaseEndpoint):
                                       self._view_id)
 
     @property
+    def base_query_view_excel_url(self):
+        return '{0}/{1}/crosstab/excel'.format(self.base_view_url,
+                                        self._view_id)
+
+    @property
     def base_query_view_data_url(self):
         return "{0}/data".format(self.base_view_id_url)
 
@@ -109,6 +118,8 @@ class ViewEndpoint(BaseEndpoint):
                 url = self.base_query_view_pdf_url
             elif self._query_view_image:
                 url = self.base_query_view_image_url
+            elif self._query_view_excel:
+                url = self.base_query_view_excel_url
             elif self._query_view_data:
                 url = self.base_query_view_data_url
             else:
