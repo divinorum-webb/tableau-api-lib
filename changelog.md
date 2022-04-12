@@ -1,5 +1,8 @@
 # Changelog for tableau-api-lib
 
+# V0.1.32
+- (divinorum-webb) Added support for user-defined `sep` param in `querying.get_view_data_dataframe`.
+
 # V0.1.31
 - (divinorum-webb) Merged changes from remote branch replacing a deprecated Pandas method.
 
