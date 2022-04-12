@@ -1,6 +1,9 @@
 # Changelog for tableau-api-lib
 
 # V0.1.32
+- (divinorum-webb) Added usage statistics by default in `querying.get_all_view_fields`.
+
+# V0.1.32
 - (divinorum-webb) Added support for user-defined `sep` param in `querying.get_view_data_dataframe`.
 
 # V0.1.31

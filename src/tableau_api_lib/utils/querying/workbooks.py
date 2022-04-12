@@ -33,7 +33,9 @@ def get_all_view_fields(
     """Returns a list of JSON / dicts describing all available views."""
     fields_param = "_all_" if all_fields is True else "_default_"
     all_views = extract_pages(
-        conn.query_views_for_site, content_id=site_id, parameter_dict={"fields": f"fields={fields_param}"}
+        conn.query_views_for_site,
+        content_id=site_id,
+        parameter_dict={"fields": f"fields={fields_param}", "usage_stats": f"includeUsageStatistics=True"},
     )
     return all_views
 
