@@ -1908,25 +1908,18 @@ class TableauServerConnection:
     def update_group(
         self,
         group_id: str,
-        new_group_name: Optional[str] = None,
+        new_group_name: str,
         active_directory_group_name: Optional[str] = None,
         active_directory_domain_name: Optional[str] = None,
-        default_site_role: Optional[str] = None,
+        minimum_site_role: Optional[str] = None,
+        license_mode: Optional[str] = None,
         parameter_dict: Optional[Dict[str, Any]] = None,
     ) -> requests.Response:
         """Updates details for the specified group."""
-        self.active_request = api_requests.UpdateGroupRequest(
-            ts_connection=self,
-            new_group_name=new_group_name,
-            active_directory_group_name=active_directory_group_name,
-            active_directory_domain_name=active_directory_domain_name,
-            default_site_role=default_site_role,
-        ).get_request()
+        local_vars = self._set_local_vars(local_vars=locals())
+        self.active_request = api_requests.CreateGroupRequest(ts_connection=self, **local_vars).get_request()
         self.active_endpoint = api_endpoints.GroupEndpoint(
-            ts_connection=self,
-            group_id=group_id,
-            update_group=True,
-            parameter_dict=parameter_dict,
+            ts_connection=self, group_id=group_id, update_group=True, parameter_dict=parameter_dict
         ).get_endpoint()
         self.active_headers = self.default_headers
         response = requests.put(

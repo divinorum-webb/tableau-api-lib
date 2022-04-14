@@ -63,7 +63,7 @@ class SiteConfig(Enum):
         "revision_limit",
         "subscribe_others_enabled_flag",
         "extract_encryption_mode",
-        "request_acces_enabled_flag",
+        "request_access_enabled_flag",
         "run_now_enabled_flag",
         "data_alerts_enabled_flag",
         "commenting_mentions_enabled_flag",

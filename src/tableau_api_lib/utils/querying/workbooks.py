@@ -33,7 +33,9 @@ def get_all_view_fields(
     """Returns a list of JSON / dicts describing all available views."""
     fields_param = "_all_" if all_fields is True else "_default_"
     all_views = extract_pages(
-        conn.query_views_for_site, content_id=site_id, parameter_dict={"fields": f"fields={fields_param}"}
+        conn.query_views_for_site,
+        content_id=site_id,
+        parameter_dict={"fields": f"fields={fields_param}", "usage_stats": f"includeUsageStatistics=True"},
     )
     return all_views
 
@@ -51,11 +53,11 @@ def get_views_dataframe(
 
 
 def get_view_data_dataframe(
-    conn: TableauServerConnection, view_id: str, parameter_dict: Optional[Dict[str, Any]] = None
+    conn: TableauServerConnection, view_id: str, parameter_dict: Optional[Dict[str, Any]] = None, sep: str = ","
 ) -> pd.DataFrame:
     """Returns a DataFrame containing the data downloaded from a Tableau view."""
     view_data = conn.query_view_data(view_id=view_id, parameter_dict=parameter_dict)
-    view_df = pd.read_csv(StringIO(view_data.text))
+    view_df = pd.read_csv(StringIO(view_data.text), sep=sep)
     return view_df
 
 
@@ -114,5 +116,7 @@ def get_embedded_datasources_dataframe(
         workbook_connections_df[new_col_prefix + "workbook_name"] = workbook[name_col]
         workbook_connections_df[new_col_prefix + "workbook_id"] = workbook[id_col]
         workbook_connections_df[new_col_prefix + "site_name"] = conn.site_name
-        embedded_datasources_df = pd.concat([embedded_datasources_df, workbook_connections_df], ignore_index=True, sort=True)
+        embedded_datasources_df = pd.concat(
+            [embedded_datasources_df, workbook_connections_df], ignore_index=True, sort=True
+        )
     return embedded_datasources_df

@@ -1,5 +1,17 @@
 # Changelog for tableau-api-lib
 
+# V0.1.34
+- (divinorum-webb) Fixed a bug related to the `update_group` method.
+
+# V0.1.34
+- (divinorum-webb) Fixed typo related to `requestAccessEnabled` flag in site-specific requests.
+
+# V0.1.33
+- (divinorum-webb) Added usage statistics by default in `querying.get_all_view_fields`.
+
+# V0.1.32
+- (divinorum-webb) Added support for user-defined `sep` param in `querying.get_view_data_dataframe`.
+
 # V0.1.31
 - (divinorum-webb) Merged changes from remote branch replacing a deprecated Pandas method.
 
