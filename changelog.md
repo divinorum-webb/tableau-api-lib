@@ -1,6 +1,9 @@
 # Changelog for tableau-api-lib
 
 # V0.1.34
+- (divinorum-webb) Fixed a bug related to the `update_group` method.
+
+# V0.1.34
 - (divinorum-webb) Fixed typo related to `requestAccessEnabled` flag in site-specific requests.
 
 # V0.1.33

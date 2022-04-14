@@ -1,27 +1,19 @@
-from typing import List, Optional
+from typing import List
 
 from tableau_api_lib.api_requests import BaseRequest
+from tableau_api_lib.tableau_server_connection import TableauServerConnection
 
 
 class CreateGroupRequest(BaseRequest):
     """Builds the request body for creating groups using Tableau's REST API."""
 
-    def __init__(
-        self,
-        ts_connection,
-        new_group_name: str = None,
-        active_directory_group_name: Optional[str] = None,
-        active_directory_domain_name: Optional[str] = None,
-        minimum_site_role: Optional[str] = None,
-        license_mode: Optional[str] = None,
-    ):
-
+    def __init__(self, ts_connection: TableauServerConnection, **kwargs):
         super().__init__(ts_connection)
-        self._new_group_name = new_group_name
-        self._active_directory_group_name = active_directory_group_name
-        self._active_directory_domain_name = active_directory_domain_name
-        self._minimum_site_role = minimum_site_role
-        self._license_mode = license_mode
+        self._new_group_name = kwargs.get("new_group_name")
+        self._active_directory_group_name = kwargs.get("active_directory_group_name")
+        self._active_directory_domain_name = kwargs.get("active_directory_domain_name")
+        self._minimum_site_role = kwargs.get("minimum_site_role")
+        self._license_mode = kwargs.get("license_mode")
         self._active_directory_source = "ActiveDirectory"
         self._validate_inputs()
 
