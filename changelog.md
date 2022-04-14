@@ -1,6 +1,9 @@
 # Changelog for tableau-api-lib
 
-# V0.1.32
+# V0.1.34
+- (divinorum-webb) Fixed typo related to `requestAccessEnabled` flag in site-specific requests.
+
+# V0.1.33
 - (divinorum-webb) Added usage statistics by default in `querying.get_all_view_fields`.
 
 # V0.1.32
