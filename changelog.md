@@ -1,6 +1,9 @@
 # Changelog for tableau-api-lib
 
-# V0.1.34
+# V0.1.35
+- (divinorum-webb) Replaced usage of DataFrame `.append()` calls with `.concat()`.
+
+# V0.1.35
 - (divinorum-webb) Fixed a bug related to the `update_group` method.
 
 # V0.1.34

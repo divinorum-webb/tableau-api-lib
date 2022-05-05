@@ -46,7 +46,7 @@ def get_all_workbook_connections_df(conn):
     for workbook_id in all_wbs['id']:
         wb_connections = get_workbook_connections_dataframe(conn, workbook_id).drop(columns=['id'])
         wb_connections = wb_connections[~wb_connections['userName'].isin([None, ''])]
-        all_wb_connections_df = all_wb_connections_df.append(wb_connections, sort=False)
+        all_wb_connections_df = all_wb_connections_df.concat(wb_connections, sort=False)
     all_wb_connections_df = all_wb_connections_df[['serverAddress', 'userName', 'serverPort']].drop_duplicates()
     return all_wb_connections_df
 
@@ -59,7 +59,7 @@ def get_all_datasource_connections_df(conn):
         ds_connections = get_datasource_connections_dataframe(conn, datasource_id).drop(columns=['id'])
         # ds_connections['datasource_name'] = datasource_name
         ds_connections = ds_connections[~ds_connections['userName'].isin([None, ''])]
-        all_ds_connections_df = all_ds_connections_df.append(ds_connections, sort=False)
+        all_ds_connections_df = all_ds_connections_df.concat(ds_connections, sort=False)
     all_ds_connections_df = all_ds_connections_df[['serverAddress', 'userName']].drop_duplicates()
     return all_ds_connections_df
 
