@@ -178,7 +178,7 @@ def download_workbooks(conn_source, workbooks_df, download_dir=None, target_proj
             file.write(response.content)
         workbook_file_name_df = workbook[['source_name', 'source_project_name']].copy()
         workbook_file_name_df['file_path'] = f"{target_project_dir}/{workbook['source_name']}.{file_type}"
-        workbook_file_names_df = workbook_file_names_df.append(workbook_file_name_df, ignore_index=True, sort=False)
+        workbook_file_names_df = workbook_file_names_df.concat(workbook_file_name_df, ignore_index=True, sort=False)
     return workbook_file_names_df
 
 

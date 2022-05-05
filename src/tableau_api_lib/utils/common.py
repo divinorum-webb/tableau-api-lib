@@ -41,7 +41,7 @@ def flatten_dict_list_column(df: pd.DataFrame, col_name: str) -> pd.DataFrame:
     for index, row in df.iterrows():
         temp_df = pd.DataFrame(row[col_name])
         temp_df.index = [index] * temp_df.shape[0]
-        flattened_col_df = flattened_col_df.append(temp_df)
+        flattened_col_df = flattened_col_df.concat(temp_df)
     new_df = df.drop(columns=[col_name]).join(flattened_col_df, how="inner")
     return new_df
 
