@@ -1,6 +1,9 @@
 # Changelog for tableau-api-lib
 
-# V0.1.35
+# V0.1.37
+- (divinorum-webb) Fixed incorrect usage of `DataFrame.concat()` with `pd.concat()`.
+
+# V0.1.36
 - (divinorum-webb) Replaced usage of DataFrame `.append()` calls with `.concat()`.
 
 # V0.1.35
