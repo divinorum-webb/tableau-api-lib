@@ -16,7 +16,8 @@ def get_all_subscription_fields(conn):
 
 def get_subscriptions_dataframe(conn):
     subscriptions_df = pd.DataFrame(get_all_subscription_fields(conn))
-    subscriptions_df = flatten_dict_column(subscriptions_df, keys=['id', 'type'], col_name='content')
-    subscriptions_df = flatten_dict_column(subscriptions_df, keys=['id', 'name'], col_name='schedule')
-    subscriptions_df = flatten_dict_column(subscriptions_df, keys=['id', 'name'], col_name='user')
+    if not subscriptions_df.empty:
+        subscriptions_df = flatten_dict_column(subscriptions_df, keys=['id', 'type'], col_name='content')
+        subscriptions_df = flatten_dict_column(subscriptions_df, keys=['id', 'name'], col_name='schedule')
+        subscriptions_df = flatten_dict_column(subscriptions_df, keys=['id', 'name'], col_name='user')
     return subscriptions_df

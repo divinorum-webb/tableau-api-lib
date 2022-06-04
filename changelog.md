@@ -1,5 +1,8 @@
 # Changelog for tableau-api-lib
 
+# V0.1.38
+- (divinorum-webb) Using the querying function `get_subscriptions_dataframe` now returns an emtpy DataFrame if no subscriptions are found.
+
 # V0.1.37
 - (divinorum-webb) Fixed incorrect usage of `DataFrame.concat()` with `pd.concat()`.
 
