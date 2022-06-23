@@ -1,5 +1,8 @@
 # Changelog for tableau-api-lib
 
+# V0.1.39
+- (divinorum-webb) Calling `switch_site()` to switch to the currently active site no longer raises an exception.
+
 # V0.1.38
 - (divinorum-webb) Using the querying function `get_subscriptions_dataframe` now returns an emtpy DataFrame if no subscriptions are found.
 
