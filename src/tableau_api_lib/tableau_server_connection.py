@@ -24,8 +24,8 @@ class TableauServerConnection:
         """
         self._env = env
         self._config = config_json
-        self._auth_token = None
         self._use_apparent_encoding = use_apparent_encoding
+        self._auth_token = None
         self.ssl_verify = ssl_verify
         self.site_url = self._config.get(self._env, dict()).get("site_url")
         self.site_name = self._config.get(self._env, dict()).get("site_name")
@@ -134,17 +134,7 @@ class TableauServerConnection:
 
     @auth_token.setter
     def auth_token(self, token_value: str) -> None:
-        """Sets the TableauServerConnection's Tableau auth token or raises an error if already signed in.
-
-        Args:
-            token_value: A valid Tableau Server auth token provided as a result of a successful `sign_in` attempt.
-        Raises:
-            ConnectionError: Indicates that the user is already logged in with a valid token.
-        """
-        if token_value is None:
-            raise ConnectionError("You are already signed in with a valid auth token or have insufficient permissions.")
-        else:
-            self._auth_token = token_value
+        self._auth_token = token_value
 
     def _get_auth_method(self) -> str:
         """Returns the relevant key associated with the appropriate value for configuring authentication details."""
