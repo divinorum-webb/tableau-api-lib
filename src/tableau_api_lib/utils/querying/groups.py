@@ -13,7 +13,7 @@ from tableau_api_lib.utils.querying import get_users_dataframe
 @typechecked
 def get_all_group_fields(conn: TableauServerConnection) -> List[Dict[str, Any]]:
     """Returns details for all groups in the Tableau Server environment, including all queryable fields."""
-    all_groups = extract_pages(conn.query_groups, parameter_dict={"fields": "fields=_all_"})
+    all_groups = extract_pages(conn.query_groups, parameter_dict={"fields": "fields=_default_"})
     return all_groups
 
 
@@ -21,7 +21,7 @@ def get_all_group_fields(conn: TableauServerConnection) -> List[Dict[str, Any]]:
 def get_group_users(conn: TableauServerConnection, group_id: str) -> List[Dict[str, Any]]:
     """Returns details of users belonging to the specified Tableau group."""
     all_group_users = extract_pages(
-        conn.get_users_in_group, content_id=group_id, parameter_dict={"fields": "fields=_all_"}
+        conn.get_users_in_group, content_id=group_id, parameter_dict={"fields": "fields=_default_"}
     )
     return all_group_users
 

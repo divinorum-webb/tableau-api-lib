@@ -10,7 +10,7 @@ from tableau_api_lib.utils import extract_pages
 
 
 def get_all_site_fields(conn):
-    all_sites = extract_pages(conn.query_sites, parameter_dict={'fields': 'fields=_all_'})
+    all_sites = extract_pages(conn.query_sites, parameter_dict={'fields': 'fields=_default_'})
     return all_sites
 
 

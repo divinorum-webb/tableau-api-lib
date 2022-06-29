@@ -13,7 +13,7 @@ def get_all_datasource_fields(conn) -> list:
     :param class conn: the Tableau Server connection
     :return: list
     """
-    all_datasources = extract_pages(conn.query_data_sources, parameter_dict={'fields': 'fields=_all_'})
+    all_datasources = extract_pages(conn.query_data_sources, parameter_dict={'fields': 'fields=_default_'})
     return all_datasources
 
 
