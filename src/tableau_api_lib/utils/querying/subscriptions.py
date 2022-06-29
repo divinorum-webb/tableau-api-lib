@@ -10,7 +10,7 @@ from tableau_api_lib.utils import extract_pages, flatten_dict_column
 
 
 def get_all_subscription_fields(conn):
-    all_subscriptions = extract_pages(conn.query_subscriptions, parameter_dict={'fields': 'fields=_all_'})
+    all_subscriptions = extract_pages(conn.query_subscriptions, parameter_dict={'fields': 'fields=_default_'})
     return all_subscriptions
 
 

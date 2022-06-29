@@ -13,7 +13,7 @@ def get_all_flow_fields(conn) -> list:
     :param class conn: the Tableau Server connection
     :return: list
     """
-    all_flows = extract_pages(conn.query_flows_for_site, parameter_dict={'fields': 'fields=_all_'})
+    all_flows = extract_pages(conn.query_flows_for_site, parameter_dict={'fields': 'fields=_default_'})
     return all_flows
 
 

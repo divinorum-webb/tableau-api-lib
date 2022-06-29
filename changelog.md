@@ -1,5 +1,8 @@
 # Changelog for tableau-api-lib
 
+# V0.1.41
+- (divinorum-webb) Removed usage of the `_all_` fields parameter as various REST API endpoints appear to have bugs.
+
 # V0.1.40
 - (divinorum-webb) Fixed a bug causing the `sign_out()` method to throw a ConnectionError exception.
 
