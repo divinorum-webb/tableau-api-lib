@@ -1,5 +1,8 @@
 # Changelog for tableau-api-lib
 
+# V0.1.43
+- (divinorum-webb) Modified embed credential validations when publishing to support publishing and embedding via OAuth.
+
 # V0.1.42
 - (divinorum-webb) Modified logic in `querying.get_subscriptions_dataframe()`.
 
