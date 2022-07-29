@@ -15,8 +15,10 @@ def get_all_subscription_fields(conn):
 
 
 def get_subscriptions_dataframe(conn):
+    target_cols = ['content', 'schedule', 'user']
     subscriptions_df = pd.DataFrame(get_all_subscription_fields(conn))
-    if not subscriptions_df.empty:
+    target_cols_present = [True for col in target_cols if col in subscriptions_df.columns]
+    if not subscriptions_df.empty and all(target_cols_present):
         subscriptions_df = flatten_dict_column(subscriptions_df, keys=['id', 'type'], col_name='content')
         subscriptions_df = flatten_dict_column(subscriptions_df, keys=['id', 'name'], col_name='schedule')
         subscriptions_df = flatten_dict_column(subscriptions_df, keys=['id', 'name'], col_name='user')

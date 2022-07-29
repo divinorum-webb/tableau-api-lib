@@ -1,5 +1,14 @@
 # Changelog for tableau-api-lib
 
+# V0.1.44
+- (divinorum-webb) Made get_users_dataframe querying func default to _all_ fields and enabled user control.
+
+# V0.1.43
+- (divinorum-webb) Modified embed credential validations when publishing to support publishing and embedding via OAuth.
+
+# V0.1.42
+- (divinorum-webb) Modified logic in `querying.get_subscriptions_dataframe()`.
+
 # V0.1.41
 - (divinorum-webb) Removed usage of the `_all_` fields parameter as various REST API endpoints appear to have bugs.
 
