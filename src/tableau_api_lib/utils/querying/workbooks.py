@@ -35,8 +35,7 @@ def get_all_view_fields(
     all_views = extract_pages(
         conn.query_views_for_site,
         content_id=site_id,
-        parameter_dict={"fields": f"fields={fields_param}"},
-        # parameter_dict={"fields": f"fields={fields_param}", "usage_stats": f"includeUsageStatistics=True"},
+        parameter_dict={"fields": f"fields={fields_param}", "usage_stats": f"includeUsageStatistics=True"},
     )
     return all_views
 

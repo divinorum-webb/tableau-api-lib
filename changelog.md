@@ -1,6 +1,9 @@
 # Changelog for tableau-api-lib
 
 # V0.1.44
+- (divinorum-webb) Fixed a bug which resulted in all view isage statistics to appear as 0.
+
+# V0.1.44
 - (divinorum-webb) Made get_users_dataframe querying func default to _all_ fields and enabled user control.
 
 # V0.1.43
