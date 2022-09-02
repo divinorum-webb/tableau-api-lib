@@ -1,6 +1,9 @@
 # Changelog for tableau-api-lib
 
-# V0.1.44
+# V0.1.46
+- (divinorum-webb) Added support for additional workbook permissions capabilities.
+
+# V0.1.45
 - (divinorum-webb) Fixed a bug which resulted in all view isage statistics to appear as 0.
 
 # V0.1.44
