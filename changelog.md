@@ -1,6 +1,9 @@
 # Changelog for tableau-api-lib
 
 # V0.1.47
+- (divinorum-webb) Addd support for user-defined page sizes for views and users.
+
+# V0.1.47
 - (divinorum-webb) Increased the default pages in paginated queries from 100 to 1000.
 
 # V0.1.46

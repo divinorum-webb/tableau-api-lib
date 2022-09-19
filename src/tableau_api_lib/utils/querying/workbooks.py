@@ -28,25 +28,29 @@ def get_workbooks_dataframe(conn: TableauServerConnection, all_fields: Optional[
 
 
 def get_all_view_fields(
-    conn: TableauServerConnection, site_id: str, all_fields: Optional[bool] = True
+    conn: TableauServerConnection, site_id: str, all_fields: Optional[bool] = True, page_size: int = 1000
 ) -> List[Dict[str, Any]]:
     """Returns a list of JSON / dicts describing all available views."""
     fields_param = "_all_" if all_fields is True else "_default_"
     all_views = extract_pages(
         conn.query_views_for_site,
         content_id=site_id,
+        page_size=page_size,
         parameter_dict={"fields": f"fields={fields_param}", "usage_stats": f"includeUsageStatistics=True"},
     )
     return all_views
 
 
 def get_views_dataframe(
-    conn: TableauServerConnection, site_id: Optional[str] = None, all_fields: Optional[bool] = True
+    conn: TableauServerConnection,
+    site_id: Optional[str] = None,
+    all_fields: Optional[bool] = True,
+    page_size: int = 1000,
 ) -> pd.DataFrame:
     """Returns a DataFrame describing all available views. If none are available, an empty DataFrame is returned."""
     if not site_id:
         site_id = conn.site_id
-    views_df = pd.DataFrame(get_all_view_fields(conn=conn, site_id=site_id, all_fields=all_fields))
+    views_df = pd.DataFrame(get_all_view_fields(conn=conn, site_id=site_id, all_fields=all_fields, page_size=page_size))
     if not views_df.empty:
         views_df = flatten_dict_column(views_df, keys=["totalViewCount"], col_name="usage")
     return views_df
