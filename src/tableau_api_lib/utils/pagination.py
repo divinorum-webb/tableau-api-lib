@@ -33,8 +33,8 @@ def extract_pages(
     query_func: object,
     content_id: Optional[str] = None,
     *,
-    starting_page: Optional[int] = 1,
-    page_size: Optional[int] = 100,
+    starting_page: int = 1,
+    page_size: int = 1000,
     limit: Optional[int] = None,
     parameter_dict: Optional[Dict[str, Any]] = None,
 ) -> Union[List[Dict[str, Any]], Dict]:
