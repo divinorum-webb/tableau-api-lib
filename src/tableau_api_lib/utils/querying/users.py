@@ -10,9 +10,9 @@ import pandas as pd
 from tableau_api_lib.utils import extract_pages
 
 
-def get_all_user_fields(conn, all_fields: Optional[bool] = True) -> List[Dict[str, Any]]:
+def get_all_user_fields(conn, all_fields: Optional[bool] = True, page_size: int = 1000) -> List[Dict[str, Any]]:
     fields_param = "_all_" if all_fields is True else "_default_"
-    all_users = extract_pages(conn.get_users_on_site, parameter_dict={"fields": f"fields={fields_param}"})
+    all_users = extract_pages(conn.get_users_on_site, page_size=page_size, parameter_dict={"fields": f"fields={fields_param}"})
     return all_users
 
 
@@ -40,6 +40,6 @@ def get_all_user_roles(conn):
     return all_user_roles
 
 
-def get_users_dataframe(conn, all_fields: Optional[bool] = True) -> pd.DataFrame:
-    users_df = pd.DataFrame(get_all_user_fields(conn, all_fields=all_fields))
+def get_users_dataframe(conn, all_fields: Optional[bool] = True, page_size: int = 1000) -> pd.DataFrame:
+    users_df = pd.DataFrame(get_all_user_fields(conn, all_fields=all_fields, page_size=page_size))
     return users_df
