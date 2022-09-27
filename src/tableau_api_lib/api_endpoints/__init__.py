@@ -5,6 +5,7 @@ from .datasource_endpoint import DatasourceEndpoint
 from .favorites_endpoint import FavoritesEndpoint
 from .file_upload_endpoint import FileUploadEndpoint
 from .flow_endpoint import FlowEndpoint
+from .flow_run_endpoint import FlowRunEndpoint
 from .group_endpoint import GroupEndpoint
 from .jobs_endpoint import JobsEndpoint
 from .permissions_endpoint import PermissionsEndpoint
