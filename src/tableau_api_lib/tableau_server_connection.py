@@ -2963,6 +2963,51 @@ class TableauServerConnection:
         response = self._set_response_encoding(response=response)
         return response
 
+    @decorators.verify_api_method_exists("3.1")
+    def get_flow_runs(self, parameter_dict: Optional[Dict[str, Any]] = None) -> requests.Response:
+        """Queries site to obtain information for flow runs"""
+        self.active_endpoint = api_endpoints.FlowRunEndpoint(
+            ts_connection=self, get_flow_runs=True, parameter_dict=parameter_dict
+        ).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.get(
+            url=self.active_endpoint,
+            headers=self.active_headers,
+            verify=self.ssl_verify,
+        )
+        response = self._set_response_encoding(response=response)
+        return response
+
+    @decorators.verify_api_method_exists("3.1")
+    def get_flow_run(self, flow_run_id: str, parameter_dict: Optional[Dict[str, Any]] = None) -> requests.Response:
+        """Gets information about specified flow run"""
+        self.active_endpoint = api_endpoints.FlowRunEndpoint(
+            ts_connection=self, flow_run_id=flow_run_id, get_flow_run=True, parameter_dict=parameter_dict
+        ).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.get(
+            url=self.active_endpoint,
+            headers=self.active_headers,
+            verify=self.ssl_verify,
+        )
+        response = self._set_response_encoding(response=response)
+        return response
+
+    @decorators.verify_api_method_exists("3.1")
+    def cancel_flow_run(self, flow_run_id: str, parameter_dict: Optional[Dict[str, Any]] = None) -> requests.Response:
+        """Cancels specified flow run"""
+        self.active_endpoint = api_endpoints.FlowRunEndpoint(
+            ts_connection=self, flow_run_id=flow_run_id, cancel_flow_run=True, parameter_dict=parameter_dict
+        ).get_endpoint()
+        self.active_headers = self.default_headers
+        response = requests.put(
+            url=self.active_endpoint,
+            headers=self.active_headers,
+            verify=self.ssl_verify,
+        )
+        response = self._set_response_encoding(response=response)
+        return response
+
     def run_flow_task(self, task_id):
         """
         Runs the specified flow run task.
