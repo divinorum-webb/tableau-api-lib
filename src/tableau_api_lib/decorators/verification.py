@@ -190,4 +190,4 @@ def verify_api_method_exists(version_introduced):
 
         return wrapper
 
-    return decorator
+    return wraps(decorator)

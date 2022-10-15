@@ -1,5 +1,8 @@
 # Changelog for tableau-api-lib
 
+# V0.1.50
+- (divinorum-webb) Added `functools.wraps` to API verification decorator to improve developer experience.
+
 # V0.1.49
 - (aldin-apple) Addd support for additional flow endpoints.
 
