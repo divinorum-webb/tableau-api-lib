@@ -49,7 +49,8 @@ class AddWorkbookPermissionsRequest(BaseRequest):
             "ViewComments",
             "ViewUnderlyingData",
             "WebAuthoring",
-            "Write" "RunExplainData",
+            "Write",
+            "RunExplainData",
             "CreateRefreshMetrics",
         ]
 
