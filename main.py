@@ -1,9 +1,13 @@
 import json
+import tkinter
+from tkinter import filedialog
 import pandas as pd
 import io
 from tableau_api_lib import TableauServerConnection
 from tableau_api_lib.utils.querying import get_views_dataframe
 from pypdf import PdfMerger
+from tkinter import *
+from tkinter.filedialog import asksaveasfile
 
 WORKBOOK_NAME = '2023_OPV_BioNData_BatchExclusion_V2'
 DASHBOARD_VIEW_NAME = 'Übersicht'
@@ -71,6 +75,13 @@ views = query_viewnames_for_workbook().head(2)
 # print(relevant_views)
 #--------------------------------------------------------------
 
+#-------------------------------------------------------------- save
+root = tkinter.Tk()
+root.withdraw()
+  
+# function to call when user press
+# the save button, a filedialog will
+# open and ask to save file
 
 # dashboard_view_id = views[views['name'] == DASHBOARD_VIEW_NAME]['id'].values[0]
 # #print(views[['name', 'id']])
@@ -90,6 +101,8 @@ pdf_params = {
 #         pdf_file.write(pdf.content)
 #         pdf_list.append(pdf_file.name)
 
+
+#----------------------------------------------------------------------------- benötigt
 for ind in views.index:
     #print(views['view_id'][ind])
     view_string = views['view_id'][ind]
@@ -99,13 +112,22 @@ for ind in views.index:
         pdf_file.write(pdf.content)
         pdf_list.append(pdf_file.name)
 
-merger = PdfMerger()
 
-for pdf in pdf_list:
-    merger.append(pdf)
+#----------------------------------------------------------------------------- pdf merger und def
+def save_as_pdf (pdf_merger):
+    pdfPath = filedialog.asksaveasfilename(defaultextension = "*.pdf", filetypes = (("PDF Files", "*.pdf"),))
+    if pdfPath: #If the user didn't close the dialog window
+        pdfOutputFile = open(pdfPath, 'wb')
+        pdf_merger.write(pdfOutputFile)
+        pdfOutputFile.close()
 
-merger.write("result.pdf")
-merger.close()
+def merge_pdf ():
+    merger = PdfMerger()
+    for pdf in pdf_list:
+        merger.append(pdf)
+    save_as_pdf(merger)
+    #merger.write('result.pdf')
+    merger.close()
 
 conn.sign_out()
 
