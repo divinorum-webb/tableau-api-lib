@@ -1,4 +1,5 @@
 import json
+import shutil
 import tkinter
 from tkinter import filedialog
 import pandas as pd
@@ -72,7 +73,7 @@ def create_pdf ():
         view_string = views['view_id'][ind]
         #print(type(view_string))
         pdf = conn.query_view_pdf(view_id=view_string, parameter_dict=pdf_params)
-        with open(f'{FILE_PREFIX}{view_string}.pdf', 'wb') as pdf_file:
+        with open('./temp/'+f'{FILE_PREFIX}{view_string}.pdf', 'wb') as pdf_file:
             pdf_file.write(pdf.content)
             pdf_list.append(pdf_file.name)
     merger = PdfMerger()
@@ -82,6 +83,7 @@ def create_pdf ():
     #merger.write('result.pdf')
     merger.close()
     conn.sign_out()
+    shutil.rmtree('./temp/')
     return 'PDF created'
 
 #conn.sign_out()
