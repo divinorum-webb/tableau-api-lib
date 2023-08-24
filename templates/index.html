@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Execute Python Function</title>
+</head>
+<body>
+    <h1>Click the button to execute the Python function:</h1>
+    <button id="executeButton">Execute</button>
+    <p id="result"></p>
+
+    <script>
+        document.getElementById("executeButton").addEventListener("click", function() {
+            fetch('/execute_function')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById("result").textContent = data;
+                });
+        });
+    </script>
+</body>
+</html>
