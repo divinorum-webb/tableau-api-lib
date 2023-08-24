@@ -61,7 +61,7 @@ def save_as_pdf (pdf_merger):
 
 def create_pdf ():
     FILE_PREFIX = 'bnt_'
-    views = query_viewnames_for_workbook()
+    views = query_viewnames_for_workbook().head(5)
     pdf_list = []
     pdf_params = {
         'type': 'type=A4',
