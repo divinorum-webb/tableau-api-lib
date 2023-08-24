@@ -1,4 +1,5 @@
 import json
+import os
 import shutil
 import tkinter
 from tkinter import filedialog
@@ -66,6 +67,7 @@ def create_pdf ():
         'type': 'type=A4',
         'orientation': 'orientation=Landscape'
     }
+    os.mkdir('./temp')
 
     conn = tableau_login()
     for ind in views.index:
