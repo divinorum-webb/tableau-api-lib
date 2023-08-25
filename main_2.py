@@ -11,6 +11,10 @@ from pypdf import PdfMerger
 from tkinter import *
 from tkinter.filedialog import asksaveasfile
 
+count_views = 0
+counter = 0
+status_percent = 0
+
 
 def tableau_login():
     tableau_server_config = {
@@ -69,23 +73,40 @@ def create_pdf ():
     }
     os.mkdir('./temp')
 
+    global count_views
+    count_views = len(views.index)
+    print(count_views)
+
     conn = tableau_login()
     for ind in views.index:
         #print(views['view_id'][ind])
+        global counter
+        counter = counter + 1
+        global status_percent
+    
         view_string = views['view_id'][ind]
         #print(type(view_string))
         pdf = conn.query_view_pdf(view_id=view_string, parameter_dict=pdf_params)
         with open('./temp/'+f'{FILE_PREFIX}{view_string}.pdf', 'wb') as pdf_file:
             pdf_file.write(pdf.content)
             pdf_list.append(pdf_file.name)
+            
+            status_percent = counter/count_views*100
+            print(status_percent)
     merger = PdfMerger()
     for pdf in pdf_list:
         merger.append(pdf)
     save_as_pdf(merger)
     #merger.write('result.pdf')
+
+    #clean up
     merger.close()
     conn.sign_out()
     shutil.rmtree('./temp/')
+    count_views = 0
+    counter = 0
+    status_percent = 0
+
     return 'PDF created'
 
 #conn.sign_out()
