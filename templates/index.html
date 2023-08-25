@@ -2,18 +2,24 @@
 <html>
 <head>
     <title>Execute PDF generation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <h1>Click the button to generate the PDF from Tableau:</h1>
-    <button id="executeButton">Execute</button>
+    <button id="executeButton" class="styled-button">Execute</button>
     <p id="result"></p>
 
     <script>
         document.getElementById("executeButton").addEventListener("click", function() {
+            var button = document.getElementById("executeButton");
+            // Change button color to loading state
+            button.classList.add("loading");
+
             fetch('/execute_function')
                 .then(response => response.text())
                 .then(data => {
                     document.getElementById("result").textContent = data;
+                    button.classList.remove("loading");
                 });
         });
     </script>
