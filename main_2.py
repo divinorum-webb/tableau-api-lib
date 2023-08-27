@@ -62,7 +62,6 @@ class TableauExtension:
         for view in views_list_dict:
             view_list.append((view['id'],view['name']))
         df = pd.DataFrame(view_list,columns = ['view_id','view_name'])
-        conn.sign_out()
         return df
 
 
