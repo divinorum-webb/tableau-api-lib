@@ -66,7 +66,7 @@ class TableauExtension:
 
 
 
-    def save_as_pdf (pdf_merger):
+    def save_as_pdf (self,pdf_merger):
         root = tkinter.Tk()
         root.withdraw()
         pdfPath = filedialog.asksaveasfilename(defaultextension = "*.pdf", filetypes = (("PDF Files", "*.pdf"),))
@@ -122,12 +122,12 @@ class TableauExtension:
 #print(get_workbook_id(tableau_login()))
 #create_pdf()
 
-jo = TableauExtension()
+#jo = TableauExtension()
 # print(jo.check_status())
 # print(jo.change_status())
 # print(jo.check_status())
 # print(jo.status)
 #print(jo.query_viewnames_for_workbook())
-jo.create_pdf()
+#jo.create_pdf()
 #test
 
