@@ -19,6 +19,7 @@ class TableauExtension:
 
     def __init__(self):
         self.status = self.status_percent
+        self.connection = self.tableau_login()
 
     def check_status(self):
         return self.status_percent
@@ -27,7 +28,7 @@ class TableauExtension:
         self.status_percent = 7
 
 
-
+    @staticmethod
     def tableau_login():
         tableau_server_config = {
             'tableau_prod': {
@@ -44,18 +45,18 @@ class TableauExtension:
         return conn
 
 
-    def get_workbook_id(connection):
+    def get_workbook_id(self):
         WORKBOOK_NAME = '2023_OPV_BioNData_BatchExclusion_V2'
-        workbooks = connection.query_workbooks_for_site().json()['workbooks']['workbook']
+        workbooks = self.connection.query_workbooks_for_site().json()['workbooks']['workbook']
         for workbook in workbooks:
             if workbook['name'] == WORKBOOK_NAME:
                 return workbook['id']
         return workbooks.pop()['id']
 
-    def query_viewnames_for_workbook():
-        conn = tableau_login()
+    def query_viewnames_for_workbook(self):
+        conn = self.connection
         view_list = []
-        workbook_id = get_workbook_id(conn)
+        workbook_id = self.get_workbook_id()
         response = conn.query_views_for_workbook(workbook_id)
         views_list_dict = response.json()['views']['view']
         for view in views_list_dict:
@@ -75,9 +76,9 @@ class TableauExtension:
             pdf_merger.write(pdfOutputFile)
             pdfOutputFile.close()
 
-    def create_pdf ():
+    def create_pdf (self):
         FILE_PREFIX = 'bnt_'
-        views = query_viewnames_for_workbook().head(5)
+        views = self.query_viewnames_for_workbook().head(5)
         pdf_list = []
         pdf_params = {
             'type': 'type=A4',
@@ -85,16 +86,13 @@ class TableauExtension:
         }
         os.mkdir('./temp')
 
-        global count_views
-        count_views = len(views.index)
-        print(count_views)
+        self.count_views = len(views.index)
+        print(self.count_views)
 
-        conn = tableau_login()
+        conn = self.connection
         for ind in views.index:
             #print(views['view_id'][ind])
-            global counter
-            counter = counter + 1
-            global status_percent
+            self.counter = self.counter + 1
         
             view_string = views['view_id'][ind]
             #print(type(view_string))
@@ -103,21 +101,21 @@ class TableauExtension:
                 pdf_file.write(pdf.content)
                 pdf_list.append(pdf_file.name)
                 
-                status_percent = counter/count_views*100
-                print(status_percent)
+                self.status_percent = self.counter/self.count_views*100
+                print(self.status_percent)
         merger = PdfMerger()
         for pdf in pdf_list:
             merger.append(pdf)
-        save_as_pdf(merger)
+        self.save_as_pdf(merger)
         #merger.write('result.pdf')
 
         #clean up
         merger.close()
         conn.sign_out()
         shutil.rmtree('./temp/')
-        count_views = 0
-        counter = 0
-        status_percent = 0
+        self.count_views = 0
+        self.counter = 0
+        self.status_percent = 0
 
         return 'PDF created'
 
@@ -126,8 +124,11 @@ class TableauExtension:
 #create_pdf()
 
 jo = TableauExtension()
-print(jo.check_status())
-print(jo.change_status())
-print(jo.check_status())
-print(jo.status)
+# print(jo.check_status())
+# print(jo.change_status())
+# print(jo.check_status())
+# print(jo.status)
+#print(jo.query_viewnames_for_workbook())
+jo.create_pdf()
+#test
 
