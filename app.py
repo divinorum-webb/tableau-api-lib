@@ -9,7 +9,8 @@ def index():
 @app.route('/execute_function')
 def execute_function():
     # Call your Python function here
-    result = main_2.create_pdf()
+    tableau_ext = main_2.TableauExtension()
+    result = tableau_ext.create_pdf()
     return result
 
 def your_python_function():
