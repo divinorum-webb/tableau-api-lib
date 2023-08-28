@@ -61,7 +61,9 @@ class TableauExtension:
         views_list_dict = response.json()['views']['view']
         for view in views_list_dict:
             view_list.append((view['id'],view['name']))
-        df = pd.DataFrame(view_list,columns = ['view_id','view_name'])
+        # take only the necessary dashboards
+        df_complete = pd.DataFrame(view_list,columns = ['view_id','view_name'])
+        df = df_complete[df_complete['view_name'].str.contains("OPV")]
         return df
 
 
@@ -77,7 +79,7 @@ class TableauExtension:
 
     def create_pdf (self):
         FILE_PREFIX = 'bnt_'
-        views = self.query_viewnames_for_workbook().head(5)
+        views = self.query_viewnames_for_workbook()#.head(5)
         pdf_list = []
         pdf_params = {
             'type': 'type=A4',
@@ -100,7 +102,7 @@ class TableauExtension:
                 pdf_file.write(pdf.content)
                 pdf_list.append(pdf_file.name)
                 
-                self.status_percent = self.counter/self.count_views*100
+                self.status_percent = round(self.counter/self.count_views*100,2)
                 print(self.status_percent)
         merger = PdfMerger()
         for pdf in pdf_list:
@@ -127,7 +129,8 @@ class TableauExtension:
 # print(jo.change_status())
 # print(jo.check_status())
 # print(jo.status)
-#print(jo.query_viewnames_for_workbook())
+# print(jo.query_viewnames_for_workbook())
+# jo.query_viewnames_for_workbook().to_json(r'test.json')
 #jo.create_pdf()
 #test
 
