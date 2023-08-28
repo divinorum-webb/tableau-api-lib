@@ -16,6 +16,7 @@
             // Change button color to loading state
             button.classList.add("loading");
             //button.disabled = true;
+            document.getElementById("result").textContent = "Please wait"
 
             fetch('/execute_function')
                 .then(response => response.text())
