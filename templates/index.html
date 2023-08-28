@@ -5,10 +5,11 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <h1>Click the button to generate the PDF from Tableau:</h1>
-    <button id="executeButton" class="styled-button">Execute</button>
-    <p id="result"></p>
-
+    <div class="container">
+        <p><b>Click the button to generate the PDF from Tableau:</b></p>
+        <button id="executeButton" class="styled-button">Execute</button>
+        <p id="result"></p>
+    </div>
     <script>
         document.getElementById("executeButton").addEventListener("click", function() {
             var button = document.getElementById("executeButton");
