@@ -14,12 +14,14 @@
             var button = document.getElementById("executeButton");
             // Change button color to loading state
             button.classList.add("loading");
+            //button.disabled = true;
 
             fetch('/execute_function')
                 .then(response => response.text())
                 .then(data => {
                     document.getElementById("result").textContent = data;
                     button.classList.remove("loading");
+                    //button.disabled = false;
                 });
         });
     </script>
