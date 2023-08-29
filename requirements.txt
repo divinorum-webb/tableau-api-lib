@@ -1,0 +1,10 @@
+easygui==0.98.3
+Flask==1.1.2
+numpy==1.25.2
+packaging==21.3
+pandas==1.4.4
+pypdf==3.15.4
+Requests==2.31.0
+setuptools==65.5.0
+typeguard==4.1.2
+urllib3==1.26.13
