@@ -1,15 +1,9 @@
-import json
 import os
 import shutil
-import tkinter
-from tkinter import filedialog
 import pandas as pd
-import io
 from tableau_api_lib import TableauServerConnection
-from tableau_api_lib.utils.querying import get_views_dataframe
 from pypdf import PdfMerger
-from tkinter import *
-from tkinter.filedialog import asksaveasfile
+import easygui
 
 class TableauExtension:
 
@@ -69,9 +63,7 @@ class TableauExtension:
 
 
     def save_as_pdf (self,pdf_merger):
-        root = tkinter.Tk()
-        root.withdraw()
-        pdfPath = filedialog.asksaveasfilename(defaultextension = "*.pdf", filetypes = (("PDF Files", "*.pdf"),))
+        pdfPath = easygui.filesavebox(default = "APQR.pdf", filetypes = {"*.pdf"})
         if pdfPath: #If the user didn't close the dialog window
             pdfOutputFile = open(pdfPath, 'wb')
             pdf_merger.write(pdfOutputFile)
