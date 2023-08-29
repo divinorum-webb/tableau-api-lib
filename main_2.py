@@ -85,6 +85,10 @@ class TableauExtension:
             'type': 'type=A4',
             'orientation': 'orientation=Landscape'
         }
+        try:
+            shutil.rmtree('./temp/')
+        except:
+            print('Path not available')
         os.mkdir('./temp')
 
         self.count_views = len(views.index)
