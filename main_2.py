@@ -5,23 +5,28 @@ from tableau_api_lib import TableauServerConnection
 from pypdf import PdfMerger
 import easygui
 
+#Erstellung der Klasse für den pdf Gen
 class TableauExtension:
 
+    #VAriablen um später den Status ans html zu schicken
     count_views = 0
     counter = 0
     status_percent = 0
 
+    #Init - bei jeder Erstellung der Klasse wird eine Connection zum Tableau Server automatisch aufgebaut
     def __init__(self):
         self.status = self.status_percent
         self.connection = self.tableau_login()
 
+    #Einfach eine Funktion um den Status rauszugeben
     def check_status(self):
         return self.status_percent
     
+    #Testfunktion
     def change_status(self):
         self.status_percent = 7
 
-
+    #Konfig zum anmelden. Kann auch in eine Datei gepackt werden und später als Secret behandelt werden
     @staticmethod
     def tableau_login():
         tableau_server_config = {
@@ -38,7 +43,7 @@ class TableauExtension:
         conn.sign_in()
         return conn
 
-
+    #Gibt die Workbook ID unseres gewünschten Workbooks zurück
     def get_workbook_id(self):
         WORKBOOK_NAME = '2023_OPV_BioNData_BatchExclusion_V2'
         workbooks = self.connection.query_workbooks_for_site().json()['workbooks']['workbook']
@@ -47,6 +52,7 @@ class TableauExtension:
                 return workbook['id']
         return workbooks.pop()['id']
 
+    #Nutzt die Workbook ID um eine Liste aller worksheets in diesem Workbook rauszugeben - ist gefiltert auf OPV
     def query_viewnames_for_workbook(self):
         conn = self.connection
         view_list = []
@@ -57,11 +63,12 @@ class TableauExtension:
             view_list.append((view['id'],view['name']))
         # take only the necessary dashboards
         df_complete = pd.DataFrame(view_list,columns = ['view_id','view_name'])
+        #Filterschritt
         df = df_complete[df_complete['view_name'].str.contains("OPV")]
         return df
 
 
-
+    #Funktion um die pdf abzuspeichern
     def save_as_pdf (self,pdf_merger):
         pdfPath = easygui.filesavebox(default = "APQR.pdf", filetypes = {"*.pdf"})
         if pdfPath: #If the user didn't close the dialog window
@@ -69,6 +76,7 @@ class TableauExtension:
             pdf_merger.write(pdfOutputFile)
             pdfOutputFile.close()
 
+    #Funktion um die einzelnen PDFs zu generieren und das abspeichern aufzurufen
     def create_pdf (self):
         FILE_PREFIX = 'bnt_'
         views = self.query_viewnames_for_workbook()#.head(5)
@@ -122,11 +130,6 @@ class TableauExtension:
 
 #jo = TableauExtension()
 # print(jo.check_status())
-# print(jo.change_status())
-# print(jo.check_status())
-# print(jo.status)
-# print(jo.query_viewnames_for_workbook())
-# jo.query_viewnames_for_workbook().to_json(r'test.json')
 #jo.create_pdf()
-#test
+
 
