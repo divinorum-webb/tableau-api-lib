@@ -28,7 +28,7 @@ class TableauExtension:
             'tableau_prod': {
                 'server': 'http://tableau.demo.sgc.corp/',
                 'api_version': '3.19',
-                'username': 'kamipat',
+                'username': 'andrmar',
                 'password': 'P@ssw0rd',
                 'site_name': 'bnt-extension-poc',
                 'site_url': 'bnt-extension-poc'
