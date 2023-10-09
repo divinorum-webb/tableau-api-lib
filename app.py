@@ -31,3 +31,5 @@ async def execute_function():
 if __name__ == '__main__':
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000, debug=True)
+
+# In den Pfad rein und folgendes ausführen: uvicorn app:app --reload 
