@@ -123,12 +123,39 @@ class TableauExtension:
         self.status_percent = 0
 
         return 'PDF created'
+    
+    #Nutzt die Workbook ID um Hilfssheet zu bekommen.
+    def create_csv (self):
+        conn = self.connection
+        view_list = []
+        workbook_id = self.get_workbook_id()
+        response = conn.query_views_for_workbook(workbook_id)
+        views_list_dict = response.json()['views']['view']
+        for view in views_list_dict:
+            view_list.append((view['id'],view['name']))
+        # take only the necessary dashboards
+        df_complete = pd.DataFrame(view_list,columns = ['view_id','view_name'])
+        #Filterschritt
+        df = df_complete[df_complete['view_name'].str.contains("Helper")]
+        view_id = str(df.head(1)['view_id'][33])
+        print(view_id)
+        response = conn.query_view_data(view_id)
+        self.save_as_csv(response)
+        return 'csv created'
+    
+    #Funktion um die csv abzuspeichern
+    def save_as_csv (self,response):
+        csvPath = easygui.filesavebox(default = "APQR.csv", filetypes = {"*.csv"})
+        if csvPath: #If the user didn't close the dialog window
+            with open(csvPath, 'wb') as csv_file:
+                csv_file.write(response.content)
+                csv_file.close()
 
 #conn.sign_out()
 #print(get_workbook_id(tableau_login()))
 #create_pdf()
-
 #jo = TableauExtension()
+#jo.create_csv()
 # print(jo.check_status())
 #jo.create_pdf()
 

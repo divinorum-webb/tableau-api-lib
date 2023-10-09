@@ -24,6 +24,13 @@ async def execute_function():
     result = tableau_ext.create_pdf()
     return {"result": result}
 
+@app.get("/get_csv")
+async def get_csv():
+    # Rufen Sie Ihre Python-Funktion hier auf
+    tableau_ext = main_2.TableauExtension()
+    result = tableau_ext.create_csv()
+    return {"result": result}
+
 # def your_python_function():
 #     # Definieren Sie die Python-Funktion, die Sie ausführen möchten
 #     return "Python function executed!"

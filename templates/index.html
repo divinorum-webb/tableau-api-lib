@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Execute PDF generation</title>
+    <title>Execute PDF and csv generation</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
 </head>
 <body>
     <div class="container">
-        <p><b>Click the button to generate the PDF from Tableau:</b></p>
-        <button id="executeButton" class="styled-button">Execute</button>
+        <p><b>Click the button to generate the pdf file from Tableau or to create the csv file:</b></p>
+        <button id="executeButton" class="styled-button">Get pdf</button>
+        <button id="csvButton" class="styled-button">Get csv</button>
         <p id="result"></p>
     </div>
     <script>
@@ -19,6 +20,22 @@
             document.getElementById("result").textContent = "Please wait"
 
             fetch('/execute_function')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById("result").textContent = data;
+                    button.classList.remove("loading");
+                    //button.disabled = false;
+                });
+        });
+
+        document.getElementById("csvButton").addEventListener("click", function() {
+            var button = document.getElementById("csvButton");
+            // Change button color to loading state
+            button.classList.add("loading");
+            //button.disabled = true;
+            document.getElementById("result").textContent = "Please wait"
+
+            fetch('/get_csv')
                 .then(response => response.text())
                 .then(data => {
                     document.getElementById("result").textContent = data;
