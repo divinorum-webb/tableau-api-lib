@@ -16,3 +16,4 @@ config.py
 **/tests/twbx_files
 *__pycache__*
 /tests/twbx_files/
+/venv
