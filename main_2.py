@@ -3,7 +3,6 @@ import shutil
 import pandas as pd
 from tableau_api_lib import TableauServerConnection
 from pypdf import PdfMerger
-import easygui
 
 #Erstellung der Klasse für den pdf Gen
 class TableauExtension:
@@ -70,7 +69,7 @@ class TableauExtension:
 
     #Funktion um die pdf abzuspeichern
     def save_as_pdf (self,pdf_merger):
-        pdfPath = easygui.filesavebox(default = "APQR.pdf", filetypes = {"*.pdf"})
+        pdfPath = "APQR.pdf"
         if pdfPath: #If the user didn't close the dialog window
             pdfOutputFile = open(pdfPath, 'wb')
             pdf_merger.write(pdfOutputFile)
@@ -140,12 +139,12 @@ class TableauExtension:
         view_id = str(df.head(1)['view_id'][33])
         print(view_id)
         response = conn.query_view_data(view_id)
-        self.save_as_csv(response)
-        return 'csv created'
+        #self.save_as_csv(response)
+        return response
     
     #Funktion um die csv abzuspeichern
     def save_as_csv (self,response):
-        csvPath = easygui.filesavebox(default = "APQR.csv", filetypes = {"*.csv"})
+        csvPath = "APQR.csv"
         if csvPath: #If the user didn't close the dialog window
             with open(csvPath, 'wb') as csv_file:
                 csv_file.write(response.content)

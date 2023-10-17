@@ -32,17 +32,34 @@
             var button = document.getElementById("csvButton");
             // Change button color to loading state
             button.classList.add("loading");
-            //button.disabled = true;
-            document.getElementById("result").textContent = "Please wait"
+            // button.disabled = true;
+            document.getElementById("result").textContent = "Please wait";
 
             fetch('/get_csv')
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById("result").textContent = data;
+                .then(response => {
+                    if (response.status === 200) {
+                        // Assuming the response is a file download, you can trigger the download
+                        response.blob().then(blob => {
+                            var url = window.URL.createObjectURL(blob);
+                            var a = document.createElement('a');
+                            a.href = url;
+                            a.download = 'APQR.csv';
+                            a.style.display = 'none';
+                            document.body.appendChild(a);
+                            a.click();
+                            window.URL.revokeObjectURL(url);
+                            document.getElementById("result").textContent = "Download complete";
+                        });
+                    } else {
+                        document.getElementById("result").textContent = "Error occurred";
+                    }
                     button.classList.remove("loading");
-                    //button.disabled = false;
+                    // button.disabled = false;
                 });
         });
+
+        
+        
     </script>
 </body>
 </html>
