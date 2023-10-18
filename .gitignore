@@ -1,6 +1,5 @@
 *.idea
 *.ipynb
-*.csv
 *.twbx
 *.twb
 *.tdsx
