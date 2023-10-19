@@ -44,7 +44,7 @@ class TableauExtension:
 
     #Gibt die Workbook ID unseres gewünschten Workbooks zurück
     def get_workbook_id(self):
-        WORKBOOK_NAME = '2023_OPV_BioNData_BatchExclusion_V2'
+        WORKBOOK_NAME = '2023_OPV_TechStack_V1_Base'
         workbooks = self.connection.query_workbooks_for_site().json()['workbooks']['workbook']
         for workbook in workbooks:
             if workbook['name'] == WORKBOOK_NAME:
@@ -136,7 +136,7 @@ class TableauExtension:
         df_complete = pd.DataFrame(view_list,columns = ['view_id','view_name'])
         #Filterschritt
         df = df_complete[df_complete['view_name'].str.contains("Helper")]
-        view_id = str(df.head(1)['view_id'][33])
+        view_id = str(df.head(1)['view_id'][10])
         print(view_id)
         response = conn.query_view_data(view_id)
         #self.save_as_csv(response)
