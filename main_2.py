@@ -70,10 +70,10 @@ class TableauExtension:
     #Funktion um die pdf abzuspeichern
     def save_as_pdf (self,pdf_merger):
         pdfPath = "APQR.pdf"
-        if pdfPath: #If the user didn't close the dialog window
-            pdfOutputFile = open(pdfPath, 'wb')
-            pdf_merger.write(pdfOutputFile)
-            pdfOutputFile.close()
+        
+        pdfOutputFile = open(pdfPath, 'wb')
+        pdf_merger.write(pdfOutputFile)
+        pdfOutputFile.close()
 
     #Funktion um die einzelnen PDFs zu generieren und das abspeichern aufzurufen
     def create_pdf (self):

@@ -24,7 +24,8 @@ async def execute_function():
     # Rufen Sie Ihre Python-Funktion hier auf
     tableau_ext = main_2.TableauExtension()
     result = tableau_ext.create_pdf()
-    return {"result": result}
+    file_path = 'APQR.pdf'
+    return FileResponse(file_path, headers={"Content-Disposition": "attachment; filename=APQR.pdf"})
 
 @app.get("/get_csv")
 async def get_csv():
