@@ -87,19 +87,23 @@ button {
 
 /* Styling the button with a class */
 .styled-button {
-  padding: 10px 20px;
-  background-color: #3498db;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
+  -webkit-border-radius: 4;
+  -moz-border-radius: 4;
+  border-radius: 4px;
+  text-shadow: 1px 1px 3px #666666;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 20px;
+  background: #1db39f;
+  padding: 10px 20px 10px 20px;
+  text-decoration: none;
   /* Add transitions or other effects as needed */
 }
 
 /* Styling the button on hover */
 .styled-button:hover {
-  background-color: #2980b9;
+  background: #168274;
+  text-decoration: none;
   /* Add more hover effects if desired */
 }
 
