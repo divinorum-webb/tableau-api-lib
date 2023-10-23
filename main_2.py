@@ -79,17 +79,27 @@ class TableauExtension:
     #Funktion um die einzelnen PDFs zu generieren und das abspeichern aufzurufen
     def create_pdf (self):
         #Filter Variablen, welche später noch manipuliert werden müssen
-        tableau_filter_name = parse.quote('Result Name')
-        tableau_filter_value = parse.quote('pH')
+        parameter_filter_name = parse.quote('Result Name')
+        parameter_filter_value = parse.quote('pH')
+
+        sample_stage_filter_name = parse.quote('Sample Stage')
+        sample_stage_filter_value = parse.quote('DP_B-IPC6')
+
+        material_number_name = parse.quote('Material Number')
+        material_number_filter_value = parse.quote('20000019')
+
         FILE_PREFIX = 'bnt_'
         views = self.query_viewnames_for_workbook()#.head(5)
         pdf_list = []
 
         # Müssen immer wieder aktualisiert werden und durchiteriert werden
+        # Können später nach Sample Stage filtern um Größe zu verkleinern
         pdf_params = {
             'type': 'type=A4',
             'orientation': 'orientation=Landscape',
-            'filter_tableau': f'vf_{tableau_filter_name}={tableau_filter_value}'
+            'parameter_filter': f'vf_{parameter_filter_name}={parameter_filter_value}',
+            'sample_stage_filter': f'vf_{sample_stage_filter_name}={sample_stage_filter_value}',
+            'material_number_filter': f'vf_{material_number_name}={material_number_filter_value}'
         }
 
         try:
