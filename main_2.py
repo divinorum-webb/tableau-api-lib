@@ -3,6 +3,7 @@ import shutil
 import pandas as pd
 from tableau_api_lib import TableauServerConnection
 from pypdf import PdfMerger
+from urllib import parse
 
 #Erstellung der Klasse für den pdf Gen
 class TableauExtension:
@@ -77,13 +78,20 @@ class TableauExtension:
 
     #Funktion um die einzelnen PDFs zu generieren und das abspeichern aufzurufen
     def create_pdf (self):
+        #Filter Variablen, welche später noch manipuliert werden müssen
+        tableau_filter_name = parse.quote('Result Name')
+        tableau_filter_value = parse.quote('pH')
         FILE_PREFIX = 'bnt_'
         views = self.query_viewnames_for_workbook()#.head(5)
         pdf_list = []
+
+        # Müssen immer wieder aktualisiert werden und durchiteriert werden
         pdf_params = {
             'type': 'type=A4',
-            'orientation': 'orientation=Landscape'
+            'orientation': 'orientation=Landscape',
+            'filter_tableau': f'vf_{tableau_filter_name}={tableau_filter_value}'
         }
+
         try:
             shutil.rmtree('./temp/')
         except:

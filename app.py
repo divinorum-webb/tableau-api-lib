@@ -19,6 +19,21 @@ templates = Jinja2Templates(directory="templates")
 async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
+# Funktion um die Dateien zu löschen
+@app.get("/cleanup")
+async def cleanup():
+    try:
+        if os.path.exists("APQR.csv"):
+            os.remove("APQR.csv")
+    except:
+        print('csv not available')
+
+    try:
+        if os.path.exists("APQR.pdf"):
+            os.remove("APQR.pdf")
+    except:
+        print('pdf not available')
+
 @app.get("/execute_function")
 async def execute_function():
     # Rufen Sie Ihre Python-Funktion hier auf
