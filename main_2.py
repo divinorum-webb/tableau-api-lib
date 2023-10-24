@@ -90,6 +90,9 @@ class TableauExtension:
         df_sorted = df.sort_values(by=["Material Number", "Sample Stage", "Result Name"])
         # Distinct, um nur relevante Infos zu behalten
         df_unique = df_sorted.drop_duplicates(subset=["Material Number", "Sample Stage", "Result Name"])
+
+        #TEST
+        df_filtered = df_unique[(df_unique["Material Number"] == 20000019) & (df_unique["Sample Stage"] == "DP_B-IPC6")]
             
 
         try:
@@ -106,42 +109,42 @@ class TableauExtension:
 
             
             # For schleifen
-        for material_number in df_unique["Material Number"].unique():
-            material_group = df_unique[df_unique["Material Number"] == material_number]
+        for material_number in df_filtered["Material Number"].unique():
+            material_group = df_filtered[df_filtered["Material Number"] == material_number]
                 
             for sample_stage in material_group["Sample Stage"].unique():
                 stage_group = material_group[material_group["Sample Stage"] == sample_stage]
                     
-                for result_name in stage_group["Result Name"].unique():
-                    #Filter Variablen, welche später noch manipuliert werden müssen
-                    parameter_filter_name = parse.quote('Result Name')
-                    parameter_filter_value = parse.quote(str(result_name))
-
-                    sample_stage_filter_name = parse.quote('Sample Stage')
-                    sample_stage_filter_value = parse.quote(str(sample_stage))
-
-                    material_number_name = parse.quote('Material Number')
-                    material_number_filter_value = parse.quote(str(material_number).split('.', 1)[0])
-                    # Müssen immer wieder aktualisiert werden und durchiteriert werden
-                    # Können später nach Sample Stage filtern um Größe zu verkleinern
-                    pdf_params = {
-                        'type': 'type=A4',
-                        'orientation': 'orientation=Landscape',
-                        'parameter_filter': f'vf_{parameter_filter_name}={parameter_filter_value}',
-                        'sample_stage_filter': f'vf_{sample_stage_filter_name}={sample_stage_filter_value}',
-                        'material_number_filter': f'vf_{material_number_name}={material_number_filter_value}'
-                    }
-                        
+                for result_name in stage_group["Result Name"].unique():                        
                     for ind in views.index:
+                        #Filter Variablen, welche später noch manipuliert werden müssen
+                        parameter_filter_name = parse.quote('Result Name')
+                        parameter_filter_value = parse.quote(str(result_name))
+
+                        sample_stage_filter_name = parse.quote('Sample Stage')
+                        sample_stage_filter_value = parse.quote(str(sample_stage))
+
+                        material_number_name = parse.quote('Material Number')
+                        material_number_filter_value = parse.quote(str(material_number).split('.', 1)[0])
+                        # Müssen immer wieder aktualisiert werden und durchiteriert werden
+                        # Können später nach Sample Stage filtern um Größe zu verkleinern
+                        pdf_params = {
+                            'type': 'type=A4',
+                            'orientation': 'orientation=Landscape',
+                            'parameter_filter': f'vf_{parameter_filter_name}={parameter_filter_value}',
+                            'sample_stage_filter': f'vf_{sample_stage_filter_name}={sample_stage_filter_value}',
+                            'material_number_filter': f'vf_{material_number_name}={material_number_filter_value}'
+                        }
                         #print(views['view_id'][ind])
                         self.counter = self.counter + 1
                         
                         view_string = views['view_id'][ind]
 
                         pdf = conn.query_view_pdf(view_id=view_string, parameter_dict=pdf_params)
-                        with open('./temp/'+f'{FILE_PREFIX}{view_string}.pdf', 'wb') as pdf_file:
+                        with open('./temp/'+f'{FILE_PREFIX}{self.counter}.pdf', 'wb') as pdf_file:
                             pdf_file.write(pdf.content)
                             pdf_list.append(pdf_file.name)
+                            pdf_file.close()
                             
                         self.status_percent = round(self.counter/self.count_views*100,2)
                         print(self.status_percent)
