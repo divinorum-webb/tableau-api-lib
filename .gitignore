@@ -6,6 +6,8 @@
 *.tds
 *.xlsx
 *.json
+*.csv
+*.pdf
 *.DS_Store
 config.py
 *.egg-info
