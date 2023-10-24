@@ -4,15 +4,16 @@ from starlette.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 import os
-import main_2
+from . import main_2
+from pathlib import Path
 
 app = FastAPI()
 
 # Pfad zu Ihrem Verzeichnis mit statischen Dateien
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory=str(Path(__file__).parent.absolute() / "static")), name="static")
 
 # Pfad zu Ihrem Template-Verzeichnis
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory=str(Path(__file__).parent.absolute() / "templates"))
 
 # Beispielroute, um die index.html-Seite zu rendern
 @app.get("/", response_class=HTMLResponse)
