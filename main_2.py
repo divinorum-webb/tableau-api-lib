@@ -82,6 +82,13 @@ class TableauExtension:
         views = self.query_viewnames_for_workbook()#.head(5)
         pdf_list = []
 
+        # csv Generierung, da sie für die pdf benötigt wird
+        file_content = self.create_csv().content
+        file_path = 'APQR.csv'
+        with open(file_path, 'wb') as file:
+                file.write(file_content)
+                file.close()
+
         # Zusammenfassung aller notwendigen Spalten
         column_names = ['Material Number','Sample Stage','Result Name']
         # csv zu Dataframe
@@ -105,49 +112,91 @@ class TableauExtension:
         print(self.count_views)
 
         conn = self.connection
-            #print(type(view_string))
+        #print(type(view_string))
 
             
-            # For schleifen
+        # For schleifen
+        #for material_number in df_unique["Material Number"].unique():
         for material_number in df_filtered["Material Number"].unique():
             material_group = df_filtered[df_filtered["Material Number"] == material_number]
+            #material_group = df_unique[df_unique["Material Number"] == material_number]
+            # Variable für die erste Seite
+            first_page_done = 0
                 
             for sample_stage in material_group["Sample Stage"].unique():
                 stage_group = material_group[material_group["Sample Stage"] == sample_stage]
+
+                first_page_done = 0
                     
                 for result_name in stage_group["Result Name"].unique():                        
                     for ind in views.index:
-                        #Filter Variablen, welche später noch manipuliert werden müssen
-                        parameter_filter_name = parse.quote('Result Name')
-                        parameter_filter_value = parse.quote(str(result_name))
+                        if first_page_done == 0 and ind == 0:
+                            #Filter Variablen, welche später noch manipuliert werden müssen
+                            parameter_filter_name = parse.quote('Result Name')
+                            parameter_filter_value = parse.quote('')
 
-                        sample_stage_filter_name = parse.quote('Sample Stage')
-                        sample_stage_filter_value = parse.quote(str(sample_stage))
+                            sample_stage_filter_name = parse.quote('Sample Stage')
+                            sample_stage_filter_value = parse.quote(str(sample_stage))
 
-                        material_number_name = parse.quote('Material Number')
-                        material_number_filter_value = parse.quote(str(material_number).split('.', 1)[0])
-                        # Müssen immer wieder aktualisiert werden und durchiteriert werden
-                        # Können später nach Sample Stage filtern um Größe zu verkleinern
-                        pdf_params = {
-                            'type': 'type=A4',
-                            'orientation': 'orientation=Landscape',
-                            'parameter_filter': f'vf_{parameter_filter_name}={parameter_filter_value}',
-                            'sample_stage_filter': f'vf_{sample_stage_filter_name}={sample_stage_filter_value}',
-                            'material_number_filter': f'vf_{material_number_name}={material_number_filter_value}'
-                        }
-                        #print(views['view_id'][ind])
-                        self.counter = self.counter + 1
-                        
-                        view_string = views['view_id'][ind]
-
-                        pdf = conn.query_view_pdf(view_id=view_string, parameter_dict=pdf_params)
-                        with open('./temp/'+f'{FILE_PREFIX}{self.counter}.pdf', 'wb') as pdf_file:
-                            pdf_file.write(pdf.content)
-                            pdf_list.append(pdf_file.name)
-                            pdf_file.close()
+                            material_number_name = parse.quote('Material Number')
+                            material_number_filter_value = parse.quote(str(material_number).split('.', 1)[0])
+                            # Müssen immer wieder aktualisiert werden und durchiteriert werden
+                            # Können später nach Sample Stage filtern um Größe zu verkleinern
+                            pdf_params = {
+                                'type': 'type=A4',
+                                'orientation': 'orientation=Landscape',
+                                'parameter_filter': f'vf_{parameter_filter_name}={parameter_filter_value}',
+                                'sample_stage_filter': f'vf_{sample_stage_filter_name}={sample_stage_filter_value}',
+                                'material_number_filter': f'vf_{material_number_name}={material_number_filter_value}'
+                            }
+                            #print(views['view_id'][ind])
+                            self.counter = self.counter + 1
                             
-                        self.status_percent = round(self.counter/self.count_views*100,2)
-                        print(self.status_percent)
+                            view_string = views['view_id'][ind]
+
+                            pdf = conn.query_view_pdf(view_id=view_string, parameter_dict=pdf_params)
+                            with open('./temp/'+f'{FILE_PREFIX}{self.counter}.pdf', 'wb') as pdf_file:
+                                pdf_file.write(pdf.content)
+                                pdf_list.append(pdf_file.name)
+                                pdf_file.close()
+                                
+                            self.status_percent = round(self.counter/self.count_views*100,2)
+                            print(self.status_percent)
+                            first_page_done = 1
+                        elif first_page_done == 1 and ind == 0:
+                            pass
+                        else:
+                            #Filter Variablen, welche später noch manipuliert werden müssen
+                            parameter_filter_name = parse.quote('Result Name')
+                            parameter_filter_value = parse.quote(str(result_name))
+
+                            sample_stage_filter_name = parse.quote('Sample Stage')
+                            sample_stage_filter_value = parse.quote(str(sample_stage))
+
+                            material_number_name = parse.quote('Material Number')
+                            material_number_filter_value = parse.quote(str(material_number).split('.', 1)[0])
+                            # Müssen immer wieder aktualisiert werden und durchiteriert werden
+                            # Können später nach Sample Stage filtern um Größe zu verkleinern
+                            pdf_params = {
+                                'type': 'type=A4',
+                                'orientation': 'orientation=Landscape',
+                                'parameter_filter': f'vf_{parameter_filter_name}={parameter_filter_value}',
+                                'sample_stage_filter': f'vf_{sample_stage_filter_name}={sample_stage_filter_value}',
+                                'material_number_filter': f'vf_{material_number_name}={material_number_filter_value}'
+                            }
+                            #print(views['view_id'][ind])
+                            self.counter = self.counter + 1
+                            
+                            view_string = views['view_id'][ind]
+
+                            pdf = conn.query_view_pdf(view_id=view_string, parameter_dict=pdf_params)
+                            with open('./temp/'+f'{FILE_PREFIX}{self.counter}.pdf', 'wb') as pdf_file:
+                                pdf_file.write(pdf.content)
+                                pdf_list.append(pdf_file.name)
+                                pdf_file.close()
+                                
+                            self.status_percent = round(self.counter/self.count_views*100,2)
+                            print(self.status_percent)
 
 
         merger = PdfMerger()
